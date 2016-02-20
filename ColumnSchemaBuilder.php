@@ -20,15 +20,42 @@ class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
     /**
      * @inheritdoc
      */
+    protected function buildUnsignedString()
+    {
+        return $this->isUnsigned ? ' UNSIGNED' : '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function buildAfterString()
+    {
+        return $this->after !== null ? " AFTER ('{$this->after}')" : '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function buildFirstString()
+    {
+        return $this->isFirst ? ' FIRST' : '';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
-        return
-            $this->type .
-            $this->buildLengthString() .
-            $this->buildUnsignedString() .
-            $this->buildDefaultString() .
-            $this->buildNotNullString() .
-            $this->buildCheckString() .
-            $this->buildAfterString();
+        switch ($this->getTypeCategory()) {
+            case self::CAT_PK:
+                $format = '{type}{length}{pos}';
+                break;
+            case self::CAT_NUMERIC:
+                $format = '{type}{length}{unsigned}{default}{notnull}{check}{pos}';
+                break;
+            default:
+                $format = '{type}{length}{default}{notnull}{check}{pos}';
+        }
+        return $this->buildCompleteString($format);
     }
 }
