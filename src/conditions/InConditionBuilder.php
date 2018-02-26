@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oci\conditions;
+namespace yii\oracle\conditions;
 
 use yii\db\conditions\InCondition;
 use yii\db\ExpressionInterface;

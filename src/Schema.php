@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oci;
+namespace yii\oracle;
 
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
