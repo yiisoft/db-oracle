@@ -14,7 +14,7 @@ use yii\db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
  *
  * @author Vasenin Matvey <vaseninm@gmail.com>
  * @author Chris Harris <chris@buckshotsoftware.com>
- * @since 2.0.6
+ * @since 1.0
  */
 class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
 {

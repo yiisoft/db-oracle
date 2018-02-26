@@ -20,7 +20,7 @@ use yii\db\ExpressionInterface;
  * QueryBuilder is the query builder for Oracle databases.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * @since 1.0
  */
 class QueryBuilder extends \yii\db\QueryBuilder
 {
@@ -338,7 +338,6 @@ EOD;
 
     /**
      * {@inheritdoc}
-     * @since 2.0.8
      */
     public function selectExists($rawSql)
     {
@@ -347,7 +346,6 @@ EOD;
 
     /**
      * {@inheritdoc}
-     * @since 2.0.8
      */
     public function dropCommentFromColumn($table, $column)
     {
@@ -356,7 +354,6 @@ EOD;
 
     /**
      * {@inheritdoc}
-     * @since 2.0.8
      */
     public function dropCommentFromTable($table)
     {

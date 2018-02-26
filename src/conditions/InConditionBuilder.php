@@ -12,6 +12,7 @@ use yii\db\ExpressionInterface;
 
 /**
  * {@inheritdoc}
+ * @since 1.0
  */
 class InConditionBuilder extends \yii\db\conditions\InConditionBuilder
 {

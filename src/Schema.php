@@ -29,7 +29,7 @@ use yii\db\IntegrityException;
  * sequence object. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * @since 1.0
  */
 class Schema extends \yii\db\Schema implements ConstraintFinderInterface
 {
@@ -516,7 +516,6 @@ SQL;
      *
      * @param TableSchema $table the table metadata
      * @return array all unique indexes for the given table.
-     * @since 2.0.4
      */
     public function findUniqueIndexes($table)
     {

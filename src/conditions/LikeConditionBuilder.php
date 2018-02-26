@@ -11,6 +11,7 @@ use yii\db\ExpressionInterface;
 
 /**
  * {@inheritdoc}
+ * @since 1.0
  */
 class LikeConditionBuilder extends \yii\db\conditions\LikeConditionBuilder
 {
