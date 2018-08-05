@@ -1,15 +1,15 @@
 {
-    "name": "yiisoft/yii2-oracle",
+    "name": "yiisoft/yii-oracle",
     "description": "Oracle extension for the Yii framework",
-    "keywords": ["yii2", "oracle"],
-    "type": "yii2-extension",
+    "keywords": ["yii", "oracle"],
+    "type": "library",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2-oracle/issues",
+        "issues": "https://github.com/yiisoft/yii-oracle/issues",
         "forum": "http://www.yiiframework.com/forum/",
         "wiki": "http://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2-oracle"
+        "source": "https://github.com/yiisoft/yii-oracle"
     },
     "authors": [
         {
@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "3.0.x-dev"
+        "yiisoft/core": "^1.0"
     },
     "autoload": {
         "psr-4": {"yii\\oracle\\": "src"}
