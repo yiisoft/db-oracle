@@ -19,7 +19,13 @@
         }
     ],
     "require": {
-        "yiisoft/core": "^1.0"
+        "yiisoft/core": "^3.0@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3",
+        "yiisoft/di": "dev-master",
+        "yiisoft/log": "dev-master",
+        "yiisoft/cache": "dev-master"
     },
     "autoload": {
         "psr-4": {"yii\\oracle\\": "src"}
