@@ -1,5 +1,5 @@
 {
-    "name": "yiisoft/yii-oracle",
+    "name": "yiisoft/db-oracle",
     "description": "Oracle extension for the Yii framework",
     "keywords": ["yii", "oracle"],
     "type": "library",
