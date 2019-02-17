@@ -12,9 +12,9 @@ For license information check the [LICENSE](LICENSE.md)-file.
 
 Documentation is at [docs/guide/README.md](docs/guide/README.md).
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-oracle)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-oracle/downloads.png)](https://packagist.org/packages/yiisoft/yii2-oracle)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-oracle.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-oracle)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
+[![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
+[![Build Status](https://travis-ci.org/yiisoft/db-oracle.svg?branch=master)](https://travis-ci.org/yiisoft/db-oracle)
 
 
 Installation
@@ -25,13 +25,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist yiisoft/yii2-oracle
+php composer.phar require --prefer-dist yiisoft/db-oracle
 ```
 
 or add
 
 ```
-"yiisoft/yii2-oracle": "~1.0.0"
+"yiisoft/db-oracle": "~1.0.0"
 ```
 
 to the require section of your composer.json.

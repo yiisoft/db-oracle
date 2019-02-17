@@ -1,7 +1,7 @@
-Oracle Extension for Yii 2
+Oracle Extension for Yii 3
 ==========================
 
-This extension provides the Oracle database support for the [Yii framework 2.1](http://www.yiiframework.com).
+This extension provides the Oracle database support for the [Yii framework 3](http://www.yiiframework.com).
 
 Getting Started
 ---------------

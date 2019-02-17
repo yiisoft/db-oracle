@@ -6,13 +6,13 @@ Installation
 In order to install extension use Composer. Either run
 
 ```
-composer require --prefer-dist yiisoft/yii2-oracle "~1.0.0"
+composer require --prefer-dist yiisoft/db-oracle "~1.0.0"
 ```
 
 or add
 
 ```json
-"yiisoft/yii2-oracle": "~1.0.0"
+"yiisoft/db-oracle": "~1.0.0"
 ```
 
 to the `require` section of your composer.json.
