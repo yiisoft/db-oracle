@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 class CommandTest extends DatabaseTestCase
 {

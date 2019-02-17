@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle\data\ar;
+namespace yii\db\oracle\tests\data\ar;
 
 /**
  * Class Category.

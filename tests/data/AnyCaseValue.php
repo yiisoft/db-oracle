@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle\data;
+namespace yii\db\oracle\tests\data;
 
 class AnyCaseValue extends CompareValue
 {

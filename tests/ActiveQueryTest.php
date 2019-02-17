@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\base\Event;
 use yii\db\ActiveQuery;
 use yii\oracle\Connection;
 use yii\oracle\QueryBuilder;
-use yiiunit\oracle\data\ar\ActiveRecord;
-use yiiunit\oracle\data\ar\Customer;
-use yiiunit\oracle\data\ar\Profile;
+use yii\db\oracle\tests\data\ar\ActiveRecord;
+use yii\db\oracle\tests\data\ar\Customer;
+use yii\db\oracle\tests\data\ar\Profile;
 
 class ActiveQueryTest extends DatabaseTestCase
 {
@@ -84,7 +84,7 @@ class ActiveQueryTest extends DatabaseTestCase
     {
         $query = new ActiveQuery(Customer::class);
         $result = $query->one();
-        $this->assertInstanceOf('yiiunit\data\ar\Customer', $result);
+        $this->assertInstanceOf('yii\activerecord\tests\data\Customer', $result);
     }
 
     /**

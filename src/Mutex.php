@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\oracle;
+namespace yii\db\oracle;
 
 use PDO;
 use yii\base\InvalidConfigException;
@@ -20,12 +20,12 @@ use yii\mutex\DbMutex;
  * [
  *     'components' => [
  *         'db' => [
- *             '__class' => yii\oracle\Connection,
+ *             '__class' => yii\db\oracle\Connection,
  *             'dsn' => 'oci:dbname=LOCAL_XE',
  *              ...
  *         ]
  *         'mutex' => [
- *             '__class' => yii\oracle\Mutex,
+ *             '__class' => yii\db\oracle\Mutex,
  *             'lockMode' => 'NL_MODE',
  *             'releaseOnCommit' => true,
  *              ...

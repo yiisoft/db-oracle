@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\db\conditions\BetweenColumnsCondition;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\db\SchemaBuilderTrait;
 use yii\helpers\ArrayHelper;
-use yiiunit\data\base\TraversableObject;
 use yii\oracle\QueryBuilder;
 use yii\oracle\Schema;
+use yii\tests\data\base\TraversableObject;
 
 class QueryBuilderTest extends DatabaseTestCase
 {

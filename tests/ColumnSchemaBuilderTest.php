@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\db\oci\ColumnSchemaBuilder;
 use yii\db\Schema;

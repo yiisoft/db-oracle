@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\oracle;
+namespace yii\db\oracle;
 
 /**
  * Database connection class prefilled for Oracle.

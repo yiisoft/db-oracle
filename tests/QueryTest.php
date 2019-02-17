@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\caching\ArrayCache;
 use yii\caching\Cache;

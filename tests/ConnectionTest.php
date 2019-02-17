@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\db\Transaction;
 
@@ -17,7 +17,7 @@ class ConnectionTest extends DatabaseTestCase
         $connection->open();
         $serialized = serialize($connection);
         $unserialized = unserialize($serialized);
-        $this->assertInstanceOf('yii\oracle\Connection', $unserialized);
+        $this->assertInstanceOf('yii\db\oracle\Connection', $unserialized);
 
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
     }

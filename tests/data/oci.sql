@@ -366,8 +366,8 @@ END;
 
 /* TRIGGERS */
 
-INSERT INTO "animal" ("type") VALUES ('yiiunit\data\ar\Cat');
-INSERT INTO "animal" ("type") VALUES ('yiiunit\data\ar\Dog');
+INSERT INTO "animal" ("type") VALUES ('yii\activerecord\tests\data\Cat');
+INSERT INTO "animal" ("type") VALUES ('yii\activerecord\tests\data\Dog');
 
 
 INSERT INTO "profile" ("description") VALUES ('profile customer 1');
