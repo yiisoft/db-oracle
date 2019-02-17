@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
-use yiiunit\oracle\data\ar\Customer;
-use yiiunit\oracle\data\ar\DefaultPk;
-use yiiunit\oracle\data\ar\Type;
+use yii\db\oracle\tests\data\ar\Customer;
+use yii\db\oracle\tests\data\ar\DefaultPk;
+use yii\db\oracle\tests\data\ar\Type;
 
 class ActiveRecordTest extends DatabaseTestCase
 {

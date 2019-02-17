@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\test\ActiveFixture;
 use yii\test\FixtureTrait;
-use yiiunit\oracle\data\ar\ActiveRecord;
-use yiiunit\oracle\data\ar\Customer;
+use yii\db\oracle\tests\data\ar\ActiveRecord;
+use yii\db\oracle\tests\data\ar\Customer;
 
 /**
  * @group test
@@ -98,21 +98,21 @@ class ActiveFixtureTest extends DatabaseTestCase
 
 class ProfileFixture extends ActiveFixture
 {
-    public $modelClass = 'yiiunit\data\ar\Profile';
+    public $modelClass = \yii\activerecord\tests\data\Profile::class;
 }
 
 class CustomerFixture extends ActiveFixture
 {
-    public $modelClass = 'yiiunit\data\ar\Customer';
+    public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
     public $depends = [
-        'yiiunit\framework\test\ProfileFixture',
+        'yii\tests\framework\test\ProfileFixture',
     ];
 }
 
 class CustomDirectoryFixture extends ActiveFixture
 {
-    public $modelClass = 'yiiunit\data\ar\Customer';
+    public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
     public $dataDirectory = '@app/framework/test/custom';
 }

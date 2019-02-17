@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\oracle\conditions;
+namespace yii\db\oracle\conditions;
 
 use yii\db\ExpressionInterface;
 

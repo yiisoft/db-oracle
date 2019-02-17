@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use Yii;
 use yii\caching\DummyCache;
@@ -125,7 +125,7 @@ abstract class DatabaseTestCase extends TestCase
                 return $sql;
         }
     }
-    
+
     /**
      * @return \yii\db\Connection
      */

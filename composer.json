@@ -19,19 +19,20 @@
         }
     ],
     "require": {
-        "yiisoft/core": "^3.0@dev"
+        "yiisoft/yii-core": "^3.0@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.3",
+        "yiisoft/active-record": "dev-master",
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master",
         "yiisoft/cache": "dev-master"
     },
     "autoload": {
-        "psr-4": {"yii\\oracle\\": "src"}
+        "psr-4": {"yii\\db\\oracle\\": "src"}
     },
     "autoload-dev": {
-        "psr-4": {"yiiunit\\oracle\\": "tests"}
+        "psr-4": {"yii\\db\\oracle\\tests\\": "tests"}
     },
     "extra": {
         "branch-alias": {

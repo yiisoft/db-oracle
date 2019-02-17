@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\oracle;
+namespace yii\db\oracle;
 
 use yii\base\InvalidArgumentException;
 use yii\db\Connection;
@@ -58,8 +58,8 @@ class QueryBuilder extends \yii\db\QueryBuilder
     protected function defaultExpressionBuilders()
     {
         return array_merge(parent::defaultExpressionBuilders(), [
-            \yii\db\conditions\InCondition::class => \yii\oracle\conditions\InConditionBuilder::class,
-            yii\db\conditions\LikeCondition::class => yii\oracle\conditions\LikeConditionBuilder::class,
+            \yii\db\conditions\InCondition::class => \yii\db\oracle\conditions\InConditionBuilder::class,
+            yii\db\conditions\LikeCondition::class => yii\db\oracle\conditions\LikeConditionBuilder::class,
         ]);
     }
 

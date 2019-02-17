@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\oracle;
+namespace yii\db\oracle;
 
 use yii\db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
 

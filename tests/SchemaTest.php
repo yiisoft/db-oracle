@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\db\CheckConstraint;
-use yiiunit\oracle\data\AnyValue;
+use yii\db\oracle\tests\data\AnyValue;
 
 class SchemaTest extends DatabaseTestCase
 {

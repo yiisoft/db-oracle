@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\oracle;
+namespace yii\db\oracle\tests;
 
 use yii\base\InvalidCallException;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
-use yiiunit\oracle\data\ar\ActiveRecord;
-use yiiunit\oracle\data\ar\Customer;
-use yiiunit\oracle\data\ar\Item;
-use yiiunit\oracle\data\ar\Order;
-use yiiunit\oracle\data\UnqueryableQueryMock;
+use yii\db\oracle\tests\data\ar\ActiveRecord;
+use yii\db\oracle\tests\data\ar\Customer;
+use yii\db\oracle\tests\data\ar\Item;
+use yii\db\oracle\tests\data\ar\Order;
+use yii\db\oracle\tests\data\UnqueryableQueryMock;
 
 /**
  * @group data
