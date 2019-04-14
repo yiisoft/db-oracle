@@ -78,7 +78,6 @@ class ActiveFixtureTest extends DatabaseTestCase
         $this->assertEquals(1, $directory->id);
         $this->assertEquals('directory@example.com', $directory['email']);
         $test->tearDown();
-
     }
 
     public function testDataPath()
@@ -92,7 +91,6 @@ class ActiveFixtureTest extends DatabaseTestCase
         $this->assertEquals(1, $customer->id);
         $this->assertEquals('customer1@example.com', $customer['email']);
         $test->tearDown();
-
     }
 }
 
