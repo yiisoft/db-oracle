@@ -18,6 +18,7 @@
             "homepage": "http://www.yiiframework.com/"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "yiisoft/yii-core": "^3.0@dev"
     },
