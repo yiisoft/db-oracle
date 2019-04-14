@@ -9,7 +9,7 @@ namespace yii\db\oracle;
 
 use PDO;
 use yii\base\InvalidConfigException;
-use yii\mutex\DbMutex;
+use Yii\Mutex\DbMutex;
 
 /**
  * OracleMutex implements mutex "lock" mechanism via Oracle locks.
