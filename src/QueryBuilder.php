@@ -13,7 +13,7 @@ use yii\db\Constraint;
 use yii\db\Exception;
 use yii\db\Expression;
 use yii\db\Query;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\db\ExpressionInterface;
 
 /**

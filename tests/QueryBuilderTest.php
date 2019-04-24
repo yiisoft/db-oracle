@@ -11,7 +11,7 @@ use yii\db\conditions\BetweenColumnsCondition;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\db\SchemaBuilderTrait;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\oracle\QueryBuilder;
 use yii\oracle\Schema;
 use yii\tests\data\base\TraversableObject;

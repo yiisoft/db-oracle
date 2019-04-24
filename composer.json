@@ -20,6 +20,9 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "yiisoft/arrays": "^3.0@dev",
+        "yiisoft/db": "^3.0@dev",
+        "yiisoft/strings": "^3.0@dev",
         "yiisoft/yii-core": "^3.0@dev"
     },
     "require-dev": {

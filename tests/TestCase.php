@@ -8,7 +8,7 @@
 namespace yii\db\oracle\tests;
 
 use yii\di\Container;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use Yii;
 
 /**
