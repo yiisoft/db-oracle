@@ -5,14 +5,14 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use yii\caching\ArrayCache;
 use yii\caching\Cache;
-use yii\db\Connection;
-use yii\db\Expression;
-use yii\db\Query;
-use yii\db\Schema;
+use Yiisoft\Db\Connection;
+use Yiisoft\Db\Expression;
+use Yiisoft\Db\Query;
+use Yiisoft\Db\Schema;
 
 class QueryTest extends DatabaseTestCase
 {
@@ -108,7 +108,7 @@ class QueryTest extends DatabaseTestCase
         $query = new Query();
         $tables = new Expression('(SELECT id,name FROM user) u');
         $query->from($tables);
-        $this->assertInstanceOf('\yii\db\Expression', $query->from[0]);
+        $this->assertInstanceOf('\Yiisoft\Db\Expression', $query->from[0]);
     }
 
     use GetTablesAliasTestTrait;
@@ -450,7 +450,7 @@ class QueryTest extends DatabaseTestCase
         $query = new Query();
 
         $result = $query->andFilterCompare('name', null);
-        $this->assertInstanceOf('yii\db\Query', $result);
+        $this->assertInstanceOf('Yiisoft\Db\Query', $result);
         $this->assertNull($query->where);
 
         $query->andFilterCompare('name', '');
@@ -637,7 +637,7 @@ class QueryTest extends DatabaseTestCase
     {
         $db = $this->getConnection();
         $query = (new Query())
-            ->from(new \yii\db\Expression('(SELECT id, name, email, address, status FROM customer) c'))
+            ->from(new \Yiisoft\Db\Expression('(SELECT id, name, email, address, status FROM customer) c'))
             ->where(['status' => 2]);
 
         $result = $query->one($db);

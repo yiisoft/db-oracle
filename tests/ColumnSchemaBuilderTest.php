@@ -5,10 +5,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
-use yii\db\oci\ColumnSchemaBuilder;
-use yii\db\Schema;
+use Yiisoft\Db\oci\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema;
 
 /**
  * ColumnSchemaBuilderTest tests ColumnSchemaBuilder for Oracle.

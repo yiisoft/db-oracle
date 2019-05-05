@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use yii\base\InvalidArgumentException;
-use yii\db\ActiveQuery;
-use yii\db\Query;
+use Yiisoft\Db\ActiveQuery;
+use Yiisoft\Db\Query;
 
 trait GetTablesAliasTestTrait
 {
@@ -130,7 +130,7 @@ trait GetTablesAliasTestTrait
     public function testGetTableNames_isFromAliasedExpression()
     {
         $query = $this->createQuery();
-        $expression = new \yii\db\Expression('(SELECT id FROM user)');
+        $expression = new \Yiisoft\Db\Expression('(SELECT id FROM user)');
         $query->from = $expression;
 
         $this->expectException(InvalidArgumentException::class);
@@ -143,7 +143,7 @@ trait GetTablesAliasTestTrait
     public function testGetTableNames_isFromAliasedArrayWithExpression()
     {
         $query = $this->createQuery();
-        $query->from = ['x' => new \yii\db\Expression('(SELECT id FROM user)')];
+        $query->from = ['x' => new \Yiisoft\Db\Expression('(SELECT id FROM user)')];
 
         $tables = $query->getTablesUsedInFrom();
 

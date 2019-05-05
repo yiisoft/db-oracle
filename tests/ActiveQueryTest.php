@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use yii\base\Event;
-use yii\db\ActiveQuery;
-use yii\oracle\Connection;
-use yii\oracle\QueryBuilder;
-use yii\db\oracle\tests\data\ar\ActiveRecord;
-use yii\db\oracle\tests\data\ar\Customer;
-use yii\db\oracle\tests\data\ar\Profile;
+use Yiisoft\Db\ActiveQuery;
+use Yiisoft\Db\Oracle\Connection;
+use Yiisoft\Db\Oracle\QueryBuilder;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\ActiveRecord;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Profile;
 
 class ActiveQueryTest extends DatabaseTestCase
 {
@@ -55,7 +55,7 @@ class ActiveQueryTest extends DatabaseTestCase
         $query = new ActiveQuery(Customer::class);
         $builder = new QueryBuilder(new Connection());
         $result = $query->prepare($builder);
-        $this->assertInstanceOf('yii\db\Query', $result);
+        $this->assertInstanceOf('Yiisoft\Db\Query', $result);
     }
 
     public function testPopulate_EmptyRows()
@@ -94,7 +94,7 @@ class ActiveQueryTest extends DatabaseTestCase
     {
         $query = new ActiveQuery(Customer::class);
         $result = $query->createCommand();
-        $this->assertInstanceOf('yii\db\Command', $result);
+        $this->assertInstanceOf('Yiisoft\Db\Command', $result);
     }
 
     /**
@@ -212,15 +212,15 @@ class ActiveQueryTest extends DatabaseTestCase
     {
         $query = new ActiveQuery(Customer::class);
         $result = $query->viaTable(Profile::class, ['id' => 'item_id']);
-        $this->assertInstanceOf('yii\db\ActiveQuery', $result);
-        $this->assertInstanceOf('yii\db\ActiveQuery', $result->via);
+        $this->assertInstanceOf('Yiisoft\Db\ActiveQuery', $result);
+        $this->assertInstanceOf('Yiisoft\Db\ActiveQuery', $result->via);
     }
 
     public function testAlias_not_set()
     {
         $query = new ActiveQuery(Customer::class);
         $result = $query->alias('alias');
-        $this->assertInstanceOf('yii\db\ActiveQuery', $result);
+        $this->assertInstanceOf('Yiisoft\Db\ActiveQuery', $result);
         $this->assertEquals(['alias' => 'customer'], $result->from);
     }
 
@@ -230,7 +230,7 @@ class ActiveQueryTest extends DatabaseTestCase
         $query = new ActiveQuery(Customer::class);
         $query->from = $aliasOld;
         $result = $query->alias('alias');
-        $this->assertInstanceOf('yii\db\ActiveQuery', $result);
+        $this->assertInstanceOf('Yiisoft\Db\ActiveQuery', $result);
         $this->assertEquals(['alias' => 'old'], $result->from);
     }
 

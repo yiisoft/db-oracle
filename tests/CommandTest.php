@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 class CommandTest extends DatabaseTestCase
 {
@@ -63,7 +63,7 @@ class CommandTest extends DatabaseTestCase
         $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
-        $this->expectException('\yii\db\Exception');
+        $this->expectException('\Yiisoft\Db\Exception');
         $command->execute();
     }
 
@@ -124,7 +124,7 @@ class CommandTest extends DatabaseTestCase
         $this->assertFalse($command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
-        $this->expectException('\yii\db\Exception');
+        $this->expectException('\Yiisoft\Db\Exception');
         $command->query();
     }
 
@@ -449,7 +449,7 @@ SQL;
             ]
         )->execute();
 
-        $query = new \yii\db\Query();
+        $query = new \Yiisoft\Db\Query();
         $query->select([
                 '{{customer}}.[[email]] as name',
                 '[[name]] as email',
@@ -503,7 +503,7 @@ SQL;
             ]
         )->execute();
 
-        $query = new \yii\db\Query();
+        $query = new \Yiisoft\Db\Query();
         $query->select([
                 'email' => '{{customer}}.[[email]]',
                 'address' => 'name',
@@ -562,7 +562,7 @@ SQL;
      */
     public function testInsertSelectFailed($invalidSelectColumns)
     {
-        $query = new \yii\db\Query();
+        $query = new \Yiisoft\Db\Query();
         $query->select($invalidSelectColumns)->from('{{customer}}');
 
         $db = $this->getConnection();
@@ -623,7 +623,7 @@ SQL;
             'total' => 42,
         ])->execute();
 
-        $columnValueQuery = new \yii\db\Query();
+        $columnValueQuery = new \Yiisoft\Db\Query();
         $columnValueQuery->select('created_at')->from('{{order}}')->where(['id' => '42']);
 
         $command = $db->createCommand();
@@ -1005,7 +1005,7 @@ SQL;
         $db = $this->getConnection(false);
         $tableName = 'test_pk';
         $name = 'test_pk_constraint';
-        /** @var \yii\db\pgsql\Schema $schema */
+        /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
@@ -1032,7 +1032,7 @@ SQL;
         $db = $this->getConnection(false);
         $tableName = 'test_fk';
         $name = 'test_fk_constraint';
-        /** @var \yii\db\pgsql\Schema $schema */
+        /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
@@ -1065,7 +1065,7 @@ SQL;
         $db = $this->getConnection(false);
         $tableName = 'test_idx';
         $name = 'test_idx_constraint';
-        /** @var \yii\db\pgsql\Schema $schema */
+        /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
@@ -1109,7 +1109,7 @@ SQL;
         $db = $this->getConnection(false);
         $tableName = 'test_uq';
         $name = 'test_uq_constraint';
-        /** @var \yii\db\pgsql\Schema $schema */
+        /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
@@ -1136,7 +1136,7 @@ SQL;
         $db = $this->getConnection(false);
         $tableName = 'test_ck';
         $name = 'test_ck_constraint';
-        /** @var \yii\db\pgsql\Schema $schema */
+        /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
@@ -1161,7 +1161,7 @@ SQL;
 
     public function testIntegrityViolation()
     {
-        $this->expectException('\yii\db\IntegrityException');
+        $this->expectException('\Yiisoft\Db\IntegrityException');
 
         $db = $this->getConnection();
 
@@ -1375,7 +1375,7 @@ SQL;
             $command->execute();
         } catch (Exception $e) {
             $hitCatch = true;
-            $this->assertInstanceOf('yii\db\IntegrityException', $e);
+            $this->assertInstanceOf('Yiisoft\Db\IntegrityException', $e);
         }
         $this->assertNull($connection->transaction);
         $this->assertSame(3, $attempts);
@@ -1386,7 +1386,7 @@ SQL;
     public function testCreateView()
     {
         $db = $this->getConnection();
-        $subquery = (new \yii\db\Query())
+        $subquery = (new \Yiisoft\Db\Query())
             ->select('bar')
             ->from('testCreateViewTable')
             ->where(['>', 'bar', '5']);

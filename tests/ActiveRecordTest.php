@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
-use yii\db\oracle\tests\data\ar\Customer;
-use yii\db\oracle\tests\data\ar\DefaultPk;
-use yii\db\oracle\tests\data\ar\Type;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\DefaultPk;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Type;
 
 class ActiveRecordTest extends DatabaseTestCase
 {
@@ -71,7 +71,7 @@ class ActiveRecordTest extends DatabaseTestCase
 
     public function testFindAsArray()
     {
-        /* @var $customerClass \yii\db\ActiveRecordInterface */
+        /* @var $customerClass \Yiisoft\Db\ActiveRecordInterface */
         $customerClass = Customer::class;
 
         // asArray

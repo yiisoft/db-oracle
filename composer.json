@@ -33,10 +33,10 @@
         "yiisoft/cache": "dev-master"
     },
     "autoload": {
-        "psr-4": {"yii\\db\\oracle\\": "src"}
+        "psr-4": {"Yiisoft\\Db\\Oracle\\": "src"}
     },
     "autoload-dev": {
-        "psr-4": {"yii\\db\\oracle\\tests\\": "tests"}
+        "psr-4": {"Yiisoft\\Db\\Oracle\\Tests\\": "tests"}
     },
     "extra": {
         "branch-alias": {

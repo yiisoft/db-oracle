@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle;
+namespace Yiisoft\Db\Oracle;
 
-use yii\db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
+use Yiisoft\Db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
 
 /**
  * ColumnSchemaBuilder is the schema builder for Oracle databases.

@@ -5,16 +5,16 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle;
+namespace Yiisoft\Db\Oracle;
 
 use yii\base\InvalidArgumentException;
-use yii\db\Connection;
-use yii\db\Constraint;
-use yii\db\Exception;
-use yii\db\Expression;
-use yii\db\Query;
+use Yiisoft\Db\Connection;
+use Yiisoft\Db\Constraint;
+use Yiisoft\Db\Exception;
+use Yiisoft\Db\Expression;
+use Yiisoft\Db\Query;
 use Yiisoft\Strings\StringHelper;
-use yii\db\ExpressionInterface;
+use Yiisoft\Db\ExpressionInterface;
 
 /**
  * QueryBuilder is the query builder for Oracle databases.
@@ -22,7 +22,7 @@ use yii\db\ExpressionInterface;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 1.0
  */
-class QueryBuilder extends \yii\db\QueryBuilder
+class QueryBuilder extends \Yiisoft\Db\QueryBuilder
 {
     /**
      * @var array mapping from abstract column types (keys) to physical column types (values).
@@ -58,8 +58,8 @@ class QueryBuilder extends \yii\db\QueryBuilder
     protected function defaultExpressionBuilders()
     {
         return array_merge(parent::defaultExpressionBuilders(), [
-            \yii\db\conditions\InCondition::class => \yii\db\oracle\conditions\InConditionBuilder::class,
-            yii\db\conditions\LikeCondition::class => yii\db\oracle\conditions\LikeConditionBuilder::class,
+            \Yiisoft\Db\Conditions\InCondition::class => \Yiisoft\Db\Oracle\Conditions\InConditionBuilder::class,
+            Yiisoft\Db\Conditions\LikeCondition::class => Yiisoft\Db\Oracle\Conditions\LikeConditionBuilder::class,
         ]);
     }
 

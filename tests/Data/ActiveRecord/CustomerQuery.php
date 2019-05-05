@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests\data\ar;
+namespace Yiisoft\Db\Oracle\Tests\Data\ActiveRecord;
 
-use yii\db\ActiveQuery;
+use Yiisoft\Db\ActiveQuery;
 
 /**
  * CustomerQuery.

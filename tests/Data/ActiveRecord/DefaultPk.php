@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests\data\ar;
+namespace Yiisoft\Db\Oracle\Tests\Data\ActiveRecord;
 
 /**
  * DefaultPk.

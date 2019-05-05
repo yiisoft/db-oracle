@@ -5,22 +5,22 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle;
+namespace Yiisoft\Db\Oracle;
 
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
-use yii\db\CheckConstraint;
-use yii\db\ColumnSchema;
-use yii\db\Connection;
-use yii\db\Constraint;
-use yii\db\ConstraintFinderInterface;
-use yii\db\ConstraintFinderTrait;
-use yii\db\Expression;
-use yii\db\ForeignKeyConstraint;
-use yii\db\IndexConstraint;
-use yii\db\TableSchema;
+use Yiisoft\Db\CheckConstraint;
+use Yiisoft\Db\ColumnSchema;
+use Yiisoft\Db\Connection;
+use Yiisoft\Db\Constraint;
+use Yiisoft\Db\ConstraintFinderInterface;
+use Yiisoft\Db\ConstraintFinderTrait;
+use Yiisoft\Db\Expression;
+use Yiisoft\Db\ForeignKeyConstraint;
+use Yiisoft\Db\IndexConstraint;
+use Yiisoft\Db\TableSchema;
 use Yiisoft\Arrays\ArrayHelper;
-use yii\db\IntegrityException;
+use Yiisoft\Db\IntegrityException;
 
 /**
  * Schema is the class for retrieving metadata from an Oracle database.
@@ -31,7 +31,7 @@ use yii\db\IntegrityException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 1.0
  */
-class Schema extends \yii\db\Schema implements ConstraintFinderInterface
+class Schema extends \Yiisoft\Db\Schema implements ConstraintFinderInterface
 {
     use ConstraintFinderTrait;
 
@@ -352,7 +352,7 @@ SQL;
      * Sequence name of table.
      *
      * @param string $tableName
-     * @internal param \yii\db\TableSchema $table->name the table schema
+     * @internal param \Yiisoft\Db\TableSchema $table->name the table schema
      * @return string|null whether the sequence exists
      */
     protected function getTableSequenceName($tableName)

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle;
+namespace Yiisoft\Db\Oracle;
 
 /**
  * Database connection class prefilled for Oracle.
@@ -13,7 +13,7 @@ namespace yii\db\oracle;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class Connection extends \yii\db\Connection
+class Connection extends \Yiisoft\Db\Connection
 {
     /**
      * {@inheritdoc}

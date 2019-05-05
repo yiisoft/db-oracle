@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use yii\test\ActiveFixture;
 use yii\test\FixtureTrait;
-use yii\db\oracle\tests\data\ar\ActiveRecord;
-use yii\db\oracle\tests\data\ar\Customer;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\ActiveRecord;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
 
 /**
  * @group test

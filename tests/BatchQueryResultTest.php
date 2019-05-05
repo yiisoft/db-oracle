@@ -5,12 +5,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
-use yii\db\BatchQueryResult;
-use yii\db\Query;
-use yii\db\oracle\tests\data\ar\ActiveRecord;
-use yii\db\oracle\tests\data\ar\Customer;
+use Yiisoft\Db\BatchQueryResult;
+use Yiisoft\Db\Query;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\ActiveRecord;
+use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
 
 class BatchQueryResultTest extends DatabaseTestCase
 {

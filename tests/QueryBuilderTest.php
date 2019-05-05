@@ -5,15 +5,15 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
-use yii\db\conditions\BetweenColumnsCondition;
-use yii\db\Expression;
-use yii\db\Query;
-use yii\db\SchemaBuilderTrait;
+use Yiisoft\Db\Conditions\BetweenColumnsCondition;
+use Yiisoft\Db\Expression;
+use Yiisoft\Db\Query;
+use Yiisoft\Db\SchemaBuilderTrait;
 use Yiisoft\Arrays\ArrayHelper;
-use yii\oracle\QueryBuilder;
-use yii\oracle\Schema;
+use Yiisoft\Db\Oracle\QueryBuilder;
+use Yiisoft\Db\Oracle\Schema;
 use yii\tests\data\base\TraversableObject;
 
 class QueryBuilderTest extends DatabaseTestCase
@@ -1704,7 +1704,7 @@ class QueryBuilderTest extends DatabaseTestCase
      */
     public function testInitFixtures()
     {
-        $this->assertInstanceOf('yii\db\QueryBuilder', $this->getQueryBuilder(true, true));
+        $this->assertInstanceOf('Yiisoft\Db\QueryBuilder', $this->getQueryBuilder(true, true));
     }
 
     /**
@@ -2015,7 +2015,7 @@ class QueryBuilderTest extends DatabaseTestCase
     {
         /*
          * Different pdo_oci8 versions may or may not implement PDO::quote(), so
-         * yii\db\Schema::quoteValue() may or may not quote \.
+         * Yiisoft\Db\Schema::quoteValue() may or may not quote \.
          */
         $encodedBackslash = substr($this->getDb()->quoteValue('\\'), 1, -1);
         $this->likeParameterReplacements[$encodedBackslash] = '\\';

@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db\oracle\tests;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use Yii;
 use yii\caching\DummyCache;
-use yii\oracle\Connection;
+use Yiisoft\Db\Oracle\Connection;
 
 abstract class DatabaseTestCase extends TestCase
 {
@@ -57,7 +57,7 @@ abstract class DatabaseTestCase extends TestCase
     /**
      * @param  bool $reset whether to clean up the test database
      * @param  bool $open  whether to open and populate test database
-     * @return \yii\db\Connection
+     * @return \Yiisoft\Db\Connection
      */
     public function getConnection($reset = true, $open = true)
     {
@@ -85,7 +85,7 @@ abstract class DatabaseTestCase extends TestCase
         if (!isset($config['__class'])) {
             $config['__class'] = Connection::class;
         }
-        /* @var $db \yii\db\Connection */
+        /* @var $db \Yiisoft\Db\Connection */
         $db = Yii::createObject($config);
         if (!$open) {
             return $db;
@@ -127,7 +127,7 @@ abstract class DatabaseTestCase extends TestCase
     }
 
     /**
-     * @return \yii\db\Connection
+     * @return \Yiisoft\Db\Connection
      */
     protected function getConnectionWithInvalidSlave()
     {
