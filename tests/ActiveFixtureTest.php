@@ -96,12 +96,12 @@ class ActiveFixtureTest extends DatabaseTestCase
 
 class ProfileFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Profile::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Profile::class;
 }
 
 class CustomerFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Customer::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Customer::class;
 
     public $depends = [
         'yii\tests\framework\test\ProfileFixture',
@@ -110,7 +110,7 @@ class CustomerFixture extends ActiveFixture
 
 class CustomDirectoryFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Customer::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Customer::class;
 
     public $dataDirectory = '@app/framework/test/custom';
 }
