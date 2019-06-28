@@ -1,15 +1,16 @@
+
+
 ### What steps will reproduce the problem?
 
-### What's expected?
+### What is the expected result?
 
 ### What do you get instead?
 
+
 ### Additional info
 
-| Q                       | A
-| ----------------------- | ---
-| Yii version             |
-| Yii Oracle version      |
-| Oracle Database version |
-| PHP version             |
-| Operating system        |
+| Q                | A
+| ---------------- | ---
+| Version          | 1.0.?
+| PHP version      | 
+| Operating system |
