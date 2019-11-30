@@ -1,7 +1,10 @@
 {
     "name": "yiisoft/db-oracle",
     "description": "Oracle extension for the Yii framework",
-    "keywords": ["yii", "oracle"],
+    "keywords": [
+        "yii",
+        "oracle"
+    ],
     "type": "library",
     "license": "BSD-3-Clause",
     "support": {
@@ -32,14 +35,21 @@
         "yiisoft/cache": "dev-master"
     },
     "autoload": {
-        "psr-4": {"Yiisoft\\Db\\Oracle\\": "src"}
+        "psr-4": {
+            "Yiisoft\\Db\\Oracle\\": "src"
+        }
     },
     "autoload-dev": {
-        "psr-4": {"Yiisoft\\Db\\Oracle\\Tests\\": "tests"}
+        "psr-4": {
+            "Yiisoft\\Db\\Oracle\\Tests\\": "tests"
+        }
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
