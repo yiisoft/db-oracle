@@ -14,7 +14,7 @@ Documentation is at [docs/guide/README.md](docs/guide/README.md).
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
-[![Build Status](https://travis-ci.org/yiisoft/db-oracle.svg?branch=master)](https://travis-ci.org/yiisoft/db-oracle)
+[![Build Status](https://travis-ci.com/yiisoft/db-oracle.svg?branch=master)](https://travis-ci.com/yiisoft/db-oracle)
 
 
 Installation
