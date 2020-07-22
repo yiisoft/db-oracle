@@ -1051,7 +1051,8 @@ class QueryBuilderTest extends DatabaseTestCase
         $columns = [];
         $i = 0;
         foreach ($this->columnTypes() as [$column, $builder, $expected]) {
-            if (!(strncmp($column, Schema::TYPE_PK, 2) === 0 ||
+            if (!(
+                strncmp($column, Schema::TYPE_PK, 2) === 0 ||
                 strncmp($column, Schema::TYPE_UPK, 3) === 0 ||
                 strncmp($column, Schema::TYPE_BIGPK, 5) === 0 ||
                 strncmp($column, Schema::TYPE_UBIGPK, 6) === 0 ||
@@ -1419,7 +1420,8 @@ class QueryBuilderTest extends DatabaseTestCase
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes(
             'SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) as lon,'
-            . ' case t.Status_Id when 1 then \'Acknowledge\' when 2 then \'No Action\' else \'Unknown Action\' END as [[Next Action]] FROM [[tablename]]');
+            . ' case t.Status_Id when 1 then \'Acknowledge\' when 2 then \'No Action\' else \'Unknown Action\' END as [[Next Action]] FROM [[tablename]]'
+        );
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
     }
