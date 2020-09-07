@@ -354,7 +354,7 @@ EOD;
                     $value = $schema->quoteValue($value);
                 } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
-                    $value = NumericHelper::normalize($value);
+                    $value = NumericHelper::normalize((string) $value);
                 } elseif ($value === false) {
                     $value = 0;
                 } elseif ($value === NULL) {
