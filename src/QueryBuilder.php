@@ -357,7 +357,7 @@ EOD;
                     $value = NumericHelper::normalize((string) $value);
                 } elseif ($value === false) {
                     $value = 0;
-                } elseif ($value === NULL) {
+                } elseif ($value === null) {
                     $value = '0';
                 } elseif ($value instanceof ExpressionInterface) {
                     $value = $this->buildExpression($value, $params);
