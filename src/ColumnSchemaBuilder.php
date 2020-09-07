@@ -1,35 +1,32 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
 
 /**
  * ColumnSchemaBuilder is the schema builder for Oracle databases.
- *
- * @author Vasenin Matvey <vaseninm@gmail.com>
- * @author Chris Harris <chris@buckshotsoftware.com>
- * @since 1.0
  */
-class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
+final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
 {
     /**
-     * {@inheritdoc}
+     * Builds the unsigned string for column. Defaults to unsupported.
+     *
+     * @return string a string containing UNSIGNED keyword.
      */
-    protected function buildUnsignedString()
+    protected function buildUnsignedString(): string
     {
-        return $this->isUnsigned ? ' UNSIGNED' : '';
+        return $this->isUnsigned() ? ' UNSIGNED' : '';
     }
 
     /**
-     * {@inheritdoc}
+     * Builds the full string for the column's schema.
+     *
+     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->getTypeCategory()) {
             case self::CATEGORY_PK:

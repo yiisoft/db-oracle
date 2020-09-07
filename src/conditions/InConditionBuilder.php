@@ -1,20 +1,14 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Conditions;
 
-use Yiisoft\Db\Conditions\InCondition;
-use Yiisoft\Db\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\InCondition;
+use Yiisoft\Db\Query\Conditions\InConditionBuilder as AbstractInConditionBuilder;
 
-/**
- * {@inheritdoc}
- * @since 1.0
- */
-class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
+final class InConditionBuilder extends AbstractInConditionBuilder
 {
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
@@ -22,9 +16,10 @@ class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
      * @param array $params the binding parameters.
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $splitCondition = $this->splitCondition($expression, $params);
         if ($splitCondition !== null) {

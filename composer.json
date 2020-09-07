@@ -14,27 +14,25 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/db-oracle"
     },
-    "authors": [
-        {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com",
-            "homepage": "http://www.yiiframework.com/"
-        }
-    ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
+        "php": "^7.4|^8.0",
+        "ext-pdo": "*",
+        "ext-pdo_oci": "*",
         "yiisoft/arrays": "^3.0@dev",
         "yiisoft/db": "^3.0@dev",
-        "yiisoft/strings": "^1.0",
-        "php": "^7.4|^8.0"
+        "yiisoft/strings": "^1.0"
     },
     "require-dev": {
+        "infection/infection": "^0.17.0",
         "phpunit/phpunit": "^9.3",
-        "yiisoft/active-record": "dev-master",
-        "yiisoft/di": "dev-master",
-        "yiisoft/log": "dev-master",
-        "yiisoft/cache": "dev-master",
-        "phan/phan": "^3.0"
+        "vimeo/psalm": "^3.15",
+        "yiisoft/aliases": "^1.0",
+        "yiisoft/active-record": "^3.0@dev",
+        "yiisoft/cache": "^3.0@dev",
+        "yiisoft/di": "^3.0@dev",
+        "yiisoft/log": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {
@@ -53,6 +51,5 @@
     },
     "config": {
         "sort-packages": true
-    },
-    "prefer-stable": true
+    }
 }
