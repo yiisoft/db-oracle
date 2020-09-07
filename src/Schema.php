@@ -143,17 +143,17 @@ SQL;
         return null;
     }
 
-    protected function loadTablePrimaryKey($tableName)
+    protected function loadTablePrimaryKey(string $tableName): Constraint
     {
         return $this->loadTableConstraints($tableName, 'primaryKey');
     }
 
-    protected function loadTableForeignKeys($tableName)
+    protected function loadTableForeignKeys(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'foreignKeys');
     }
 
-    protected function loadTableIndexes($tableName)
+    protected function loadTableIndexes(string $tableName): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -194,12 +194,12 @@ SQL;
         return $result;
     }
 
-    protected function loadTableUniques($tableName)
+    protected function loadTableUniques(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'uniques');
     }
 
-    protected function loadTableChecks($tableName)
+    protected function loadTableChecks(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'checks');
     }
@@ -207,7 +207,7 @@ SQL;
     /**
      * @throws NotSupportedException if this method is called.
      */
-    protected function loadTableDefaultValues($tableName)
+    protected function loadTableDefaultValues(string $tableName): array
     {
         throw new NotSupportedException('Oracle does not support default value constraints.');
     }
