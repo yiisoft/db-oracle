@@ -2,11 +2,11 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://avatars3.githubusercontent.com/u/4430336" height="100px">
     </a>
-    <h1 align="center">Oracle Extension for Yii 2</h1>
+    <h1 align="center">Yii Framework Oracle Extension</h1>
     <br>
 </p>
 
-This extension provides the Oracle database support for the [Yii framework 2.1](http://www.yiiframework.com).
+This extension provides the Oracle database support for the [Yii framework](http://www.yiiframework.com).
 
 For license information check the [LICENSE](LICENSE.md)-file.
 
