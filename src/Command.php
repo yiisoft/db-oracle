@@ -19,7 +19,12 @@ final class Command extends AbstractCommand
         foreach ($this->pendingParams as $name => $value) {
             if (PDO::PARAM_STR === $value[1]) {
                 $paramsPassedByReference[$name] = $value[0];
-                $this->getPdoStatement()->bindParam($name, $paramsPassedByReference[$name], $value[1], strlen($value[0]));
+                $this->getPdoStatement()->bindParam(
+                    $name,
+                    $paramsPassedByReference[$name],
+                    $value[1],
+                    strlen($value[0])
+                );
             } else {
                 $this->getPdoStatement()->bindValue($name, $value[0], $value[1]);
             }

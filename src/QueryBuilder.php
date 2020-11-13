@@ -101,7 +101,7 @@ EOD;
      */
     public function renameTable(string $table, string $newName): string
     {
-        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' RENAME TO ' . $this->db->quoteTableName($newName);
+        return 'ALTER TABLE ' . $this->getDb()->quoteTableName($table) . ' RENAME TO ' . $this->getDb()->quoteTableName($newName);
     }
 
     /**
@@ -124,9 +124,9 @@ EOD;
         $type = $this->getColumnType($type);
 
         return 'ALTER TABLE '
-            . $this->db->quoteTableName($table)
+            . $this->getDb()->quoteTableName($table)
             . ' MODIFY '
-            . $this->db->quoteColumnName($column)
+            . $this->getDb()->quoteColumnName($column)
             . ' ' . $this->getColumnType($type);
     }
 
@@ -140,34 +140,46 @@ EOD;
      */
     public function dropIndex(string $name, string $table): string
     {
-        return 'DROP INDEX ' . $this->db->quoteTableName($name);
+        return 'DROP INDEX ' . $this->getDb()->quoteTableName($name);
     }
 
     public function resetSequence(string $tableName, $value = null): string
     {
-        $tableSchema = $this->db->getTableSchema($table);
+        $tableSchema = $this->getDb()->getTableSchema($table);
 
         if ($tableSchema === null) {
             throw new InvalidArgumentException("Unknown table: $table");
         }
-
         if ($tableSchema->getSequenceName() === null) {
-            return '';
+            throw new InvalidArgumentException("There is no sequence associated with table: $table");
         }
 
         if ($value !== null) {
             $value = (int) $value;
         } else {
-            /* use master connection to get the biggest PK value */
-            $value = $this->db->useMaster(function (ConnectionInterface $db) use ($tableSchema) {
+            if (count($tableSchema->getPrimaryKey()) > 1) {
+                throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $table");
+            }
+            /** use master connection to get the biggest PK value */
+            $value = $this->getDb()->useMaster(static function (Connection $db) use ($tableSchema) {
                 return $db->createCommand(
-                    "SELECT MAX(\"{$tableSchema->primaryKey}\") FROM \"{$tableSchema->name}\""
+                    'SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") FROM "' . $tableSchema->getName() . '"'
                 )->queryScalar();
             }) + 1;
         }
 
-        return "DROP SEQUENCE \"{$tableSchema->name}_SEQ\";"
-            . "CREATE SEQUENCE \"{$tableSchema->name}_SEQ\" START WITH {$value} INCREMENT BY 1 NOMAXVALUE NOCACHE";
+        /**
+         *  Oracle needs at least two queries to reset sequence (see adding transactions and/or use alter method to
+         *  avoid grants' issue?)
+         */
+        $this->db->createCommand('DROP SEQUENCE "' . $tableSchema->getSequenceName() . '"')->execute();
+        $this->db->createCommand(
+            'CREATE SEQUENCE "' .
+            $tableSchema->getSequenceName() .
+            '" START WITH ' .
+            $value .
+            ' INCREMENT BY 1 NOMAXVALUE NOCACHE'
+        )->execute();
     }
 
     public function addForeignKey(
@@ -179,10 +191,10 @@ EOD;
         ?string $delete = null,
         ?string $update = null
     ): string {
-        $sql = 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->db->quoteColumnName($name)
+        $sql = 'ALTER TABLE ' . $this->getDb()->quoteTableName($table)
+            . ' ADD CONSTRAINT ' . $this->getDb()->quoteColumnName($name)
             . ' FOREIGN KEY (' . $this->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->db->quoteTableName($refTable)
+            . ' REFERENCES ' . $this->getDb()->quoteTableName($refTable)
             . ' (' . $this->buildColumns($refColumns) . ')';
 
         if ($delete !== null) {
@@ -201,13 +213,13 @@ EOD;
         [$names, $placeholders, $values, $params] = parent::prepareInsertValues($table, $columns, $params);
 
         if (!$columns instanceof Query && empty($names)) {
-            $tableSchema = $this->db->getSchema()->getTableSchema($table);
+            $tableSchema = $this->getDb()->getSchema()->getTableSchema($table);
 
             if ($tableSchema !== null) {
                 $columns = !empty($tableSchema->primaryKey)
                     ? $tableSchema->primaryKey : [reset($tableSchema->columns)->name];
                 foreach ($columns as $name) {
-                    $names[] = $this->db->quoteColumnName($name);
+                    $names[] = $this->getDb()->quoteColumnName($name);
                     $placeholders[] = 'DEFAULT';
                 }
             }
@@ -235,13 +247,18 @@ EOD;
             return $this->insert($table, $insertColumns, $params);
         }
 
+        if ($updateNames === []) {
+            /** there are no columns to update */
+            $updateColumns = false;
+        }
+
         $onCondition = ['or'];
-        $quotedTableName = $this->db->quoteTableName($table);
+        $quotedTableName = $this->getDb()->quoteTableName($table);
 
         foreach ($constraints as $constraint) {
             $constraintCondition = ['and'];
             foreach ($constraint->getColumnNames() as $name) {
-                $quotedName = $this->db->quoteColumnName($name);
+                $quotedName = $this->getDb()->quoteColumnName($name);
                 $constraintCondition[] = "$quotedTableName.$quotedName=\"EXCLUDED\".$quotedName";
             }
 
@@ -258,20 +275,20 @@ EOD;
                 $usingSelectValues[$name] = new Expression($placeholders[$index]);
             }
 
-            $usingSubQuery = (new Query())
+            $usingSubQuery = (new Query($this->getDb()))
                 ->select($usingSelectValues)
                 ->from('DUAL');
 
             [$usingValues, $params] = $this->build($usingSubQuery, $params);
         }
 
-        $mergeSql = 'MERGE INTO ' . $this->db->quoteTableName($table) . ' '
+        $mergeSql = 'MERGE INTO ' . $this->getDb()->quoteTableName($table) . ' '
             . 'USING (' . (isset($usingValues) ? $usingValues : ltrim($values, ' ')) . ') "EXCLUDED" '
             . "ON ($on)";
 
         $insertValues = [];
         foreach ($insertNames as $name) {
-            $quotedName = $this->db->quoteColumnName($name);
+            $quotedName = $this->getDb()->quoteColumnName($name);
 
             if (strrpos($quotedName, '.') === false) {
                 $quotedName = '"EXCLUDED".' . $quotedName;
@@ -290,7 +307,7 @@ EOD;
         if ($updateColumns === true) {
             $updateColumns = [];
             foreach ($updateNames as $name) {
-                $quotedName = $this->db->quoteColumnName($name);
+                $quotedName = $this->getDb()->quoteColumnName($name);
 
                 if (strrpos($quotedName, '.') === false) {
                     $quotedName = '"EXCLUDED".' . $quotedName;
@@ -390,11 +407,11 @@ EOD;
 
     public function dropCommentFromColumn(string $table, string $column): string
     {
-        return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . " IS ''";
+        return 'COMMENT ON COLUMN ' . $this->getDb()->quoteTableName($table) . '.' . $this->getDb()->quoteColumnName($column) . " IS ''";
     }
 
     public function dropCommentFromTable(string $table): string
     {
-        return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . " IS ''";
+        return 'COMMENT ON TABLE ' . $this->getDb()->quoteTableName($table) . " IS ''";
     }
 }

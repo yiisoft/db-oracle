@@ -120,7 +120,7 @@ SQL;
         $names = [];
 
         foreach ($rows as $row) {
-            if ($this->getDb()->slavePdo->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->getDb()->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
             $names[] = $row['TABLE_NAME'];
@@ -184,11 +184,17 @@ SQL;
 
         $result = [];
         foreach ($indexes as $name => $index) {
+            $columnNames = ArrayHelper::getColumn($index, 'column_name');
+
+            if ($columnNames[0] === null) {
+                $columnNames[0] = '';
+            }
+
             $result[] = (new IndexConstraint())
                 ->primary((bool) $index[0]['index_is_primary'])
                 ->unique((bool) $index[0]['index_is_unique'])
                 ->name($name)
-                ->columnNames(ArrayHelper::getColumn($index, 'column_name'));
+                ->columnNames($columnNames);
         }
 
         return $result;

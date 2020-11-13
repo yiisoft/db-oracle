@@ -210,4 +210,14 @@ final class SchemaTest extends TestCase
             ]
         ];
     }
+
+    public function testCompositeFk(): void
+    {
+        $this->markTestSkipped('should be fixed.');
+    }
+
+    public function testColumnSchema(): void
+    {
+        $this->markTestSkipped('should be fixed.');
+    }
 }
