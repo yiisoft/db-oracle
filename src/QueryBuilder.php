@@ -333,7 +333,7 @@ EOD;
             return '';
         }
 
-        $schema = $this->db->getSchema();
+        $schema = $this->getDb()->getSchema();
 
         if (($tableSchema = $schema->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->getColumns();

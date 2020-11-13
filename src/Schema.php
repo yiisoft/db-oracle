@@ -72,7 +72,7 @@ final class Schema extends AbstractSchema implements ConstraintFinderInterface
     /**
      * @see https://docs.oracle.com/cd/B28359_01/server.111/b28337/tdpsg_user_accounts.htm
      */
-    protected function findSchemaNames()
+    protected function findSchemaNames(): array
     {
         static $sql = <<<'SQL'
 SELECT "u"."USERNAME"
@@ -143,7 +143,7 @@ SQL;
         return null;
     }
 
-    protected function loadTablePrimaryKey(string $tableName): Constraint
+    protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
         return $this->loadTableConstraints($tableName, 'primaryKey');
     }
@@ -248,7 +248,7 @@ SQL;
      * @param TableSchema $table the table metadata object
      * @param string $name the table name
      */
-    protected function resolveTableNames(TableSchema $table, string $name)
+    protected function resolveTableNames(TableSchema $table, string $name): void
     {
         $parts = explode('.', str_replace('"', '', $name));
 
@@ -368,13 +368,9 @@ SQL;
             /* get the last insert id from the master connection */
             $sequenceName = $this->quoteSimpleTableName($sequenceName);
 
-            if ($sequenceName !== null) {
-                return $this->getDb()->useMaster(function (Connection $db) use ($sequenceName) {
-                    return $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar();
-                });
-            } else {
-                return '';
-            }
+            return $this->getDb()->useMaster(function (Connection $db) use ($sequenceName) {
+                return $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar();
+            });
         } else {
             throw new InvalidCallException('DB Connection is not active.');
         }
@@ -466,6 +462,7 @@ SQL;
         ]);
 
         $constraints = [];
+
         foreach ($command->queryAll() as $row) {
             if ($this->getDb()->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
@@ -672,7 +669,7 @@ SQL;
      */
     private function loadTableConstraints(string $tableName, string $returnType)
     {
-        static $sql = <<<'SQL'
+        $sql = <<<'SQL'
 SELECT
     /*+ PUSH_PRED("uc") PUSH_PRED("uccol") PUSH_PRED("fuc") */
     "uc"."CONSTRAINT_NAME" AS "name",
@@ -702,7 +699,9 @@ SQL;
         ])->queryAll();
 
         $constraints = $this->normalizePdoRowKeyCase($constraints, true);
+
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
+
         $result = [
             'primaryKey' => null,
             'foreignKeys' => [],
@@ -742,6 +741,7 @@ SQL;
                 }
             }
         }
+
         foreach ($result as $type => $data) {
             $this->setTableMetadata($tableName, $type, $data);
         }

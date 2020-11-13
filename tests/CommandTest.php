@@ -271,7 +271,7 @@ final class CommandTest extends TestCase
      */
     public function testNoTablenameReplacement(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $db->createCommand()->insert(
             '{{customer}}',

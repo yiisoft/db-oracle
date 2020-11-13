@@ -14,12 +14,14 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Cache\ConnectionCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\TestUtility\IsOneOfAssert;
 use Yiisoft\Di\Container;
+use Yiisoft\Factory\Definitions\Reference;
 use Yiisoft\Log\Logger;
 use Yiisoft\Profiler\Profiler;
 
@@ -255,39 +257,31 @@ class TestCase extends AbstractTestCase
         $params = $this->params();
 
         return [
-            ContainerInterface::class => static function (ContainerInterface $container) {
-                return $container;
-            },
-
             Aliases::class => [
                 '@root' => dirname(__DIR__, 1),
                 '@data' =>  '@root/tests/Data',
                 '@runtime' => '@data/runtime',
             ],
 
-            CacheInterface::class => static function () {
-                return new Cache(new ArrayCache());
-            },
+            CacheInterface::class => [
+                '__class' => Cache::class,
+                '__construct()' => [
+                    Reference::to(ArrayCache::class)
+                ]
+            ],
+
+            SimpleCacheInterface::class => CacheInterface::class,
 
             LoggerInterface::class => Logger::class,
 
-            Profiler::class => static function (ContainerInterface $container) {
-                return new Profiler($container->get(LoggerInterface::class));
-            },
-
-            ConnectionInterface::class  => static function (ContainerInterface $container) use ($params) {
-                $connection = new Connection(
-                    $container->get(CacheInterface::class),
-                    $container->get(LoggerInterface::class),
-                    $container->get(Profiler::class),
-                    $params['yiisoft/db-oracle']['dsn'],
-                );
-
-                $connection->setUsername($params['yiisoft/db-oracle']['username']);
-                $connection->setPassword($params['yiisoft/db-oracle']['password']);
-
-                return $connection;
-            }
+            ConnectionInterface::class  => [
+                '__class' => Connection::class,
+                '__construct()' => [
+                    'dsn' => $params['yiisoft/db-oracle']['dsn']
+                ],
+                'setUsername()' => [$params['yiisoft/db-oracle']['username']],
+                'setPassword()' => [$params['yiisoft/db-oracle']['password']]
+            ]
         ];
     }
 
