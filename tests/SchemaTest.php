@@ -65,7 +65,7 @@ final class SchemaTest extends TestCase
                 'defaultValue' => 1,
             ],
             'char_col' => [
-                'type' => 'char',
+                'type' => 'string',
                 'dbType' => 'CHAR',
                 'phpType' => 'string',
                 'allowNull' => false,

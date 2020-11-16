@@ -131,8 +131,12 @@ final class CommandTest extends TestCase
             /* batch insert on "type" table */
             $db->createCommand()->batchInsert('type', $cols, $data)->execute();
 
+            // change , for point oracle.
+            $db->createCommand("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'")->execute();
+
             $data = $db->createCommand(
-                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
+                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
+                'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
             )->queryAll();
 
             $this->assertCount(3, $data);
@@ -312,7 +316,6 @@ final class CommandTest extends TestCase
 
     public function testBindParamValue(): void
     {
-        $this->markTestSkipped('Should be fixed');
         $db = $this->getConnection(true);
 
         /** bindParam */
@@ -338,7 +341,7 @@ SQL;
         $command = $db->createCommand($sql);
         $intCol = 123;
         $charCol = str_repeat('abc', 33) . 'x'; // a 100 char string
-        $boolCol = false;
+        $boolCol = '0';
         $command->bindParam(':int_col', $intCol, PDO::PARAM_INT);
         $command->bindParam(':char_col', $charCol);
         $command->bindParam(':bool_col', $boolCol, PDO::PARAM_BOOL);
