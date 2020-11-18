@@ -34,7 +34,7 @@
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master",
         "yiisoft/cache": "dev-master",
-        "phan/phan": "^3.0"
+        "phan/phan": "^3.2"
     },
     "autoload": {
         "psr-4": {
