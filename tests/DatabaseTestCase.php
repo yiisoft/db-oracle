@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -22,7 +25,6 @@ abstract class DatabaseTestCase extends TestCase
      * @var Connection
      */
     private $_db;
-
 
     /**
      * {@inheritdoc}
@@ -57,6 +59,7 @@ abstract class DatabaseTestCase extends TestCase
     /**
      * @param  bool $reset whether to clean up the test database
      * @param  bool $open  whether to open and populate test database
+     *
      * @return \Yiisoft\Db\Connection
      */
     public function getConnection($reset = true, $open = true)
@@ -111,7 +114,9 @@ abstract class DatabaseTestCase extends TestCase
 
     /**
      * Adjust dbms specific escaping.
+     *
      * @param $sql
+     *
      * @return mixed
      */
     protected function replaceQuotes($sql)

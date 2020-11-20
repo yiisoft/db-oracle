@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -12,15 +15,15 @@ use Yiisoft\Db\Connection;
 use Yiisoft\Db\Constraint;
 use Yiisoft\Db\Exception;
 use Yiisoft\Db\Expression;
+use Yiisoft\Db\ExpressionInterface;
 use Yiisoft\Db\Query;
 use Yiisoft\Strings\NumericHelper;
-use Yiisoft\Strings\StringHelper;
-use Yiisoft\Db\ExpressionInterface;
 
 /**
  * QueryBuilder is the query builder for Oracle databases.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 1.0
  */
 class QueryBuilder extends \Yiisoft\Db\QueryBuilder
@@ -51,7 +54,6 @@ class QueryBuilder extends \Yiisoft\Db\QueryBuilder
         Schema::TYPE_BOOLEAN => 'NUMBER(1)',
         Schema::TYPE_MONEY => 'NUMBER(19,4)',
     ];
-
 
     /**
      * {@inheritdoc}
@@ -100,6 +102,7 @@ EOD;
      *
      * @param string $table the table to be renamed. The name will be properly quoted by the method.
      * @param string $newName the new table name. The name will be properly quoted by the method.
+     *
      * @return string the SQL statement for renaming a DB table.
      */
     public function renameTable($table, $newName)
@@ -115,6 +118,7 @@ EOD;
      * @param string $type the new column type. The [[getColumnType]] method will be invoked to convert abstract column type (if any)
      * into the physical one. Anything that is not recognized as abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
+     *
      * @return string the SQL statement for changing the definition of a column.
      */
     public function alterColumn($table, $column, $type)
@@ -129,6 +133,7 @@ EOD;
      *
      * @param string $name the name of the index to be dropped. The name will be properly quoted by the method.
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
+     *
      * @return string the SQL statement for dropping an index.
      */
     public function dropIndex($name, $table)
@@ -203,6 +208,7 @@ EOD;
 
     /**
      * {@inheritdoc}
+     *
      * @see https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      */
     public function upsert($table, $insertColumns, $updateColumns, &$params)
@@ -236,7 +242,7 @@ EOD;
             [$usingValues, $params] = $this->build($usingSubQuery, $params);
         }
         $mergeSql = 'MERGE INTO ' . $this->db->quoteTableName($table) . ' '
-            . 'USING (' . (isset($usingValues) ? $usingValues : ltrim($values, ' ')) . ') "EXCLUDED" '
+            . 'USING (' . ($usingValues ?? ltrim($values, ' ')) . ') "EXCLUDED" '
             . "ON ($on)";
         $insertValues = [];
         foreach ($insertNames as $name) {
@@ -285,6 +291,7 @@ EOD;
      * @param string $table the table that new rows will be inserted into.
      * @param array $columns the column names
      * @param array|\Generator $rows the rows to be batch inserted into the table
+     *
      * @return string the batch INSERT SQL statement
      */
     public function batchInsert($table, $columns, $rows, &$params = [])

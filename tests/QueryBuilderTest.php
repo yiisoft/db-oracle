@@ -1,20 +1,23 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use yii\tests\data\base\TraversableObject;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\Expression;
-use Yiisoft\Db\Query;
-use Yiisoft\Db\SchemaBuilderTrait;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Oracle\QueryBuilder;
 use Yiisoft\Db\Oracle\Schema;
-use yii\tests\data\base\TraversableObject;
+use Yiisoft\Db\Query;
+use Yiisoft\Db\SchemaBuilderTrait;
 
 class QueryBuilderTest extends DatabaseTestCase
 {
@@ -33,10 +36,12 @@ class QueryBuilderTest extends DatabaseTestCase
     }
 
     /**
-     * @throws \Exception
-     * @return QueryBuilder
      * @param bool $reset
      * @param bool $open
+     *
+     * @throws \Exception
+     *
+     * @return QueryBuilder
      */
     protected function getQueryBuilder($reset = true, $open = false)
     {
@@ -1116,6 +1121,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider conditionProvider
+     *
      * @param array $condition
      * @param string $expected
      * @param array $expectedParams
@@ -1130,6 +1136,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider filterConditionProvider
+     *
      * @param array $condition
      * @param string $expected
      * @param array $expectedParams
@@ -1170,6 +1177,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider primaryKeysProvider
+     *
      * @param string $sql
      */
     public function testAddDropPrimaryKey($sql, \Closure $builder)
@@ -1179,6 +1187,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider foreignKeysProvider
+     *
      * @param string $sql
      */
     public function testAddDropForeignKey($sql, \Closure $builder)
@@ -1188,6 +1197,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider indexesProvider
+     *
      * @param string $sql
      */
     public function testCreateDropIndex($sql, \Closure $builder)
@@ -1225,6 +1235,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider uniquesProvider
+     *
      * @param string $sql
      */
     public function testAddDropUnique($sql, \Closure $builder)
@@ -1254,6 +1265,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider checksProvider
+     *
      * @param string $sql
      */
     public function testAddDropCheck($sql, \Closure $builder)
@@ -1291,6 +1303,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider existsParamsProvider
+     *
      * @param string $cond
      * @param string $expectedQuerySql
      */
@@ -1311,7 +1324,6 @@ class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals($expectedQueryParams, $actualQueryParams);
     }
-
 
     public function testBuildWhereExistsWithParameters()
     {
@@ -1432,7 +1444,7 @@ class QueryBuilderTest extends DatabaseTestCase
             ->select(new Expression('1 AS ab'))
             ->from('tablename');
         [$sql, $params] = $this->getQueryBuilder()->build($query);
-        $expected = $this->replaceQuotes("SELECT 1 AS ab FROM [[tablename]]");
+        $expected = $this->replaceQuotes('SELECT 1 AS ab FROM [[tablename]]');
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
@@ -1442,7 +1454,7 @@ class QueryBuilderTest extends DatabaseTestCase
             ->addSelect(['ef' => new Expression('3')])
             ->from('tablename');
         [$sql, $params] = $this->getQueryBuilder()->build($query);
-        $expected = $this->replaceQuotes("SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]");
+        $expected = $this->replaceQuotes('SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]');
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
@@ -1450,7 +1462,7 @@ class QueryBuilderTest extends DatabaseTestCase
             ->select(new Expression('SUBSTR(name, 0, :len)', [':len' => 4]))
             ->from('tablename');
         [$sql, $params] = $this->getQueryBuilder()->build($query);
-        $expected = $this->replaceQuotes("SELECT SUBSTR(name, 0, :len) FROM [[tablename]]");
+        $expected = $this->replaceQuotes('SELECT SUBSTR(name, 0, :len) FROM [[tablename]]');
         $this->assertEquals($expected, $sql);
         $this->assertEquals([':len' => 4], $params);
     }
@@ -1687,6 +1699,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider insertProvider
+     *
      * @param string $table
      * @param array $columns
      * @param array $params
@@ -1712,6 +1725,7 @@ class QueryBuilderTest extends DatabaseTestCase
     /**
      * @depends testInitFixtures
      * @dataProvider upsertProvider
+     *
      * @param string $table
      * @param array $insertColumns
      * @param array|null $updateColumns
@@ -1784,6 +1798,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider batchInsertProvider
+     *
      * @param string $table
      * @param array $columns
      * @param array $value
@@ -1820,6 +1835,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider updateProvider
+     *
      * @param string $table
      * @param array $columns
      * @param array|string $condition
@@ -1853,6 +1869,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider deleteProvider
+     *
      * @param string $table
      * @param array|string $condition
      * @param string $expectedSQL
@@ -1868,6 +1885,7 @@ class QueryBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider likeConditionProvider
+     *
      * @param array $condition
      * @param string $expected
      * @param array $expectedParams
@@ -1894,7 +1912,7 @@ class QueryBuilderTest extends DatabaseTestCase
             ->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
-        $this->assertSame($this->replaceQuotes("SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)"), $sql);
+        $this->assertSame($this->replaceQuotes('SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)'), $sql);
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
     }
 

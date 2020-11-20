@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -112,6 +115,7 @@ class QueryTest extends DatabaseTestCase
     }
 
     use GetTablesAliasTestTrait;
+
     protected function createQuery()
     {
         return new Query();
@@ -389,7 +393,6 @@ class QueryTest extends DatabaseTestCase
         $this->assertEquals(['user3' => 'user3', 'user2' => 'user2', 'user1' => 'user1'], $result);
     }
 
-
     /**
      * Ensure no ambiguous column error occurs on indexBy with JOIN.
      *
@@ -565,6 +568,7 @@ class QueryTest extends DatabaseTestCase
      * @param string $columnName
      * @param array $condition
      * @param string $operator
+     *
      * @return int
      */
     protected function countLikeQuery(Connection $db, $tableName, $columnName, array $condition, $operator = 'or')
@@ -691,7 +695,7 @@ class QueryTest extends DatabaseTestCase
         $this->assertEquals('user11', $query->where(['id' => 1])->scalar($db), 'When both Connection and Query have cache enabled, we get cached value');
         $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar($db), 'When Query has disabled cache, we get actual data');
 
-        $db->cache(function (Connection $db) use ($query, $update) {
+        $db->cache(function (Connection $db) use ($query) {
             $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar($db));
             $this->assertEquals('user11', $query->cache()->where(['id' => 1])->scalar($db));
         }, 10);

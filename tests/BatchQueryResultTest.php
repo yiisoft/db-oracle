@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,9 +11,9 @@
 namespace Yiisoft\Db\Oracle\Tests;
 
 use Yiisoft\Db\BatchQueryResult;
-use Yiisoft\Db\Query;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\ActiveRecord;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
+use Yiisoft\Db\Query;
 
 class BatchQueryResultTest extends DatabaseTestCase
 {

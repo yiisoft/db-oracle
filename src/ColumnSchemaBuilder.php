@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,6 +17,7 @@ use Yiisoft\Db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
  *
  * @author Vasenin Matvey <vaseninm@gmail.com>
  * @author Chris Harris <chris@buckshotsoftware.com>
+ *
  * @since 1.0
  */
 class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder

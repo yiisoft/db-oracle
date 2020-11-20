@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -194,7 +197,7 @@ SQL;
         } elseif (\defined('HHVM_VERSION') && $this->driverName === 'pgsql') {
             // HHVMs pgsql implementation does not seem to support blob columns correctly.
         } else {
-            $this->assertInternalType('resource', $row['blob_col']);
+            $this->assertIsResource($row['blob_col']);
             $this->assertEquals($blobCol, stream_get_contents($row['blob_col']));
         }
         $this->assertEquals($numericCol, $row['numeric_col']);
@@ -227,7 +230,9 @@ SQL;
 
     /**
      * Test whether param binding works in other places than WHERE.
+     *
      * @dataProvider paramsNonWhereProvider
+     *
      * @param string $sql
      */
     public function testBindParamsNonWhere($sql)
@@ -259,7 +264,7 @@ SQL;
         $command = $db->createCommand($sql);
         $command->fetchMode = \PDO::FETCH_OBJ;
         $result = $command->queryOne();
-        $this->assertInternalType('object', $result);
+        $this->assertIsObject($result);
 
         // FETCH_NUM, customized in query method
         $sql = 'SELECT * FROM {{customer}}';
@@ -332,7 +337,7 @@ SQL;
             $db->createCommand()->batchInsert('type', $cols, $data)->execute();
 
             $data = $db->createCommand('SELECT int_col, char_col, float_col, bool_col FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]];')->queryAll();
-            $this->assertEquals(3, \count($data));
+            $this->assertCount(3, $data);
             $this->assertEquals(1, $data[0]['int_col']);
             $this->assertEquals(2, $data[1]['int_col']);
             $this->assertEquals(3, $data[2]['int_col']);
@@ -360,6 +365,7 @@ SQL;
      * https://github.com/yiisoft/yii2/issues/11242.
      *
      * @dataProvider batchInsertSqlProvider
+     *
      * @param mixed $table
      * @param mixed $columns
      * @param mixed $values
@@ -543,6 +549,7 @@ SQL;
 
     /**
      * Data provider for testInsertSelectFailed.
+     *
      * @return array
      */
     public function invalidSelectColumns()
@@ -558,12 +565,14 @@ SQL;
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
      * @dataProvider invalidSelectColumns
-     * @expectedException \yii\base\InvalidArgumentException
-     * @expectedExceptionMessage Expected select query object with enumerated (named) parameters
+     *
      * @param mixed $invalidSelectColumns
      */
     public function testInsertSelectFailed($invalidSelectColumns)
     {
+        $this->expectException(\yii\base\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
+
         $query = new \Yiisoft\Db\Query();
         $query->select($invalidSelectColumns)->from('{{customer}}');
 
@@ -737,8 +746,8 @@ SQL;
                             'email' => 'foo@example.com',
                             'address' => 'Earth',
                             'status' => 3,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 [
                     'params' => [
@@ -747,8 +756,8 @@ SQL;
                             'email' => 'foo@example.com',
                             'address' => 'Universe',
                             'status' => 1,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
             ],
             'regular values with update part' => [
@@ -796,7 +805,7 @@ SQL;
                             'status' => 3,
                         ],
                         false,
-                    ]
+                    ],
                 ],
                 [
                     'params' => [
@@ -827,7 +836,7 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
                         'email' => 'user1@example.com',
@@ -846,7 +855,7 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
                         'email' => 'user1@example.com',
@@ -950,6 +959,7 @@ SQL;
 
     /**
      * @dataProvider upsertProvider
+     *
      * @param array $firstData
      * @param array $secondData
      */
@@ -965,7 +975,7 @@ SQL;
     protected function performAndCompareUpsertResult(Connection $db, array $data)
     {
         $params = $data['params'];
-        $expected = isset($data['expected']) ? $data['expected'] : $params[1];
+        $expected = $data['expected'] ?? $params[1];
         $command = $db->createCommand();
         call_user_func_array([$command, 'upsert'], $params);
         $command->execute();
@@ -1212,7 +1222,7 @@ SQL;
         $this->assertEquals('user1', $command->noCache()->bindValue(':id', 1)->queryScalar());
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-        $db->cache(function (Connection $db) use ($command, $update) {
+        $db->cache(function (Connection $db) use ($command) {
             $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
             $this->assertEquals('user1', $command->noCache()->bindValue(':id', 1)->queryScalar());
         }, 10);
@@ -1244,6 +1254,7 @@ SQL;
 
     /**
      * Data provider for [[testGetRawSql()]].
+     *
      * @return array test data
      */
     public function dataProviderGetRawSql()
@@ -1469,9 +1480,9 @@ SQL;
                 '{{%type}}',
                 ['int_col'],
                 [[new Expression(':qp1', [':qp1' => 42])]], // This example is completely useless. This feature of batchInsert is intended to be used with complex expression objects, such as JsonExpression.
-                'expected' => "INSERT INTO `type` (`int_col`) VALUES (:qp1)",
-                'expectedParams' => [':qp1' => 42]
-            ]
+                'expected' => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
+                'expectedParams' => [':qp1' => 42],
+            ],
         ];
         $data['issue11242']['expected'] = 'INSERT INTO "type" ("int_col", "float_col", "char_col") VALUES (NULL, NULL, \'Kyiv {{city}}, Ukraine\')';
         $data['wrongBehavior']['expected'] = 'INSERT INTO "type" ("type"."int_col", "float_col", "char_col") VALUES (\'\', \'\', \'Kyiv {{city}}, Ukraine\')';

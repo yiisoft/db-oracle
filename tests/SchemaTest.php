@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -17,8 +20,8 @@ class SchemaTest extends DatabaseTestCase
     public function getExpectedColumns()
     {
         $columns = parent::getExpectedColumns();
-        unset($columns['enum_col']);
-        unset($columns['json_col']);
+        unset($columns['enum_col'], $columns['json_col']);
+
         $columns['int_col']['dbType'] = 'NUMBER';
         $columns['int_col']['size'] = 22;
         $columns['int_col']['precision'] = null;

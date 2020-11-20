@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -11,6 +14,7 @@ namespace Yiisoft\Db\Oracle\Tests\Data\ActiveRecord;
  * DefaultPk.
  *
  * @author Jan Waś <janek.jan@gmail.com>
+ *
  * @property int $id
  */
 class DefaultPk extends ActiveRecord

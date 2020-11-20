@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,7 +17,7 @@ use Yiisoft\Db\Query;
 trait GetTablesAliasTestTrait
 {
     /**
-     * @return Query|ActiveQuery
+     * @return ActiveQuery|Query
      */
     abstract protected function createQuery();
 
@@ -43,7 +46,7 @@ trait GetTablesAliasTestTrait
         $query = $this->createQuery();
         $query->from = [
             '{{profile}}',
-            'user'
+            'user',
         ];
 
         $tables = $query->getTablesUsedInFrom();
