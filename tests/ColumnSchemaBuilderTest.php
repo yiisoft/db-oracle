@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -18,6 +21,7 @@ class ColumnSchemaBuilderTest extends DatabaseTestCase
     /**
      * @param string $type
      * @param int $length
+     *
      * @return ColumnSchemaBuilder
      */
     public function getColumnSchemaBuilder($type, $length = null)
@@ -42,6 +46,7 @@ class ColumnSchemaBuilderTest extends DatabaseTestCase
 
     /**
      * @dataProvider typesProvider
+     *
      * @param string $expected
      * @param string $type
      * @param int|null $length

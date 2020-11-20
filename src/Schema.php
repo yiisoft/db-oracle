@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,6 +12,7 @@ namespace Yiisoft\Db\Oracle;
 
 use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\CheckConstraint;
 use Yiisoft\Db\ColumnSchema;
 use Yiisoft\Db\Connection;
@@ -18,9 +22,8 @@ use Yiisoft\Db\ConstraintFinderTrait;
 use Yiisoft\Db\Expression;
 use Yiisoft\Db\ForeignKeyConstraint;
 use Yiisoft\Db\IndexConstraint;
-use Yiisoft\Db\TableSchema;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\IntegrityException;
+use Yiisoft\Db\TableSchema;
 
 /**
  * Schema is the class for retrieving metadata from an Oracle database.
@@ -29,6 +32,7 @@ use Yiisoft\Db\IntegrityException;
  * sequence object. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 1.0
  */
 class Schema extends \Yiisoft\Db\Schema implements ConstraintFinderInterface
@@ -48,7 +52,6 @@ class Schema extends \Yiisoft\Db\Schema implements ConstraintFinderInterface
      */
     protected $tableQuoteCharacter = '"';
 
-
     /**
      * {@inheritdoc}
      */
@@ -58,7 +61,7 @@ class Schema extends \Yiisoft\Db\Schema implements ConstraintFinderInterface
         if ($this->defaultSchema === null) {
             $username = $this->db->username;
             if (empty($username)) {
-                $username = isset($this->db->masters[0]['username']) ? $this->db->masters[0]['username'] : '';
+                $username = $this->db->masters[0]['username'] ?? '';
             }
             $this->defaultSchema = strtoupper($username);
         }
@@ -84,6 +87,7 @@ class Schema extends \Yiisoft\Db\Schema implements ConstraintFinderInterface
 
     /**
      * {@inheritdoc}
+     *
      * @see https://docs.oracle.com/cd/B28359_01/server.111/b28337/tdpsg_user_accounts.htm
      */
     protected function findSchemaNames()
@@ -234,6 +238,7 @@ SQL;
 
     /**
      * {@inheritdoc}
+     *
      * @throws NotSupportedException if this method is called.
      */
     protected function loadTableDefaultValues($tableName)
@@ -295,7 +300,9 @@ SQL;
 
     /**
      * Collects the table column metadata.
+     *
      * @param TableSchema $table the table schema
+     *
      * @return bool whether the table exists
      */
     protected function findColumns($table)
@@ -352,7 +359,9 @@ SQL;
      * Sequence name of table.
      *
      * @param string $tableName
+     *
      * @internal param \Yiisoft\Db\TableSchema $table->name the table schema
+     *
      * @return string|null whether the sequence exists
      */
     protected function getTableSequenceName($tableName)
@@ -373,12 +382,16 @@ SQL;
 
     /**
      * @Overrides method in class 'Schema'
+     *
      * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php -> Oracle does not support this
      *
      * Returns the ID of the last inserted row or sequence value.
+     *
      * @param string $sequenceName name of the sequence object (required by some DBMS)
-     * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
+     *
      * @throws InvalidCallException if the DB connection is not active
+     *
+     * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
      */
     public function getLastInsertID($sequenceName = '')
     {
@@ -397,6 +410,7 @@ SQL;
      * Creates ColumnSchema instance.
      *
      * @param array $column
+     *
      * @return ColumnSchema
      */
     protected function createColumn($column)
@@ -438,6 +452,7 @@ SQL;
 
     /**
      * Finds constraints and fills them into TableSchema object passed.
+     *
      * @param TableSchema $table
      */
     protected function findConstraints($table)
@@ -515,6 +530,7 @@ SQL;
      * ```
      *
      * @param TableSchema $table the table metadata
+     *
      * @return array all unique indexes for the given table.
      */
     public function findUniqueIndexes($table)
@@ -545,6 +561,7 @@ SQL;
 
     /**
      * Extracts the data types for the given column.
+     *
      * @param ColumnSchema $column
      * @param string $dbType DB type
      * @param string $precision total number of digits.
@@ -581,6 +598,7 @@ SQL;
 
     /**
      * Extracts size, precision and scale information from column's DB type.
+     *
      * @param ColumnSchema $column
      * @param string $dbType the column's DB type
      * @param string $precision total number of digits.
@@ -648,12 +666,14 @@ SQL;
 
     /**
      * Loads multiple types of constraints and returns the specified ones.
+     *
      * @param string $tableName table name.
      * @param string $returnType return type:
      * - primaryKey
      * - foreignKeys
      * - uniques
      * - checks
+     *
      * @return mixed constraints.
      */
     private function loadTableConstraints($tableName, $returnType)

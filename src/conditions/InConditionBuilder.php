@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -12,6 +15,7 @@ use Yiisoft\Db\ExpressionInterface;
 
 /**
  * {@inheritdoc}
+ *
  * @since 1.0
  */
 class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
@@ -22,6 +26,7 @@ class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
      * @param array $params the binding parameters.
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = [])
@@ -40,7 +45,8 @@ class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
      *
      * @param ExpressionInterface|InCondition $condition the expression to be built.
      * @param array $params the binding parameters.
-     * @return null|string null when split is not required. Otherwise - built SQL condition.
+     *
+     * @return string|null null when split is not required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InCondition $condition, &$params)
     {

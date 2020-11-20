@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,12 +12,12 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use yii\base\InvalidCallException;
 use yii\data\ActiveDataProvider;
-use Yiisoft\Db\Query;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\ActiveRecord;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Customer;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Item;
 use Yiisoft\Db\Oracle\Tests\Data\ActiveRecord\Order;
 use Yiisoft\Db\Oracle\Tests\Data\UnqueryableQueryMock;
+use Yiisoft\Db\Query;
 
 /**
  * @group data
@@ -127,7 +130,7 @@ class ActiveDataProviderTest extends DatabaseTestCase
         ]);
         $orders = $provider->getModels();
         $this->assertCount(3, $orders);
-        $this->assertInternalType('array', $orders[0]);
+        $this->assertIsArray($orders[0]);
         $this->assertEquals([0, 1, 2], $provider->getKeys());
 
         $query = new Query();

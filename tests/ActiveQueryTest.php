@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -38,7 +41,7 @@ class ActiveQueryTest extends DatabaseTestCase
     public function testTriggerInitEvent()
     {
         $where = '1==1';
-        $callback = function (\yii\base\Event $event) use ($where) {
+        $callback = function (Event $event) use ($where) {
             $event->sender->where = $where;
         };
         Event::on(ActiveQuery::class, ActiveQuery::EVENT_INIT, $callback);
@@ -235,6 +238,7 @@ class ActiveQueryTest extends DatabaseTestCase
     }
 
     use GetTablesAliasTestTrait;
+
     protected function createQuery()
     {
         return new ActiveQuery(null);

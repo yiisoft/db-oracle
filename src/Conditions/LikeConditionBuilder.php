@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -11,6 +14,7 @@ use Yiisoft\Db\ExpressionInterface;
 
 /**
  * {@inheritdoc}
+ *
  * @since 1.0
  */
 class LikeConditionBuilder extends \Yiisoft\Db\Conditions\LikeConditionBuilder
@@ -29,7 +33,6 @@ class LikeConditionBuilder extends \Yiisoft\Db\Conditions\LikeConditionBuilder
         '_' => '!_',
         '!' => '!!',
     ];
-
 
     /**
      * {@inheritdoc}
