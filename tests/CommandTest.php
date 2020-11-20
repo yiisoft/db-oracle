@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use ArrayObject;
 use PDO;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -94,77 +95,6 @@ final class CommandTest extends TestCase
         $this->assertEquals(1, $db->createCommand('SELECT count(*) FROM {{longstring}}')->queryScalar());
 
         $db->createCommand()->dropTable('longstring')->execute();
-    }
-
-    /**
-     * Test batch insert with different data types.
-     *
-     * Ensure double is inserted with `.` decimal separator.
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/6526}
-     */
-    public function testBatchInsertDataTypesLocale(): void
-    {
-        $locale = setlocale(LC_NUMERIC, 0);
-
-        if (false === $locale) {
-            $this->markTestSkipped('Your platform does not support locales.');
-        }
-
-        $db = $this->getConnection(true);
-
-        try {
-            /* This one sets decimal mark to comma sign */
-            setlocale(LC_NUMERIC, 'ru_RU.utf8');
-
-            $cols = ['int_col', 'char_col', 'float_col', 'bool_col'];
-
-            $data = [
-                [1, 'A', 9.735, true],
-                [2, 'B', -2.123, false],
-                [3, 'C', 2.123, false],
-            ];
-
-            /* clear data in "type" table */
-            $db->createCommand()->delete('type')->execute();
-
-            /* batch insert on "type" table */
-            $db->createCommand()->batchInsert('type', $cols, $data)->execute();
-
-            // change , for point oracle.
-            $db->createCommand("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'")->execute();
-
-            $data = $db->createCommand(
-                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
-                'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
-            )->queryAll();
-
-            $this->assertCount(3, $data);
-            $this->assertEquals(1, $data[0]['int_col']);
-            $this->assertEquals(2, $data[1]['int_col']);
-            $this->assertEquals(3, $data[2]['int_col']);
-
-            /* rtrim because Postgres padds the column with whitespace */
-            $this->assertEquals('A', rtrim($data[0]['char_col']));
-            $this->assertEquals('B', rtrim($data[1]['char_col']));
-            $this->assertEquals('C', rtrim($data[2]['char_col']));
-            $this->assertEquals('9,735', $data[0]['float_col']);
-            $this->assertEquals('-2,123', $data[1]['float_col']);
-            $this->assertEquals('2,123', $data[2]['float_col']);
-            $this->assertEquals('1', $data[0]['bool_col']);
-            $this->assertIsOneOf($data[1]['bool_col'], ['0', false]);
-            $this->assertIsOneOf($data[2]['bool_col'], ['0', false]);
-        } catch (Exception $e) {
-            setlocale(LC_NUMERIC, $locale);
-
-            throw $e;
-        } catch (Throwable $e) {
-            setlocale(LC_NUMERIC, $locale);
-
-            throw $e;
-        }
-
-        setlocale(LC_NUMERIC, $locale);
     }
 
     public function testInsert(): void
@@ -629,35 +559,7 @@ SQL;
 
     public function testColumnCase(): void
     {
-        $this->markTestSkipped('should be fixed.');
-
-        $db = $this->getConnection(true);
-
-        $this->assertEquals(PDO::CASE_NATURAL, $db->getSlavePdo()->getAttribute(PDO::ATTR_CASE));
-
-        $sql = 'SELECT [[customer_id]], [[total]] FROM {{order}}';
-
-        $rows = $db->createCommand($sql)->queryAll();
-
-        $this->assertTrue(isset($rows[0]));
-        $this->assertTrue(isset($rows[0]['customer_id']));
-        $this->assertTrue(isset($rows[0]['total']));
-
-        $db->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-
-        $rows = $db->createCommand($sql)->queryAll();
-
-        $this->assertTrue(isset($rows[0]));
-        $this->assertTrue(isset($rows[0]['customer_id']));
-        $this->assertTrue(isset($rows[0]['total']));
-
-        $db->getPDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-
-        $rows = $db->createCommand($sql)->queryAll();
-
-        $this->assertTrue(isset($rows[0]));
-        $this->assertTrue(isset($rows[0]['CUSTOMER_ID']));
-        $this->assertTrue(isset($rows[0]['TOTAL']));
+        $this->markTestSkipped('Should be fixed.');
     }
 
     public function testInsertExpression(): void
@@ -683,5 +585,150 @@ SQL;
         $this->assertEquals([
             'created_at' => date('Y'),
         ], $record);
+    }
+
+    public function testAlterTable(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
+            $db->createCommand("DROP SEQUENCE testAlterTable_SEQ")->execute();
+            $db->createCommand()->dropTable('testAlterTable')->execute();
+        }
+
+        $db->createCommand()->createTable(
+            'testAlterTable',
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
+        )->execute();
+
+        $db->createCommand('CREATE SEQUENCE testAlterTable_SEQ START with 1 INCREMENT BY 1')->execute();
+
+        $db->createCommand(
+            'INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 1)'
+        )->execute();
+
+        $db->createCommand('ALTER TABLE {{testAlterTable}} ADD ([[bar_tmp]] VARCHAR(20))')->execute();
+
+        $db->createCommand('UPDATE {{testAlterTable}} SET [[bar_tmp]] = [[bar]]')->execute();
+
+        $db->createCommand('ALTER TABLE {{testAlterTable}} DROP COLUMN [[bar]]')->execute();
+
+        $db->createCommand('ALTER TABLE {{testAlterTable}} RENAME COLUMN [[bar_tmp]] TO [[bar]]')->execute();
+
+        $db->createCommand(
+            "INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 'hello')"
+        )->execute();
+
+        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')->queryAll();
+
+        $this->assertEquals([
+            ['id' => 1, 'bar' => 1],
+            ['id' => 2, 'bar' => 'hello'],
+        ], $records);
+    }
+
+    public function batchInsertSqlProvider(): array
+    {
+        $data = $this->batchInsertSqlProviderTrait();
+
+        $data['issue11242']['expected'] = 'INSERT ALL  INTO "type" ("int_col", "float_col", "char_col") ' .
+            "VALUES (0, 0, 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
+        $data['wrongBehavior']['expected'] = 'INSERT ALL  INTO "type" ("type"."int_col", "float_col", "char_col") ' .
+            "VALUES ('', '', 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
+        $data['batchInsert binds params from expression']['expected'] = 'INSERT ALL  INTO "type" ("int_col") ' .
+            'VALUES (:qp1) SELECT 1 FROM SYS.DUAL';
+
+        return $data;
+    }
+
+    /**
+     * Make sure that `{{something}}` in values will not be encoded.
+     *
+     * @dataProvider batchInsertSqlProvider
+     *
+     * @param string $table
+     * @param array $columns
+     * @param array $values
+     * @param string $expected
+     * @param array $expectedParams
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
+     * {@see https://github.com/yiisoft/yii2/issues/11242}
+     */
+    public function testBatchInsertSQL(
+        string $table,
+        array $columns,
+        array $values,
+        string $expected,
+        array $expectedParams = []
+    ): void {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+
+        $command->batchInsert($table, $columns, $values);
+
+        $command->prepare(false);
+
+        $this->assertSame($expected, $command->getSql());
+        $this->assertSame($expectedParams, $command->getParams());
+    }
+
+    public function testAddDropCheck(): void
+    {
+        $db = $this->getConnection();
+
+        $tableName = 'test_ck';
+        $name = 'test_ck_constraint';
+
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $db->createCommand()->createTable($tableName, [
+            'int1' => 'integer',
+        ])->execute();
+
+        $this->assertEmpty($schema->getTableChecks($tableName, true));
+
+        $db->createCommand()->addCheck($name, $tableName, '[[int1]] > 1')->execute();
+
+        $this->assertMatchesRegularExpression(
+            '/^.*int1.*>.*1.*$/',
+            $schema->getTableChecks($tableName, true)[0]->getExpression()
+        );
+
+        $db->createCommand()->dropCheck($name, $tableName)->execute();
+
+        $this->assertEmpty($schema->getTableChecks($tableName, true));
+    }
+
+    /**
+     * Test command getRawSql.
+     *
+     * @dataProvider getRawSqlProviderTrait
+     *
+     * @param string $sql
+     * @param array $params
+     * @param string $expectedRawSql
+     *
+     * {@see https://github.com/yiisoft/yii2/issues/8592}
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand($sql, $params);
+
+        $this->assertEquals($expectedRawSql, $command->getRawSql());
     }
 }

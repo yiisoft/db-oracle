@@ -406,6 +406,14 @@ SQL;
             $column['DATA_LENGTH']
         );
 
+        $this->extractColumnSize(
+            $c,
+            $column['DATA_TYPE'],
+            $column['DATA_PRECISION'],
+            $column['DATA_SCALE'],
+            $column['DATA_LENGTH']
+        );
+
         $c->phpType($this->getColumnPhpType($c));
 
         if (!$c->isPrimaryKey()) {
@@ -603,7 +611,7 @@ SQL;
     {
         $column->size(trim($length) === '' ? null : (int) $length);
         $column->precision(trim((string) $precision) === '' ? null : (int) $precision);
-        $column->scale($scale === '' ? null : (int) $scale);
+        $column->scale($scale === '' || $scale === null ? null : (int) $scale);
     }
 
     public function insert($table, $columns)

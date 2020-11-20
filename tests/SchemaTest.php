@@ -215,9 +215,4 @@ final class SchemaTest extends TestCase
     {
         $this->markTestSkipped('should be fixed.');
     }
-
-    public function testColumnSchema(): void
-    {
-        $this->markTestSkipped('should be fixed.');
-    }
 }

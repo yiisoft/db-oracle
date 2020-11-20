@@ -13,9 +13,4 @@ use Yiisoft\Db\TestUtility\TestQueryTrait;
 final class QueryTest extends TestCase
 {
     use TestQueryTrait;
-
-    public function testExpressionInFrom()
-    {
-        $this->markTestSkipped('Test no support.');
-    }
 }
