@@ -338,9 +338,9 @@ SQL;
      *
      * @return string|null whether the sequence exists
      */
-    protected function getTableSequenceName($tableName): ?string
+    protected function getTableSequenceName(string $tableName): ?string
     {
-        $sequenceNameSql = <<<'SQL'
+        $sequenceNameSql = <<<SQL
 SELECT
     UD.REFERENCED_NAME AS SEQUENCE_NAME
 FROM USER_DEPENDENCIES UD

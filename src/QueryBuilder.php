@@ -143,22 +143,25 @@ EOD;
         return 'DROP INDEX ' . $this->getDb()->quoteTableName($name);
     }
 
-    public function resetSequence(string $tableName, $value = null): string
+    public function executeResetSequence(string $tableName, $value = null)
     {
-        $tableSchema = $this->getDb()->getTableSchema($table);
+        $tableSchema = $this->getDb()->getTableSchema($tableName);
 
         if ($tableSchema === null) {
-            throw new InvalidArgumentException("Unknown table: $table");
+            throw new InvalidArgumentException("Unknown table: $tableName");
         }
+
         if ($tableSchema->getSequenceName() === null) {
-            throw new InvalidArgumentException("There is no sequence associated with table: $table");
+            throw new InvalidArgumentException("There is no sequence associated with table: $tableName");
         }
 
         if ($value !== null) {
             $value = (int) $value;
         } else {
             if (count($tableSchema->getPrimaryKey()) > 1) {
-                throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $table");
+                throw new InvalidArgumentException(
+                    "Can't reset sequence for composite primary key in table: $tableName"
+                );
             }
             /** use master connection to get the biggest PK value */
             $value = $this->getDb()->useMaster(static function (Connection $db) use ($tableSchema) {
@@ -172,8 +175,8 @@ EOD;
          *  Oracle needs at least two queries to reset sequence (see adding transactions and/or use alter method to
          *  avoid grants' issue?)
          */
-        $this->db->createCommand('DROP SEQUENCE "' . $tableSchema->getSequenceName() . '"')->execute();
-        $this->db->createCommand(
+        $this->getDb()->createCommand('DROP SEQUENCE "' . $tableSchema->getSequenceName() . '"')->execute();
+        $this->getDb()->createCommand(
             'CREATE SEQUENCE "' .
             $tableSchema->getSequenceName() .
             '" START WITH ' .
@@ -371,11 +374,11 @@ EOD;
                     $value = $schema->quoteValue($value);
                 } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
-                    $value = NumericHelper::normalize((string) $value);
+                    $value = NumericHelper::normalize($value);
                 } elseif ($value === false) {
                     $value = 0;
                 } elseif ($value === null) {
-                    $value = '0';
+                    $value = 'NULL';
                 } elseif ($value instanceof ExpressionInterface) {
                     $value = $this->buildExpression($value, $params);
                 }

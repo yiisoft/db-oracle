@@ -13,6 +13,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
      * {@inheritdoc}
      */
     protected ?string $escapeCharacter = '!';
+
     /**
      * `\` is initialized in [[buildLikeCondition()]] method since
      * we need to choose replacement value based on [[\Yiisoft\Db\Schema::quoteValue()]].
@@ -21,7 +22,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
     protected array $escapingReplacements = [
         '%' => '!%',
         '_' => '!_',
-        '!' => '!!',
+        '!' => '!!'
     ];
 
     public function build(ExpressionInterface $expression, array &$params = []): string

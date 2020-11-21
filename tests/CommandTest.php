@@ -632,7 +632,7 @@ SQL;
         $data = $this->batchInsertSqlProviderTrait();
 
         $data['issue11242']['expected'] = 'INSERT ALL  INTO "type" ("int_col", "float_col", "char_col") ' .
-            "VALUES (0, 0, 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
+            "VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
         $data['wrongBehavior']['expected'] = 'INSERT ALL  INTO "type" ("type"."int_col", "float_col", "char_col") ' .
             "VALUES ('', '', 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
         $data['batchInsert binds params from expression']['expected'] = 'INSERT ALL  INTO "type" ("int_col") ' .
