@@ -29,12 +29,13 @@
         "php": "^7.4|^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3",
+        "phpunit/phpunit": "^9.4",
+        "roave/infection-static-analysis-plugin": "^1.3",
+        "vimeo/psalm": "^4.1",
         "yiisoft/active-record": "dev-master",
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master",
         "yiisoft/cache": "dev-master",
-        "phan/phan": "^3.0"
     },
     "autoload": {
         "psr-4": {
