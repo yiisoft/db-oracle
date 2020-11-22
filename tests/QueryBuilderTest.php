@@ -505,7 +505,7 @@ WHERE rownum <= 1) "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NO
             ->upsert($table, $insertColumns, $updateColumns, $actualParams);
 
         if (is_string($expectedSQL)) {
-            $this->assertSame($expectedSQL, $actualSQL);
+            $this->assertEqualsWithoutLE($expectedSQL, $actualSQL);
         } else {
             $this->assertContains($actualSQL, $expectedSQL);
         }

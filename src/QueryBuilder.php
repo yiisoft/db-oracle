@@ -232,7 +232,7 @@ EOD;
     }
 
     /**
-     * @see https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
+     * {@see https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606}
      */
     public function upsert(string $table, $insertColumns, $updateColumns, array &$params = []): string
     {

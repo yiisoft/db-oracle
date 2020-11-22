@@ -13,4 +13,9 @@ use Yiisoft\Db\TestUtility\TestQueryTrait;
 final class QueryTest extends TestCase
 {
     use TestQueryTrait;
+
+    public function testUnion(): void
+    {
+        $this->markTestSkipped('Unsupported use of WITH clause in Oracle.');
+    }
 }
