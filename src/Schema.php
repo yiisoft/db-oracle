@@ -13,6 +13,8 @@ use Yiisoft\Db\Constraint\ConstraintFinderInterface;
 use Yiisoft\Db\Constraint\ConstraintFinderTrait;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -54,16 +56,17 @@ final class Schema extends AbstractSchema implements ConstraintFinderInterface
         $parts = explode('.', str_replace('"', '', $name));
 
         if (isset($parts[1])) {
-            $resolvedName->schemaName = $parts[0];
-            $resolvedName->name = $parts[1];
+            $resolvedName->schemaName($parts[0]);
+            $resolvedName->name($parts[1]);
         } else {
             $resolvedName->schemaName($this->defaultSchema);
             $resolvedName->name($name);
         }
 
-        $resolvedName->fullName = ($resolvedName->getSchemaName() !== $this->defaultSchema
+        $fullName = ($resolvedName->getSchemaName() !== $this->defaultSchema
             ? $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
 
+        $resolvedName->fullName($fullName);
 
         return $resolvedName;
     }
@@ -618,7 +621,7 @@ SQL;
         $returnParams = [];
         $sql = $this->getDb()->getQueryBuilder()->insert($table, $columns, $params);
         $tableSchema = $this->getTableSchema($table);
-        $returnColumns = $tableSchema->isPrimaryKey();
+        $returnColumns = $tableSchema->getPrimaryKey();
 
         if (!empty($returnColumns)) {
             $columnSchemas = $tableSchema->getColumns();

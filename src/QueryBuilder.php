@@ -91,14 +91,15 @@ EOD;
     /**
      * Builds a SQL statement for renaming a DB table.
      *
-     * @param string $table the table to be renamed. The name will be properly quoted by the method.
+     * @param string $oldname the table to be renamed. The name will be properly quoted by the method.
      * @param string $newName the new table name. The name will be properly quoted by the method.
      *
      * @return string the SQL statement for renaming a DB table.
      */
-    public function renameTable(string $table, string $newName): string
+    public function renameTable(string $oldName, string $newName): string
     {
-        return 'ALTER TABLE ' . $this->getDb()->quoteTableName($table) . ' RENAME TO ' . $this->getDb()->quoteTableName($newName);
+        return 'ALTER TABLE ' . $this->getDb()->quoteTableName($oldName) . ' RENAME TO ' .
+            $this->getDb()->quoteTableName($newName);
     }
 
     /**
@@ -216,8 +217,9 @@ EOD;
             $tableSchema = $this->getDb()->getSchema()->getTableSchema($table);
 
             if ($tableSchema !== null) {
-                $columns = !empty($tableSchema->primaryKey)
-                    ? $tableSchema->primaryKey : [reset($tableSchema->columns)->name];
+                $tableColumns = $tableSchema->getColumns();
+                $columns = !empty($tableSchema->getPrimaryKey())
+                    ? $tableSchema->getPrimaryKey() : [reset($tableColumns)->getName()];
                 foreach ($columns as $name) {
                     $names[] = $this->getDb()->quoteColumnName($name);
                     $placeholders[] = 'DEFAULT';
