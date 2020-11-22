@@ -33,7 +33,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * Oracle DBMS does not support more than 1000 parameters in `IN` condition.
      * This method splits long `IN` condition into series of smaller ones.
      *
-     * @param ExpressionInterface|InCondition $condition the expression to be built.
+     * @param InCondition $condition
      * @param array $params the binding parameters.
      *
      * @return mixed null when split is not required. Otherwise - built SQL condition.

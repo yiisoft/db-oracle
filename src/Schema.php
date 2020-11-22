@@ -449,7 +449,7 @@ SQL;
      *
      * @param TableSchema $table
      */
-    protected function findConstraints(TableSchema $table)
+    protected function findConstraints(TableSchema $table): void
     {
         $sql = <<<'SQL'
 SELECT
@@ -574,7 +574,7 @@ SQL;
      * @param string $scale number of digits on the right of the decimal separator.
      * @param string $length length for character types.
      */
-    protected function extractColumnType($column, $dbType, $precision, $scale, $length)
+    protected function extractColumnType($column, $dbType, $precision, $scale, $length): void
     {
         $column->dbType($dbType);
 
@@ -608,7 +608,7 @@ SQL;
      * @param string $scale number of digits on the right of the decimal separator.
      * @param string $length length for character types.
      */
-    protected function extractColumnSize($column, $dbType, $precision, $scale, $length)
+    protected function extractColumnSize($column, $dbType, $precision, $scale, $length): void
     {
         $column->size(trim($length) === '' ? null : (int) $length);
         $column->precision(trim((string) $precision) === '' ? null : (int) $precision);

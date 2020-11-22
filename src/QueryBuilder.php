@@ -141,7 +141,7 @@ EOD;
         return 'DROP INDEX ' . $this->getDb()->quoteTableName($name);
     }
 
-    public function executeResetSequence(string $tableName, $value = null)
+    public function executeResetSequence(string $tableName, $value = null): void
     {
         $tableSchema = $this->getDb()->getTableSchema($tableName);
 
