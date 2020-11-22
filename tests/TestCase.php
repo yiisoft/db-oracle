@@ -65,11 +65,10 @@ class TestCase extends AbstractTestCase
 
     /**
      * Asserting two strings equality ignoring line endings.
+     *
      * @param string $expected
      * @param string $actual
      * @param string $message
-     *
-     * @return void
      */
     protected function assertEqualsWithoutLE(string $expected, string $actual, string $message = ''): void
     {
@@ -260,7 +259,7 @@ class TestCase extends AbstractTestCase
                 'username' => 'system',
                 'password' => 'oracle',
                 'fixture' => __DIR__ . '/Data/oci.sql',
-            ]
+            ],
         ];
     }
 
@@ -271,29 +270,29 @@ class TestCase extends AbstractTestCase
         return [
             Aliases::class => [
                 '@root' => dirname(__DIR__, 1),
-                '@data' =>  '@root/tests/Data',
+                '@data' => '@root/tests/Data',
                 '@runtime' => '@data/runtime',
             ],
 
             CacheInterface::class => [
                 '__class' => Cache::class,
                 '__construct()' => [
-                    Reference::to(ArrayCache::class)
-                ]
+                    Reference::to(ArrayCache::class),
+                ],
             ],
 
             SimpleCacheInterface::class => CacheInterface::class,
 
             LoggerInterface::class => Logger::class,
 
-            ConnectionInterface::class  => [
+            ConnectionInterface::class => [
                 '__class' => Connection::class,
                 '__construct()' => [
-                    'dsn' => $params['yiisoft/db-oracle']['dsn']
+                    'dsn' => $params['yiisoft/db-oracle']['dsn'],
                 ],
                 'setUsername()' => [$params['yiisoft/db-oracle']['username']],
-                'setPassword()' => [$params['yiisoft/db-oracle']['password']]
-            ]
+                'setPassword()' => [$params['yiisoft/db-oracle']['password']],
+            ],
         ];
     }
 }

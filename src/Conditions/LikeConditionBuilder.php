@@ -22,7 +22,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
     protected array $escapingReplacements = [
         '%' => '!%',
         '_' => '!_',
-        '!' => '!!'
+        '!' => '!!',
     ];
 
     public function build(ExpressionInterface $expression, array &$params = []): string

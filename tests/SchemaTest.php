@@ -6,9 +6,6 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
 use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\TableSchema;
@@ -218,7 +215,7 @@ final class SchemaTest extends TestCase
                 'precision' => null,
                 'scale' => null,
                 'defaultValue' => '130', // b'10000010'
-            ]
+            ],
         ];
     }
 

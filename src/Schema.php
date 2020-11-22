@@ -16,8 +16,6 @@ use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\QueryBuilder;
-use Yiisoft\Db\Oracle\TableSchema;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema as AbstractSchema;
 
@@ -37,7 +35,7 @@ final class Schema extends AbstractSchema implements ConstraintFinderInterface
      * If left part is found in DB error message exception class from the right part is used.
      */
     protected array $exceptionMap = [
-        'ORA-00001: unique constraint' => IntegrityException::class
+        'ORA-00001: unique constraint' => IntegrityException::class,
     ];
 
     protected $tableQuoteCharacter = '"';
@@ -240,7 +238,7 @@ SQL;
      * This method may be overridden by child classes to create a DBMS-specific column schema builder.
      *
      * @param string $type type of the column. See {@see ColumnSchemaBuilder::$type}.
-     * @param int|string|array $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
+     * @param array|int|string $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
      *
      * @return ColumnSchemaBuilder column schema builder instance
      */
@@ -307,7 +305,7 @@ SQL;
         try {
             $columns = $this->getDb()->createCommand($sql, [
                 ':tableName' => $table->getName(),
-                ':schemaName' => $table->getSchemaName()
+                ':schemaName' => $table->getSchemaName(),
             ])->queryAll();
         } catch (Exception $e) {
             return false;
@@ -473,7 +471,7 @@ SQL;
 
         $command = $this->getDb()->createCommand($sql, [
             ':tableName' => $table->getName(),
-            ':schemaName' => $table->getSchemaName()
+            ':schemaName' => $table->getSchemaName(),
         ]);
 
         $constraints = [];
@@ -554,7 +552,7 @@ SQL;
 
         $command = $this->getDb()->createCommand($query, [
             ':tableName' => $table->getName(),
-            ':schemaName' => $table->getschemaName()
+            ':schemaName' => $table->getschemaName(),
         ]);
 
         foreach ($command->queryAll() as $row) {
@@ -568,7 +566,6 @@ SQL;
      * Extracts the data types for the given column.
      *
      * @param ColumnSchema $column
-     *
      * @param string $dbType DB type.
      * @param string $precision total number of digits.
      * @param string $scale number of digits on the right of the decimal separator.
@@ -710,7 +707,7 @@ SQL;
 
         $constraints = $this->getDb()->createCommand($sql, [
             ':schemaName' => $resolvedName->getSchemaName(),
-            ':tableName' => $resolvedName->getName()
+            ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
         $constraints = $this->normalizePdoRowKeyCase($constraints, true);

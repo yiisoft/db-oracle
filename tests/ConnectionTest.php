@@ -72,7 +72,6 @@ final class ConnectionTest extends TestCase
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
     }
 
-
     public function testQuoteTableName()
     {
         $db = $this->getConnection(false);

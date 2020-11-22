@@ -35,7 +35,8 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      *
      * @param ExpressionInterface|InCondition $condition the expression to be built.
      * @param array $params the binding parameters.
-     * @return null|string null when split is not required. Otherwise - built SQL condition.
+     *
+     * @return string|null null when split is not required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InCondition $condition, &$params)
     {

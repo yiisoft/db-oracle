@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -12,7 +11,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Conditions\InConditionBuilder;
 use Yiisoft\Db\Oracle\Conditions\LikeConditionBuilder;
-use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilder as AbstractQueryBuilder;
 use Yiisoft\Db\Query\Conditions\InCondition;
@@ -50,7 +48,6 @@ final class QueryBuilder extends AbstractQueryBuilder
         Schema::TYPE_BOOLEAN => 'NUMBER(1)',
         Schema::TYPE_MONEY => 'NUMBER(19,4)',
     ];
-
 
     protected function defaultExpressionBuilders(): array
     {
@@ -286,7 +283,7 @@ EOD;
         }
 
         $mergeSql = 'MERGE INTO ' . $this->getDb()->quoteTableName($table) . ' '
-            . 'USING (' . (isset($usingValues) ? $usingValues : ltrim($values, ' ')) . ') "EXCLUDED" '
+            . 'USING (' . ($usingValues ?? ltrim($values, ' ')) . ') "EXCLUDED" '
             . "ON ($on)";
 
         $insertValues = [];

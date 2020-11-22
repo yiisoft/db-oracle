@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use ArrayObject;
 use PDO;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -108,8 +107,8 @@ final class CommandTest extends TestCase
         $command->insert(
             '{{customer}}',
             [
-                'email'   => 't1@example.com',
-                'name'    => 'test',
+                'email' => 't1@example.com',
+                'name' => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -119,8 +118,8 @@ final class CommandTest extends TestCase
         $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryOne();
 
         $this->assertEquals([
-            'email'   => 't1@example.com',
-            'name'    => 'test',
+            'email' => 't1@example.com',
+            'name' => 'test',
             'address' => 'test address',
         ], $record);
     }
@@ -195,7 +194,7 @@ final class CommandTest extends TestCase
 
         $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
 
-        $db->cache(function (Connection $db) use ($update) {
+        $db->cache(function (Connection $db) {
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
             $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
@@ -216,8 +215,8 @@ final class CommandTest extends TestCase
         $db->createCommand()->insert(
             '{{customer}}',
             [
-                'name'    => 'Some {{weird}} name',
-                'email'   => 'test@example.com',
+                'name' => 'Some {{weird}} name',
+                'email' => 'test@example.com',
                 'address' => 'Some {{%weird}} address',
             ]
         )->execute();
@@ -232,7 +231,7 @@ final class CommandTest extends TestCase
         $db->createCommand()->update(
             '{{customer}}',
             [
-                'name'    => 'Some {{updated}} name',
+                'name' => 'Some {{updated}} name',
                 'address' => 'Some {{%updated}} address',
             ],
             ['id' => $customerId]
@@ -315,7 +314,7 @@ SQL;
         return [
             ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email GROUP BY SUBSTR("name", :len)'],
             ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email ORDER BY SUBSTR("name", :len)'],
-            ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email']
+            ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email'],
         ];
     }
 
@@ -363,6 +362,7 @@ SQL;
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
      * @dataProvider invalidSelectColumns
+     *
      * @param mixed $invalidSelectColumns
      */
     public function testInsertSelectFailed($invalidSelectColumns): void
@@ -411,8 +411,8 @@ SQL;
 
         $command->insert('{{order}}', [
             'customer_id' => 1,
-            'created_at'  => $time,
-            'total'       => 42,
+            'created_at' => $time,
+            'total' => 42,
         ])->execute();
 
         $columnValueQuery = new Query($db);
@@ -427,8 +427,8 @@ SQL;
             '{{order_with_null_fk}}',
             [
                 'customer_id' => $orderId,
-                'created_at'  => $columnValueQuery,
-                'total'       => 42,
+                'created_at' => $columnValueQuery,
+                'total' => 42,
             ]
         )->execute();
 
@@ -457,8 +457,8 @@ SQL;
         $command->insert(
             '{{customer}}',
             [
-                'email'   => 't1@example.com',
-                'name'    => 'test',
+                'email' => 't1@example.com',
+                'name' => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -478,13 +478,13 @@ SQL;
 
         $this->assertEquals([
             [
-                'email'   => 't1@example.com',
-                'name'    => 'test',
+                'email' => 't1@example.com',
+                'name' => 'test',
                 'address' => 'test address',
             ],
             [
-                'email'   => 't2@example.com',
-                'name'    => 'test address',
+                'email' => 't2@example.com',
+                'name' => 'test address',
                 'address' => 'test',
             ],
         ], $record);
@@ -494,9 +494,9 @@ SQL;
     {
         $db = $this->getConnection(true);
 
-        if ($db->getSchema()->getTableSchema("testCreateTable") !== null) {
-            $db->createCommand("DROP SEQUENCE testCreateTable_SEQ")->execute();
-            $db->createCommand()->dropTable("testCreateTable")->execute();
+        if ($db->getSchema()->getTableSchema('testCreateTable') !== null) {
+            $db->createCommand('DROP SEQUENCE testCreateTable_SEQ')->execute();
+            $db->createCommand()->dropTable('testCreateTable')->execute();
         }
 
         $db->createCommand()->createTable(
@@ -531,12 +531,12 @@ SQL;
         }
 
         if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
-            $db->createCommand("DROP SEQUENCE testCreateViewTable_SEQ")->execute();
+            $db->createCommand('DROP SEQUENCE testCreateViewTable_SEQ')->execute();
             $db->createCommand()->dropTable('testCreateViewTable')->execute();
         }
 
         $db->createCommand()->createTable('testCreateViewTable', [
-            'id'  => Schema::TYPE_PK,
+            'id' => Schema::TYPE_PK,
             'bar' => Schema::TYPE_INTEGER,
         ])->execute();
 
@@ -592,7 +592,7 @@ SQL;
         $db = $this->getConnection();
 
         if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
-            $db->createCommand("DROP SEQUENCE testAlterTable_SEQ")->execute();
+            $db->createCommand('DROP SEQUENCE testAlterTable_SEQ')->execute();
             $db->createCommand()->dropTable('testAlterTable')->execute();
         }
 

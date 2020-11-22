@@ -6,10 +6,6 @@ namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use Yiisoft\Db\Connection\Connection as AbstractConnection;
-use Yiisoft\Db\Oracle\Command;
-use Yiisoft\Db\Oracle\Schema;
-
-use function in_array;
 
 /**
  * Database connection class prefilled for ORACLE Server.
@@ -43,7 +39,7 @@ final class Connection extends AbstractConnection
         return $this->schema = new Schema($this);
     }
 
-    protected function createPdoInstance(): \PDO
+    protected function createPdoInstance(): PDO
     {
         return new PDO($this->getDsn(), $this->getUsername(), $this->getPassword(), $this->getAttributes());
     }
