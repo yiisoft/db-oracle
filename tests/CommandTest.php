@@ -731,4 +731,45 @@ SQL;
 
         $this->assertEquals($expectedRawSql, $command->getRawSql());
     }
+
+    public function testAutoRefreshTableSchema(): void
+    {
+        $db = $this->getConnection();
+
+        $tableName = 'test';
+        $fkName = 'test_fk';
+
+        if ($db->getSchema()->getTableSchema($tableName) !== null) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $this->assertNull($db->getSchema()->getTableSchema($tableName));
+
+        $db->createCommand()->createTable($tableName, [
+            'id' => 'pk',
+            'fk' => 'int',
+            'name' => 'string',
+        ])->execute();
+        $initialSchema = $db->getSchema()->getTableSchema($tableName);
+        $this->assertNotNull($initialSchema);
+
+        $db->createCommand()->addColumn($tableName, 'value', 'integer')->execute();
+        $newSchema = $db->getSchema()->getTableSchema($tableName);
+        $this->assertNotEquals($initialSchema, $newSchema);
+
+        $db->createCommand()->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')->execute();
+        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+
+        $db->createCommand()->dropForeignKey($fkName, $tableName)->execute();
+        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+
+        $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
+        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+
+        $db->createCommand()->dropCommentFromColumn($tableName, 'id')->execute();
+        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+
+        $db->createCommand()->dropTable($tableName)->execute();
+        $this->assertNull($db->getSchema()->getTableSchema($tableName));
+    }
 }

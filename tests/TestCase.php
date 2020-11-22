@@ -252,6 +252,18 @@ class TestCase extends AbstractTestCase
         }
     }
 
+    protected function params(): array
+    {
+        return [
+            'yiisoft/db-oracle' => [
+                'dsn' => 'oci:dbname=localhost/XE;charset=AL32UTF8;',
+                'username' => 'system',
+                'password' => 'oracle',
+                'fixture' => __DIR__ . '/Data/oci.sql',
+            ]
+        ];
+    }
+
     private function config(): array
     {
         $params = $this->params();
@@ -281,18 +293,6 @@ class TestCase extends AbstractTestCase
                 ],
                 'setUsername()' => [$params['yiisoft/db-oracle']['username']],
                 'setPassword()' => [$params['yiisoft/db-oracle']['password']]
-            ]
-        ];
-    }
-
-    private function params(): array
-    {
-        return [
-            'yiisoft/db-oracle' => [
-                'dsn' => 'oci:dbname=localhost/XE;charset=AL32UTF8;',
-                'username' => 'system',
-                'password' => 'oracle',
-                'fixture' => __DIR__ . '/Data/oci.sql',
             ]
         ];
     }
