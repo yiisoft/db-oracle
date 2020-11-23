@@ -141,6 +141,18 @@ EOD;
         return 'DROP INDEX ' . $this->getDb()->quoteTableName($name);
     }
 
+    /**
+     * Creates a SQL statement for resetting the sequence value of a table's primary key.
+     *
+     * The sequence will be reset such that the primary key of the next new row inserted will have the specified value
+     * or 1.
+     *
+     * @param string $tableName the name of the table whose primary key sequence will be reset.
+     * @param array|string|null $value the value for the primary key of the next new row inserted. If this is not set,
+     * the next new row's primary key will have a value 1.
+     *
+     * @throws InvalidArgumentException
+     */
     public function executeResetSequence(string $tableName, $value = null): void
     {
         $tableSchema = $this->getDb()->getTableSchema($tableName);

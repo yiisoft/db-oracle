@@ -15,18 +15,19 @@ final class Command extends AbstractCommand
     protected function bindPendingParams(): void
     {
         $paramsPassedByReference = [];
+        $pdoStatement = $this->getPdoStatement();
 
         foreach ($this->pendingParams as $name => $value) {
-            if (PDO::PARAM_STR === $value[1]) {
+            if (PDO::PARAM_STR === $value[1] && $pdoStatement !== null) {
                 $paramsPassedByReference[$name] = $value[0];
-                $this->getPdoStatement()->bindParam(
+                $pdoStatement->bindParam(
                     $name,
                     $paramsPassedByReference[$name],
                     $value[1],
                     strlen($value[0])
                 );
-            } else {
-                $this->getPdoStatement()->bindValue($name, $value[0], $value[1]);
+            } elseif ($pdoStatement !== null) {
+                $pdoStatement->bindValue($name, $value[0], $value[1]);
             }
         }
 

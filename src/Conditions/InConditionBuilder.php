@@ -21,6 +21,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        /** @var Incondition $expression */
         $splitCondition = $this->splitCondition($expression, $params);
         if ($splitCondition !== null) {
             return $splitCondition;
@@ -43,10 +44,6 @@ final class InConditionBuilder extends AbstractInConditionBuilder
         $operator = $condition->getOperator();
         $values = $condition->getValues();
         $column = $condition->getColumn();
-
-        if ($values instanceof \Traversable) {
-            $values = iterator_to_array($values);
-        }
 
         if (!is_array($values)) {
             return null;
