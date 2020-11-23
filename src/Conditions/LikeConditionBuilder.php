@@ -1,50 +1,38 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace Yiisoft\Db\Oracle\Conditions;
 
-use Yiisoft\Db\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\LikeConditionBuilder as AbstractLikeConditionBuilder;
 
-/**
- * {@inheritdoc}
- *
- * @since 1.0
- */
-class LikeConditionBuilder extends \Yiisoft\Db\Conditions\LikeConditionBuilder
+final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
     /**
      * {@inheritdoc}
      */
-    protected $escapeCharacter = '!';
+    protected ?string $escapeCharacter = '!';
+
     /**
      * `\` is initialized in [[buildLikeCondition()]] method since
      * we need to choose replacement value based on [[\Yiisoft\Db\Schema::quoteValue()]].
      * {@inheritdoc}
      */
-    protected $escapingReplacements = [
+    protected array $escapingReplacements = [
         '%' => '!%',
         '_' => '!_',
         '!' => '!!',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!isset($this->escapingReplacements['\\'])) {
             /*
              * Different pdo_oci8 versions may or may not implement PDO::quote(), so
              * Yiisoft\Db\Schema::quoteValue() may or may not quote \.
              */
-            $this->escapingReplacements['\\'] = substr($this->queryBuilder->db->quoteValue('\\'), 1, -1);
+            $this->escapingReplacements['\\'] = substr((string) $this->queryBuilder->getDb()->quoteValue('\\'), 1, -1);
         }
 
         return parent::build($expression, $params);

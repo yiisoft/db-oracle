@@ -1,24 +1,14 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace Yiisoft\Db\Oracle\Conditions;
 
-use Yiisoft\Db\Conditions\InCondition;
-use Yiisoft\Db\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\InCondition;
+use Yiisoft\Db\Query\Conditions\InConditionBuilder as AbstractInConditionBuilder;
 
-/**
- * {@inheritdoc}
- *
- * @since 1.0
- */
-class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
+final class InConditionBuilder extends AbstractInConditionBuilder
 {
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
@@ -29,8 +19,9 @@ class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        /** @var Incondition $expression */
         $splitCondition = $this->splitCondition($expression, $params);
         if ($splitCondition !== null) {
             return $splitCondition;
@@ -43,20 +34,16 @@ class InConditionBuilder extends \Yiisoft\Db\Conditions\InConditionBuilder
      * Oracle DBMS does not support more than 1000 parameters in `IN` condition.
      * This method splits long `IN` condition into series of smaller ones.
      *
-     * @param ExpressionInterface|InCondition $condition the expression to be built.
+     * @param InCondition $condition
      * @param array $params the binding parameters.
      *
-     * @return string|null null when split is not required. Otherwise - built SQL condition.
+     * @return mixed null when split is not required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InCondition $condition, &$params)
     {
         $operator = $condition->getOperator();
         $values = $condition->getValues();
         $column = $condition->getColumn();
-
-        if ($values instanceof \Traversable) {
-            $values = iterator_to_array($values);
-        }
 
         if (!is_array($values)) {
             return null;
