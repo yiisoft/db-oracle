@@ -18,6 +18,7 @@ BEGIN EXECUTE IMMEDIATE 'DROP TABLE "constraints"'; EXCEPTION WHEN OTHERS THEN I
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "bool_values"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "animal"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "default_pk"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
+BEGIN EXECUTE IMMEDIATE 'DROP TABLE "default_multiple_pk"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "document"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "dossier"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "employee"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
@@ -194,6 +195,13 @@ CREATE TABLE "default_pk" (
   CONSTRAINT "default_pk_PK" PRIMARY KEY ("id") ENABLE
 );
 
+CREATE TABLE "default_multiple_pk" (
+  "id" integer not null,
+  "second_key_column" char(10) not null,
+  "type" varchar2(255) not null,
+  CONSTRAINT "default_multiple_pk_PK" PRIMARY KEY ("id", "second_key_column") ENABLE
+);
+
 CREATE TABLE "document" (
   "id" integer,
   "title" varchar2(255) not null,
@@ -366,8 +374,8 @@ END;
 
 /* TRIGGERS */
 
-INSERT INTO "animal" ("type") VALUES ('Yiisoft\ActiveRecord\Tests\Data\Cat');
-INSERT INTO "animal" ("type") VALUES ('Yiisoft\ActiveRecord\Tests\Data\Dog');
+INSERT INTO "animal" ("type") VALUES ('yiiunit\data\ar\Cat');
+INSERT INTO "animal" ("type") VALUES ('yiiunit\data\ar\Dog');
 
 
 INSERT INTO "profile" ("description") VALUES ('profile customer 1');
