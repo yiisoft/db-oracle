@@ -6,8 +6,7 @@ filter:
         - "src/*"
 
 tools:
-    php_code_coverage:
-        enabled: true
+    external_code_coverage: true
 
 build:
     nodes:
