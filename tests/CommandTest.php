@@ -128,8 +128,7 @@ final class CommandTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $db->setEnableQueryCache(true);
-        $db->setQueryCache($this->cache);
+        $db->getQueryCache()->setEnable(true);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
@@ -164,7 +163,7 @@ final class CommandTest extends TestCase
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->setEnableQueryCache(false);
+        $db->getQueryCache()->setEnable(false);
 
         $db->cache(function (Connection $db) use ($update) {
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
@@ -178,7 +177,7 @@ final class CommandTest extends TestCase
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->setEnableQueryCache(true);
+        $db->getQueryCache()->setEnable(true);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
 

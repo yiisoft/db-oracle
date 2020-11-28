@@ -12,7 +12,7 @@ use Yiisoft\Db\Connection\Connection as AbstractConnection;
  */
 final class Connection extends AbstractConnection
 {
-    private ?Schema $schema = null;
+    private Schema $schema;
 
     public function createCommand(?string $sql = null, array $params = []): Command
     {
@@ -20,7 +20,7 @@ final class Connection extends AbstractConnection
             $sql = $this->quoteSql($sql);
         }
 
-        $command = new Command($this->getProfiler(), $this->getLogger(), $this, $sql);
+        $command = new Command($this->getProfiler(), $this->getLogger(), $this, $this->getQueryCache(), $sql);
 
         return $command->bindValues($params);
     }
@@ -32,11 +32,7 @@ final class Connection extends AbstractConnection
      */
     public function getSchema(): Schema
     {
-        if ($this->schema !== null) {
-            return $this->schema;
-        }
-
-        return $this->schema = new Schema($this);
+        return $this->schema = new Schema($this, $this->getSchemaCache());
     }
 
     protected function createPdoInstance(): PDO
