@@ -15,6 +15,8 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Factory\DatabaseFactory;
@@ -39,6 +41,8 @@ class TestCase extends AbstractTestCase
     protected Connection $connection;
     protected Profiler $profiler;
     protected array $dataProvider;
+    protected QueryCache $queryCache;
+    protected SchemaCache $schemaCache;
 
     protected function setUp(): void
     {
@@ -59,6 +63,8 @@ class TestCase extends AbstractTestCase
             $this->container,
             $this->logger,
             $this->connection,
+            $this->queryCache,
+            $this->schemaCache,
             $this->profiler
         );
     }
@@ -99,6 +105,8 @@ class TestCase extends AbstractTestCase
         $this->logger = $this->container->get(LoggerInterface::class);
         $this->profiler = $this->container->get(Profiler::class);
         $this->connection = $this->container->get(ConnectionInterface::class);
+        $this->queryCache = $this->container->get(QueryCache::class);
+        $this->schemaCache = $this->container->get(SchemaCache::class);
 
         DatabaseFactory::initialize($this->container, []);
     }
