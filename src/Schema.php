@@ -628,7 +628,7 @@ SQL;
             $columnSchemas = $tableSchema->getColumns();
 
             $returning = [];
-            foreach ((array) $returnColumns as $name) {
+            foreach ($returnColumns as $name) {
                 $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
 
                 $returnParams[$phName] = [
