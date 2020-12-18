@@ -41,7 +41,39 @@ or add
 
 to the require section of your composer.json.
 
-## General usage
+## Configuration
+
+Using yiisoft/composer-config-plugin automatically get the settings of `Yiisoft\Cache\CacheInterface::class`, `LoggerInterface::class`, and `Profiler::class`.
+
+Di-Container:
+
+```php
+use Yiisoft\Db\Oracle\Connection as OracleConnection;
+
+return [
+    OracleConnection::class => [
+        '__class' => OracleConnection::class,
+        '__construct()' => [
+            'dsn' => $params['yiisoft/db-oracle']['dsn'],
+        ],
+        'setUsername()' => [$params['yiisoft/db-oracle']['username']],
+        'setPassword()' => [$params['yiisoft/db-oracle']['password']],
+    ]
+];
+```
+
+Params.php
+
+```php
+return [
+    'yiisoft/db-oracle' => [
+        'dsn' => 'oci:dbname=localhost/XE;charset=AL32UTF8;',
+        'username' => 'system',
+        'password' => 'oracle',
+    ],
+];
+```
+
 
 ### Unit testing
 
