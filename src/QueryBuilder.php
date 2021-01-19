@@ -255,7 +255,7 @@ EOD;
      * @param $updateColumns
      * @param array $params
      *
-     * @throws Exception|JsonException|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
      *
      * @return string
      */
