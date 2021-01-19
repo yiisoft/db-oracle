@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
+use Generator;
+use JsonException;
+use Throwable;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Conditions\InConditionBuilder;
@@ -91,7 +96,7 @@ EOD;
     /**
      * Builds a SQL statement for renaming a DB table.
      *
-     * @param string $oldname the table to be renamed. The name will be properly quoted by the method.
+     * @param string $oldName
      * @param string $newName the new table name. The name will be properly quoted by the method.
      *
      * @return string the SQL statement for renaming a DB table.
@@ -151,7 +156,7 @@ EOD;
      * @param array|string|null $value the value for the primary key of the next new row inserted. If this is not set,
      * the next new row's primary key will have a value 1.
      *
-     * @throws InvalidArgumentException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|Throwable
      */
     public function executeResetSequence(string $tableName, $value = null): void
     {
@@ -244,6 +249,15 @@ EOD;
 
     /**
      * {@see https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606}
+     *
+     * @param string $table
+     * @param $insertColumns
+     * @param $updateColumns
+     * @param array $params
+     *
+     * @throws Exception|JsonException|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     *
+     * @return string
      */
     public function upsert(string $table, $insertColumns, $updateColumns, array &$params = []): string
     {
@@ -354,11 +368,14 @@ EOD;
      *
      * @param string $table the table that new rows will be inserted into.
      * @param array $columns the column names.
-     * @param array|\Generator $rows the rows to be batch inserted into the table.
+     * @param array|Generator $rows the rows to be batch inserted into the table.
+     * @param array $params
+     *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the batch INSERT SQL statement.
      */
-    public function batchInsert(string $table, $columns, $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, $rows, array &$params = []): string
     {
         if (empty($rows)) {
             return '';

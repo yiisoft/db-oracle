@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
+use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
@@ -17,6 +17,7 @@ use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\ColumnSchema;
@@ -43,11 +44,11 @@ final class Schema extends AbstractSchema implements ConstraintFinderInterface
 
     protected $tableQuoteCharacter = '"';
 
-    public function __construct(Connection $db, SchemaCache $schemaCache)
+    public function __construct(Connection $db)
     {
         $this->defaultSchema = strtoupper($db->getUsername());
 
-        parent::__construct($db, $schemaCache);
+        parent::__construct($db);
     }
 
     protected function resolveTableName(string $name): TableSchema
@@ -87,6 +88,13 @@ SQL;
         return $this->getDb()->createCommand($sql)->queryColumn();
     }
 
+    /**
+     * @param string $schema
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @return array
+     */
     protected function findTableNames(string $schema = ''): array
     {
         if ($schema === '') {
@@ -132,6 +140,13 @@ SQL;
         return $names;
     }
 
+    /**
+     * @param string $name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @return TableSchema|null
+     */
     protected function loadTableSchema(string $name): ?TableSchema
     {
         $table = new TableSchema();
@@ -146,16 +161,37 @@ SQL;
         return null;
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     *
+     * @return Constraint|null
+     */
     protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
         return $this->loadTableConstraints($tableName, 'primaryKey');
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     *
+     * @return array
+     */
     protected function loadTableForeignKeys(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'foreignKeys');
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     *
+     * @return array
+     */
     protected function loadTableIndexes(string $tableName): array
     {
         static $sql = <<<'SQL'
@@ -203,18 +239,36 @@ SQL;
         return $result;
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     *
+     * @return array
+     */
     protected function loadTableUniques(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'uniques');
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     *
+     * @return array
+     */
     protected function loadTableChecks(string $tableName): array
     {
         return $this->loadTableConstraints($tableName, 'checks');
     }
 
     /**
+     * @param string $tableName
+     *
      * @throws NotSupportedException if this method is called.
+     *
+     * @return array
      */
     protected function loadTableDefaultValues(string $tableName): array
     {
@@ -248,7 +302,7 @@ SQL;
      */
     public function createColumnSchemaBuilder(string $type, $length = null): ColumnSchemaBuilder
     {
-        return new ColumnSchemaBuilder($type, $length, $this->getDb());
+        return new ColumnSchemaBuilder($type, $length);
     }
 
     /**
@@ -277,6 +331,8 @@ SQL;
      * Collects the table column metadata.
      *
      * @param TableSchema $table the table schema.
+     *
+     * @throws Exception|Throwable
      *
      * @return bool whether the table exists.
      */
@@ -337,9 +393,11 @@ SQL;
      *
      * @param string $tableName
      *
-     * @internal TableSchema `$table->getName()` the table schema
+     * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return string|null whether the sequence exists
+     * @return string|null whether the sequence exists.
+     *
+     * @internal TableSchema `$table->getName()` the table schema.
      */
     protected function getTableSequenceName(string $tableName): ?string
     {
@@ -367,7 +425,7 @@ SQL;
      *
      * @param string $sequenceName name of the sequence object (required by some DBMS)
      *
-     * @throws InvalidCallException if the DB connection is not active.
+     * @throws Exception|InvalidCallException|InvalidConfigException|Throwable if the DB connection is not active.
      *
      * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object.
      */
@@ -380,25 +438,25 @@ SQL;
             return $this->getDb()->useMaster(function (Connection $db) use ($sequenceName) {
                 return $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar();
             });
-        } else {
-            throw new InvalidCallException('DB Connection is not active.');
         }
+
+        throw new InvalidCallException('DB Connection is not active.');
     }
 
     /**
      * Creates ColumnSchema instance.
      *
-     * @param array $column
+     * @param array|string $column
      *
      * @return ColumnSchema
      */
-    protected function createColumn($column)
+    protected function createColumn($column): ColumnSchema
     {
         $c = $this->createColumnSchema();
 
         $c->name($column['COLUMN_NAME']);
         $c->allowNull($column['NULLABLE'] === 'Y');
-        $c->comment($column['COLUMN_COMMENT'] === null ? '' : $column['COLUMN_COMMENT']);
+        $c->comment($column['COLUMN_COMMENT'] ?? '');
         $c->primaryKey(false);
 
         $this->extractColumnType(
@@ -449,6 +507,8 @@ SQL;
      * Finds constraints and fills them into TableSchema object passed.
      *
      * @param TableSchema $table
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      */
     protected function findConstraints(TableSchema $table): void
     {
@@ -518,7 +578,7 @@ SQL;
         foreach ($constraints as $constraint) {
             $name = current(array_keys($constraint));
 
-            $table->foreignKey($name, array_merge([$constraint['tableName']], $constraint['columns']));
+            $table->foreignKey(array_merge([$constraint['tableName']], $constraint['columns']));
         }
     }
 
@@ -535,6 +595,8 @@ SQL;
      * ```
      *
      * @param TableSchema $table the table metadata.
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      *
      * @return array all unique indexes for the given table.
      */
@@ -571,12 +633,17 @@ SQL;
      *
      * @param ColumnSchema $column
      * @param string $dbType DB type.
-     * @param string $precision total number of digits.
-     * @param string $scale number of digits on the right of the decimal separator.
+     * @param string|null $precision total number of digits.
+     * @param string|null $scale number of digits on the right of the decimal separator.
      * @param string $length length for character types.
      */
-    protected function extractColumnType($column, $dbType, $precision, $scale, $length): void
-    {
+    protected function extractColumnType(
+        ColumnSchema $column,
+        string $dbType,
+        ?string $precision,
+        ?string $scale,
+        string $length
+    ): void {
         $column->dbType($dbType);
 
         if (strpos($dbType, 'FLOAT') !== false || strpos($dbType, 'DOUBLE') !== false) {
@@ -605,12 +672,17 @@ SQL;
      *
      * @param ColumnSchema $column
      * @param string $dbType the column's DB type.
-     * @param string $precision total number of digits.
-     * @param string $scale number of digits on the right of the decimal separator.
+     * @param string|null $precision total number of digits.
+     * @param string|null $scale number of digits on the right of the decimal separator.
      * @param string $length length for character types.
      */
-    protected function extractColumnSize($column, $dbType, $precision, $scale, $length): void
-    {
+    protected function extractColumnSize(
+        ColumnSchema $column,
+        string $dbType,
+        ?string $precision,
+        ?string $scale,
+        string $length
+    ): void {
         $column->size(trim($length) === '' ? null : (int) $length);
         $column->precision(trim((string) $precision) === '' ? null : (int) $precision);
         $column->scale($scale === '' || $scale === null ? null : (int) $scale);
@@ -642,8 +714,7 @@ SQL;
                     $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
                 }
 
-                $returnParams[$phName]['size'] = $columnSchemas[$name]->getSize() !== null
-                    ? $columnSchemas[$name]->getSize() : -1;
+                $returnParams[$phName]['size'] = $columnSchemas[$name]->getSize() ?? -1;
 
                 $returning[] = $this->quoteColumnName($name);
             }
@@ -680,6 +751,8 @@ SQL;
      * - foreignKeys
      * - uniques
      * - checks
+     *
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
      *
      * @return mixed constraints.
      */

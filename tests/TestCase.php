@@ -17,6 +17,7 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\LazyConnectionDependencies;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Oracle\Connection;
@@ -37,6 +38,7 @@ class TestCase extends AbstractTestCase
     protected Aliases $aliases;
     protected CacheInterface $cache;
     protected ContainerInterface $container;
+    protected LazyConnectionDependencies $dependencies;
     protected LoggerInterface $logger;
     protected Connection $connection;
     protected ProfilerInterface $profiler;
@@ -61,6 +63,7 @@ class TestCase extends AbstractTestCase
             $this->aliases,
             $this->cache,
             $this->container,
+            $this->dependencies,
             $this->logger,
             $this->connection,
             $this->queryCache,
@@ -100,15 +103,16 @@ class TestCase extends AbstractTestCase
     {
         $this->container = new Container($this->config());
 
+        DatabaseFactory::initialize($this->container, []);
+
         $this->aliases = $this->container->get(Aliases::class);
         $this->cache = $this->container->get(CacheInterface::class);
+        $this->dependencies = $this->container->get(LazyConnectionDependencies::class);
         $this->logger = $this->container->get(LoggerInterface::class);
         $this->profiler = $this->container->get(ProfilerInterface::class);
         $this->connection = $this->container->get(ConnectionInterface::class);
         $this->queryCache = $this->container->get(QueryCache::class);
         $this->schemaCache = $this->container->get(SchemaCache::class);
-
-        DatabaseFactory::initialize($this->container, []);
     }
 
     /**
@@ -193,8 +197,6 @@ class TestCase extends AbstractTestCase
      * @param string $propertyName
      * @param bool $revoke whether to make property inaccessible after getting.
      *
-     * @throws ReflectionException
-     *
      * @return mixed
      */
     protected function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true)
@@ -237,8 +239,6 @@ class TestCase extends AbstractTestCase
      * @param string $propertyName
      * @param $value
      * @param bool $revoke whether to make property inaccessible after setting
-     *
-     * @throws ReflectionException
      */
     protected function setInaccessibleProperty(object $object, string $propertyName, $value, bool $revoke = true): void
     {
@@ -290,6 +290,7 @@ class TestCase extends AbstractTestCase
             ],
 
             LoggerInterface::class => Logger::class,
+
             ProfilerInterface::class => Profiler::class,
 
             ConnectionInterface::class => [
