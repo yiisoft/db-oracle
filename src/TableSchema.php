@@ -29,7 +29,7 @@ final class TableSchema extends AbstractTableSchema
         return $this->foreignKeys;
     }
 
-    public function foreignKey(string $key, array $value): void
+    public function foreignKey(array $value): void
     {
         $this->foreignKeys[] = $value;
     }
