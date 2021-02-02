@@ -25,7 +25,7 @@
     "require": {
         "ext-pdo": "*",
         "php": "^7.4|^8.0",
-        "yiisoft/arrays": "^3.0@dev",
+        "yiisoft/arrays": "^1.0",
         "yiisoft/db": "^3.0@dev",
         "yiisoft/strings": "^1.1"
     },
