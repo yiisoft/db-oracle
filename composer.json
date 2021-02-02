@@ -36,7 +36,7 @@
         "vimeo/psalm": "^4.2",
         "yiisoft/active-record": "dev-master",
         "yiisoft/aliases": "^1.1",
-        "yiisoft/cache": "dev-master",
+        "yiisoft/cache": "^1.0",
         "yiisoft/di": "dev-master",
         "yiisoft/log": "dev-master"
     },
