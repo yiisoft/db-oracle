@@ -176,7 +176,7 @@ final class ConnectionTest extends TestCase
         $db->setSlaves(
             '1',
             [
-                '__class' => Connection::class,
+                'class' => Connection::class,
                 '__construct()' => [
                     'dsn' => $this->params()['yiisoft/db-oracle']['dsn'],
                 ],
@@ -209,7 +209,7 @@ final class ConnectionTest extends TestCase
         $db->setMasters(
             '1',
             [
-                '__class' => Connection::class,
+                'class' => Connection::class,
                 '__construct()' => [
                     'dsn' => $this->params()['yiisoft/db-oracle']['dsn'],
                 ],
@@ -244,7 +244,7 @@ final class ConnectionTest extends TestCase
         $db->setMasters(
             '1',
             [
-                '__class' => Connection::class,
+                'class' => Connection::class,
                 '__construct()' => [
                     'dsn' => 'host:invalid',
                 ],
@@ -277,7 +277,7 @@ final class ConnectionTest extends TestCase
         $db->setMasters(
             '1',
             [
-                '__class' => Connection::class,
+                'class' => Connection::class,
                 '__construct()' => [
                     'dsn' => $this->params()['yiisoft/db-oracle']['dsn'],
                 ],
@@ -309,7 +309,7 @@ final class ConnectionTest extends TestCase
         $db->setMasters(
             '1',
             [
-                '__class' => Connection::class,
+                'class' => Connection::class,
                 '__construct()' => [
                     'dsn' => 'host:invalid',
                 ],
