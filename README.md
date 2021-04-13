@@ -56,7 +56,7 @@ use Yiisoft\Db\Oracle\Connection as OracleConnection;
 
 return [
     ConnectionInterface::class => [
-        '__class' => OracleConnection::class,
+        'class' => OracleConnection::class,
         '__construct()' => [
             'dsn' => $params['yiisoft/db-oracle']['dsn'],
         ],
