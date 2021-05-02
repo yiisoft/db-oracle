@@ -277,9 +277,13 @@ class TestCase extends AbstractTestCase
 
         return [
             Aliases::class => [
-                '@root' => dirname(__DIR__, 1),
-                '@data' => '@root/tests/Data',
-                '@runtime' => '@data/runtime',
+                '__construct()' => [
+                    [
+                        '@root' => dirname(__DIR__, 1),
+                        '@data' => '@root/tests/Data',
+                        '@runtime' => '@data/runtime',
+                    ],
+                ],
             ],
 
             CacheInterface::class => [
