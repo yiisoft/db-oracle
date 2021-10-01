@@ -6,19 +6,40 @@ namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use Yiisoft\Db\Connection\Connection as AbstractConnection;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 
 /**
  * Database connection class prefilled for ORACLE Server.
  */
 final class Connection extends AbstractConnection
 {
+    private QueryCache $queryCache;
+    private SchemaCache $schemaCache;
+
+    public function __construct(string $dsn, QueryCache $queryCache, SchemaCache $schemaCache)
+    {
+        $this->queryCache = $queryCache;
+        $this->schemaCache = $schemaCache;
+
+        parent::__construct($dsn, $queryCache);
+    }
+
     public function createCommand(?string $sql = null, array $params = []): Command
     {
         if ($sql !== null) {
             $sql = $this->quoteSql($sql);
         }
 
-        $command = new Command($this, $sql);
+        $command = new Command($this, $this->queryCache, $sql);
+
+        if ($this->logger !== null) {
+            $command->setLogger($this->logger);
+        }
+
+        if ($this->profiler !== null) {
+            $command->setProfiler($this->profiler);
+        }
 
         return $command->bindValues($params);
     }
@@ -30,7 +51,7 @@ final class Connection extends AbstractConnection
      */
     public function getSchema(): Schema
     {
-        return new Schema($this);
+        return new Schema($this, $this->schemaCache);
     }
 
     protected function createPdoInstance(): PDO

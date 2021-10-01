@@ -14,19 +14,12 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/db-oracle"
     },
-    "authors": [
-        {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com",
-            "homepage": "http://www.yiiframework.com/"
-        }
-    ],
     "minimum-stability": "dev",
     "require": {
         "ext-pdo": "*",
         "php": "^7.4|^8.0",
         "yiisoft/arrays": "^1.0",
-        "yiisoft/db": "^3.0@dev",
+        "yiisoft/db": "dev-move-schemacache-to-schema-class as 3.0",
         "yiisoft/strings": "^2.0"
     },
     "require-dev": {
@@ -37,7 +30,6 @@
         "yiisoft/active-record": "dev-master",
         "yiisoft/aliases": "^1.1|^2.0",
         "yiisoft/cache": "^1.0",
-        "yiisoft/di": "dev-master",
         "yiisoft/log": "^1.0"
     },
     "autoload": {
@@ -62,5 +54,11 @@
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
         "test-watch": "phpunit-watcher watch"
-    }
+    },
+    "repositories": [
+        {
+            "type": "github",
+            "url": "https://github.com/terabytesoftw/db"
+        }
+    ]
 }
