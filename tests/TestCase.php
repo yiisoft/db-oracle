@@ -55,6 +55,36 @@ class TestCase extends AbstractTestCase
         return $db;
     }
 
+    protected function prepareDatabase(string $dsn = null, $fixture = null): void
+    {
+        $fixture = $fixture ?? self::DB_FIXTURES_PATH;
+
+        if ($dsn !== null) {
+            $this->connection = $this->createConnection($dsn);
+        }
+
+        $this->connection->open();
+
+        if ($fixture !== null) {
+            [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+
+            [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
+
+            $lines = array_merge(
+                explode('--', $drops),
+                explode(';', $statements),
+                explode('/', $triggers),
+                explode(';', $data),
+            );
+
+            foreach ($lines as $line) {
+                if (trim($line) !== '') {
+                    $this->connection->getPDO()->exec($line);
+                }
+            }
+        }
+    }
+
     /**
      * Adjust dbms specific escaping.
      *
