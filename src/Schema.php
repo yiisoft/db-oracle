@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use PDO;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
@@ -15,8 +16,8 @@ use Yiisoft\Db\Constraint\ConstraintFinderTrait;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -44,11 +45,11 @@ final class Schema extends AbstractSchema implements ConstraintFinderInterface
 
     protected $tableQuoteCharacter = '"';
 
-    public function __construct(Connection $db)
+    public function __construct(Connection $db, SchemaCache $schemaCache)
     {
         $this->defaultSchema = strtoupper($db->getUsername());
 
-        parent::__construct($db);
+        parent::__construct($db, $schemaCache);
     }
 
     protected function resolveTableName(string $name): TableSchema
