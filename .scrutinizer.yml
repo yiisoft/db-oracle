@@ -60,7 +60,6 @@ build:
           - curl -k -L --output /home/scrutinizer/php-8.0.11.tar.gz https://www.php.net/distributions/php-8.0.11.tar.gz
           - cd /home/scrutinizer
           - tar -zxf php-8.0.11.tar.gz
-          - ls -l
           - cd php-8.0.11/ext/pdo_oci
           - phpize
           - ./configure --with-pdo-oci=instantclient,/opt/oracle/instantclient_21_3
@@ -70,7 +69,7 @@ build:
           - cd /home/scrutinizer/build/
           - composer self-update
           - composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
-          - echo 'extension=pdo_oci' > /home/scrutinizer/.phpenv/versions/8.0.11/etc/php.ini
+          - echo 'extension=pdo_oci' >> /home/scrutinizer/.phpenv/versions/8.0.11/etc/php.ini
 
         override:
           - command: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
