@@ -8,12 +8,14 @@ use PDO;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\TestUtility\TestCommandTrait;
 
 /**
  * @group oracle
+ * @group upsert
  */
 final class CommandTest extends TestCase
 {
@@ -380,6 +382,49 @@ SQL;
             '{{customer}}',
             $query
         )->execute();
+    }
+
+    /**
+     * @dataProvider dataInsertVarbinary
+     * @throws \Throwable
+     * @throws \Yiisoft\Db\Exception\Exception
+     * @throws \Yiisoft\Db\Exception\InvalidConfigException
+     */
+    public function testInsertVarbinary($expectedData, $testData)
+    {
+        $db = $this->getConnection();
+
+        $db->createCommand()->delete('T_upsert_varbinary')->execute();
+
+        $db->createCommand()->insert('T_upsert_varbinary', ['id' => 1, 'blob_col' => $testData])->execute();
+
+        $query = (new Query($db))
+            ->select(['blob_col'])
+            ->from('T_upsert_varbinary')
+            ->where(['id' => 1]);
+
+        $resultData = $query->createCommand()->queryOne();
+        $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
+
+        $this->assertEquals($expectedData, $resultBlob);
+    }
+
+    public function dataInsertVarbinary()
+    {
+        return [
+            [
+                json_encode(['string' => 'string', 'integer' => 1234]),
+                json_encode(['string' => 'string', 'integer' => 1234]),
+            ],
+            [
+                serialize(['string' => 'string', 'integer' => 1234]),
+                new PdoValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB)
+            ],
+            [
+                'simple string',
+                'simple string',
+            ],
+        ];
     }
 
     /**
