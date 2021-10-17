@@ -386,6 +386,7 @@ SQL;
 
     /**
      * @dataProvider dataInsertVarbinary
+     *
      * @throws \Throwable
      * @throws \Yiisoft\Db\Exception\Exception
      * @throws \Yiisoft\Db\Exception\InvalidConfigException
@@ -418,7 +419,7 @@ SQL;
             ],
             [
                 serialize(['string' => 'string', 'integer' => 1234]),
-                new PdoValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB)
+                new PdoValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
             ],
             [
                 'simple string',
