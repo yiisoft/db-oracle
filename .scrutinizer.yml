@@ -1,19 +1,80 @@
 checks:
-    php: true
+  php: true
 
 filter:
-    paths:
-        - "src/*"
-
-tools:
-    external_code_coverage: true
+  paths:
+    - "src/*"
 
 build:
-    nodes:
-        analysis:
-            environment:
-                php: 7.4.12
+  image: default-bionic
 
-            tests:
-                override:
-                    - php-scrutinizer-run
+  environment:
+    php:
+      version: 8.0.11
+      ini:
+        xdebug.mode: coverage
+
+  nodes:
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
+
+    phpunit:
+      services:
+        db-oracle:
+          image: wnameless/oracle-xe-11g-r2:latest
+
+          # We automatically forward these ports from your localhost to the service's port.
+          # Alternatively, you can also access the service on the "$SERVICE_SOME_NAME_IP"
+          # environment variable.
+          ports:
+            # Forward 127.0.0.1:12345 -> SERVICE_IP:12345
+            - 1521
+
+          # If your service writes data to disk like most databases do, you can significantly
+          # speed up tests by mounting a ramdisk at those paths.
+          ramdisks:
+            - /var/lib/data
+
+      tests:
+        before:
+          - sudo mkdir -p /opt/oracle
+          - sudo curl -k -L --output /opt/oracle/instantclient-basic-linux.x64-21.3.0.0.0.zip https://download.oracle.com/otn_software/linux/instantclient/213000/instantclient-basic-linux.x64-21.3.0.0.0.zip
+          - sudo curl -k -L --output /opt/oracle/instantclient-sdk-linux.x64-21.3.0.0.0.zip https://download.oracle.com/otn_software/linux/instantclient/213000/instantclient-sdk-linux.x64-21.3.0.0.0.zip
+          - sudo unzip /opt/oracle/instantclient-basic-linux.x64-21.3.0.0.0.zip -d /opt/oracle
+          - sudo unzip /opt/oracle/instantclient-sdk-linux.x64-21.3.0.0.0.zip -d /opt/oracle
+          - sudo apt-get install libaio1 -y
+          - export ORACLE_HOME=/opt/oracle/instantclient_21_3
+          - sudo sh -c "echo /opt/oracle/instantclient_21_3 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+          - sudo ldconfig
+          - curl -k -L --output /home/scrutinizer/oci8-3.0.1.tgz https://pecl.php.net/get/oci8-3.0.1.tgz
+          - cd /home/scrutinizer
+          - tar -zxf oci8-3.0.1.tgz
+          - cd oci8-3.0.1
+          - phpize
+          - ./configure --with-oci8=instantclient,/opt/oracle/instantclient_21_3
+          - make
+          - sudo make install
+          - sudo ldconfig
+          - curl -k -L --output /home/scrutinizer/php-8.0.11.tar.gz https://www.php.net/distributions/php-8.0.11.tar.gz
+          - cd /home/scrutinizer
+          - tar -zxf php-8.0.11.tar.gz
+          - cd php-8.0.11/ext/pdo_oci
+          - phpize
+          - ./configure --with-pdo-oci=instantclient,/opt/oracle/instantclient_21_3
+          - make
+          - sudo make install
+          - sudo ldconfig
+          - cd /home/scrutinizer/build/
+          - composer self-update
+          - composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+          - echo 'extension=pdo_oci' >> /home/scrutinizer/.phpenv/versions/8.0.11/etc/php.ini
+
+        override:
+          - command: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
+            on_node: 1
+            coverage:
+              file: coverage.xml
+              format: php-clover
+
