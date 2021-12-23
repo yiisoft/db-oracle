@@ -54,24 +54,6 @@ final class Connection extends AbstractConnection
         return new Schema($this, $this->schemaCache);
     }
 
-    protected function createPdoInstance(): PDO
-    {
-        return new PDO($this->getDsn(), $this->getUsername(), $this->getPassword(), $this->getAttributes());
-    }
-
-    protected function initConnection(): void
-    {
-        $pdo = $this->getPDO();
-
-        if ($pdo !== null) {
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            if ($this->getEmulatePrepare() !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
-                $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->getEmulatePrepare());
-            }
-        }
-    }
-
     /**
      * Returns the name of the DB driver.
      *
@@ -80,5 +62,22 @@ final class Connection extends AbstractConnection
     public function getDriverName(): string
     {
         return 'oci';
+    }
+
+    protected function initConnection(): void
+    {
+        $pdo = $this->getPdo() ?? $this->createPdoInstance();
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        if ($this->getEmulatePrepare() !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->getEmulatePrepare());
+        }
+
+        $this->setPDO($pdo);
+    }
+
+    private function createPdoInstance(): PDO
+    {
+        return new PDO($this->getDsn(), $this->getUsername(), $this->getPassword(), $this->getAttributes());
     }
 }
