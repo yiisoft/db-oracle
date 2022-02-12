@@ -6,10 +6,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use Closure;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Oracle\PDO\QueryBuilderPDOOracle;
 use yiisoft\Db\Query\Query;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\TestSupport\TestQueryBuilderTrait;
 
 /**
@@ -320,5 +317,4 @@ final class QueryBuilderTest extends TestCase
             $this->assertIsOneOf($actualParams, $expectedParams);
         }
     }
-
 }

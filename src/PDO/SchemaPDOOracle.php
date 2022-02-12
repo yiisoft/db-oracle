@@ -399,7 +399,7 @@ SQL;
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return int|null|string whether the sequence exists.
+     * @return int|string|null whether the sequence exists.
      *
      * @internal TableSchema `$table->getName()` the table schema.
      */

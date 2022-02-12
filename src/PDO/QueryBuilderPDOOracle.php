@@ -137,7 +137,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
      *
      * @param string $table the table that new rows will be inserted into.
      * @param array $columns the column names.
-     * @param iterable|Generator $rows the rows to be batched inserted into the table.
+     * @param Generator|iterable $rows the rows to be batched inserted into the table.
      * @param array $params
      *
      * @throws \Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
