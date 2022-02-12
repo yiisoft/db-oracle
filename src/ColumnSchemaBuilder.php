@@ -28,16 +28,11 @@ final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
      */
     public function __toString(): string
     {
-        switch ($this->getTypeCategory()) {
-            case self::CATEGORY_PK:
-                $format = '{type}{length}{check}{append}';
-                break;
-            case self::CATEGORY_NUMERIC:
-                $format = '{type}{length}{unsigned}{default}{notnull}{check}{append}';
-                break;
-            default:
-                $format = '{type}{length}{default}{notnull}{check}{append}';
-        }
+        $format = match ($this->getTypeCategory()) {
+            self::CATEGORY_PK => '{type}{length}{check}{append}',
+            self::CATEGORY_NUMERIC => '{type}{length}{unsigned}{default}{notnull}{check}{append}',
+            default => '{type}{length}{default}{notnull}{check}{append}',
+        };
 
         return $this->buildCompleteString($format);
     }

@@ -9,8 +9,8 @@ use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\TableSchema;
-use Yiisoft\Db\TestUtility\AnyValue;
-use Yiisoft\Db\TestUtility\TestSchemaTrait;
+use Yiisoft\Db\TestSupport\AnyValue;
+use Yiisoft\Db\TestSupport\TestSchemaTrait;
 
 /**
  * @group oracle

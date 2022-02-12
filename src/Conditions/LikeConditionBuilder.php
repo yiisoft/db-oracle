@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle\Conditions;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\LikeConditionBuilder as AbstractLikeConditionBuilder;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
@@ -25,6 +26,11 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
         '!' => '!!',
     ];
 
+    public function __construct(private QueryBuilderInterface $queryBuilder)
+    {
+        parent::__construct($queryBuilder);
+    }
+
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!isset($this->escapingReplacements['\\'])) {
@@ -32,7 +38,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
              * Different pdo_oci8 versions may or may not implement PDO::quote(), so
              * Yiisoft\Db\Schema::quoteValue() may or may not quote \.
              */
-            $this->escapingReplacements['\\'] = substr((string) $this->queryBuilder->getDb()->quoteValue('\\'), 1, -1);
+            $this->escapingReplacements['\\'] = substr((string) $this->queryBuilder->quoter()->quoteValue('\\'), 1, -1);
         }
 
         return parent::build($expression, $params);

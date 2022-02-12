@@ -4,39 +4,62 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use Exception;
 use PHPUnit\Framework\TestCase as AbstractTestCase;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\TestUtility\TestTrait;
+use Yiisoft\Db\Driver\PDODriver;
+use Yiisoft\Db\Oracle\PDO\ConnectionPDOOracle;
+use Yiisoft\Db\TestSupport\TestTrait;
 
 class TestCase extends AbstractTestCase
 {
     use TestTrait;
 
-    protected const DB_CONNECTION_CLASS = \Yiisoft\Db\Oracle\Connection::class;
-    protected const DB_DRIVERNAME = 'oci';
-    protected const DB_DSN = 'oci:dbname=localhost/XE;';
-    protected const DB_FIXTURES_PATH = __DIR__ . '/Fixture/oci.sql';
-    protected const DB_USERNAME = 'system';
-    protected const DB_PASSWORD = 'oracle';
-    protected const DB_CHARSET = 'AL32UTF8';
+    protected string $drivername = 'oci';
+    protected string $dsn = 'oci:dbname=localhost/XE;';
+    protected string $username = 'system';
+    protected string $password = 'oracle';
+    protected string $charset = 'AL32UTF8';
     protected array $dataProvider;
     protected string $likeEscapeCharSql = '';
     protected array $likeParameterReplacements = [];
-    protected ConnectionInterface $connection;
+    protected ?ConnectionPDOOracle $db = null;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->connection = $this->createConnection(self::DB_DSN);
+    /**
+     * @param bool $reset whether to clean up the test database.
+     *
+     * @return ConnectionPDOOracle
+     */
+    protected function getConnection(
+        $reset = false,
+        ?string $dsn = null,
+        string $fixture = __DIR__ . '/Fixture/oci.sql'
+    ): ConnectionPDOOracle {
+        $pdoDriver = new PDODriver($dsn ?? $this->dsn, $this->username, $this->password);
+        $this->db = new ConnectionPDOOracle($pdoDriver, $this->createQueryCache(), $this->createSchemaCache());
+        $this->db->setLogger($this->createLogger());
+        $this->db->setProfiler($this->createProfiler());
+
+        if ($reset === false) {
+            return $this->db;
+        }
+
+        try {
+            $this->prepareDatabase($this->db, $fixture);
+        } catch (Exception $e) {
+            $this->markTestSkipped('Something wrong when preparing database: ' . $e->getMessage());
+        }
+
+        return $this->db;
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
-        $this->connection->close();
+        $this->db?->close();
         unset(
             $this->cache,
-            $this->connection,
+            $this->db,
             $this->logger,
             $this->queryCache,
             $this->schemaCache,
