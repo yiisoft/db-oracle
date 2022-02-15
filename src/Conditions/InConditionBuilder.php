@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Conditions;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\InConditionBuilder as AbstractInConditionBuilder;
@@ -20,7 +24,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
      *
-     * @param ExpressionInterface|InCondition $expression the expression to be built.
+     * @param ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
@@ -44,9 +48,11 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * @param InCondition $condition
      * @param array $params the binding parameters.
      *
-     * @return mixed null when split is not required. Otherwise - built SQL condition.
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     *
+     * @return string|null null when split is not required. Otherwise - built SQL condition.
      */
-    protected function splitCondition(InCondition $condition, &$params)
+    protected function splitCondition(InCondition $condition, array &$params): ?string
     {
         $operator = $condition->getOperator();
         $values = $condition->getValues();
