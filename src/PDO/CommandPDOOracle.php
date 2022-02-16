@@ -17,8 +17,6 @@ use Yiisoft\Db\Query\QueryBuilderInterface;
  */
 final class CommandPDOOracle extends Command
 {
-    private int $i = 0;
-
     public function __construct(private ConnectionPDOInterface $db, QueryCache $queryCache)
     {
         parent::__construct($queryCache);
