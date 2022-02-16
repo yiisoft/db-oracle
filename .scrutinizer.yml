@@ -23,7 +23,7 @@ build:
         override:
           - php-scrutinizer-run
 
-    phpunit-and-coverage:
+    phpunit:
       services:
         db-oracle:
           image: wnameless/oracle-xe-11g-r2:latest
