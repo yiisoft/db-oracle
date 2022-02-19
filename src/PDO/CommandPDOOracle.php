@@ -63,21 +63,19 @@ final class CommandPDOOracle extends Command
     {
         $paramsPassedByReference = [];
 
-        foreach ($this->pendingParams as $name => $value) {
-            if (PDO::PARAM_STR === $value[1]) {
-                $paramsPassedByReference[$name] = $value[0];
+        foreach ($this->params as $name => $value) {
+            if (PDO::PARAM_STR === $value->getType()) {
+                $paramsPassedByReference[$name] = $value->getValue();
                 $this->pdoStatement?->bindParam(
                     $name,
                     $paramsPassedByReference[$name],
-                    $value[1],
-                    strlen($value[0])
+                    $value->getType(),
+                    strlen($value->getValue())
                 );
             } else {
-                $this->pdoStatement?->bindValue($name, $value[0], $value[1]);
+                $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
             }
         }
-
-        $this->pendingParams = [];
     }
 
     protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): array
