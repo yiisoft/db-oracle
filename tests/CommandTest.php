@@ -246,6 +246,8 @@ final class CommandTest extends TestCase
 
     public function testBindParamValue(): void
     {
+        $this->markTestSkipped('Temporary remove binding');
+
         $db = $this->getConnection(true);
 
         /** bindParam */
