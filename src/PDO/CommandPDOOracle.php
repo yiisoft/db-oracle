@@ -73,7 +73,7 @@ final class CommandPDOOracle extends Command
                     strlen($value->getValue())
                 );
             } else {
-                $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType);
+                $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
             }
         }
     }
