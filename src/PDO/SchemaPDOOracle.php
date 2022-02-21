@@ -49,15 +49,6 @@ use Yiisoft\Db\Schema\Schema;
  */
 final class SchemaPDOOracle extends Schema
 {
-    /**
-     * @var array map of DB errors and corresponding exceptions.
-     *
-     * If left part is found in DB error message exception class from the right part is used.
-     */
-    protected array $exceptionMap = [
-        'ORA-00001: unique constraint' => IntegrityException::class,
-    ];
-
     public function __construct(private ConnectionPDOInterface $db, SchemaCache $schemaCache)
     {
         $this->defaultSchema = strtoupper($db->getDriver()->getUsername());
