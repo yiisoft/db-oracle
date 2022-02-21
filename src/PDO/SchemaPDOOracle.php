@@ -733,7 +733,7 @@ SQL;
         $command->prepare(false);
 
         foreach ($returnParams as $name => &$value) {
-            $command->getPdoStatement()->bindParam($name, $value['value'], $value['dataType'], $value['size']);
+            $command->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
 
         if (!$command->execute()) {
