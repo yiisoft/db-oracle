@@ -10,6 +10,7 @@ use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
@@ -25,6 +26,58 @@ final class CommandPDOOracle extends Command
     public function queryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
+    }
+
+    public function insertEx(string $table, array $columns): bool|array
+    {
+        $params = [];
+        $sql = $this->queryBuilder()->insertEx($table, $columns, $params);
+
+        $tableSchema = $this->queryBuilder()->schema()->getTableSchema($table);
+
+        $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
+        $columnSchemas = $tableSchema?->getColumns() ?? [];
+
+        $returnParams = [];
+        $returning = [];
+        foreach ($returnColumns as $name) {
+            $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
+
+            $returnParams[$phName] = [
+                'column' => $name,
+                'value' => '',
+            ];
+
+            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== 'integer') {
+                $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
+            } else {
+                $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
+            }
+
+            $returnParams[$phName]['size'] = $columnSchemas[$name]->getSize() ?? -1;
+
+            $returning[] = $this->db->getQuoter()->quoteColumnName($name);
+        }
+
+        $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
+
+        $this->setSql($sql)->bindValues($params);
+        $this->prepare(false);
+
+        foreach ($returnParams as $name => &$value) {
+            $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
+        }
+
+        if (!$this->execute()) {
+            return false;
+        }
+
+        $result = [];
+        foreach ($returnParams as $value) {
+            $result[$value['column']] = $value['value'];
+        }
+
+        return $result;
     }
 
     public function prepare(?bool $forRead = null): void
