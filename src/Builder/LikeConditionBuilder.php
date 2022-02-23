@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\Conditions;
+namespace Yiisoft\Db\Oracle\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\LikeConditionBuilder as AbstractLikeConditionBuilder;
+use Yiisoft\Db\Query\Conditions\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
