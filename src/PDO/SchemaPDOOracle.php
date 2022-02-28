@@ -692,63 +692,6 @@ SQL;
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException|Throwable
-     */
-    public function insert($table, $columns): bool|array
-    {
-        $params = [];
-        $returnParams = [];
-        $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-        $tableSchema = $this->getTableSchema($table);
-        $returnColumns = $tableSchema->getPrimaryKey();
-
-        if (!empty($returnColumns)) {
-            $columnSchemas = $tableSchema->getColumns();
-
-            $returning = [];
-            foreach ($returnColumns as $name) {
-                $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
-
-                $returnParams[$phName] = [
-                    'column' => $name,
-                    'value' => '',
-                ];
-
-                if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== 'integer') {
-                    $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
-                } else {
-                    $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
-                }
-
-                $returnParams[$phName]['size'] = $columnSchemas[$name]->getSize() ?? -1;
-
-                $returning[] = $this->db->getQuoter()->quoteColumnName($name);
-            }
-
-            $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
-        }
-
-        $command = $this->db->createCommand($sql, $params);
-
-        $command->prepare(false);
-
-        foreach ($returnParams as $name => &$value) {
-            $command->bindParam($name, $value['value'], $value['dataType'], $value['size']);
-        }
-
-        if (!$command->execute()) {
-            return false;
-        }
-
-        $result = [];
-        foreach ($returnParams as $value) {
-            $result[$value['column']] = $value['value'];
-        }
-
-        return $result;
-    }
-
-    /**
      * Loads multiple types of constraints and returns the specified ones.
      *
      * @param string $tableName table name.
