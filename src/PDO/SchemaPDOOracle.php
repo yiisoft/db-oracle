@@ -15,7 +15,6 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -23,7 +22,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\ColumnSchema;
 use Yiisoft\Db\Oracle\ColumnSchemaBuilder;
 use Yiisoft\Db\Oracle\TableSchema;
-use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 
 /**
