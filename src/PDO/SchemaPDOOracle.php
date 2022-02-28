@@ -14,7 +14,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -47,15 +46,6 @@ use Yiisoft\Db\Schema\Schema;
  */
 final class SchemaPDOOracle extends Schema
 {
-    /**
-     * @var array map of DB errors and corresponding exceptions.
-     *
-     * If left part is found in DB error message exception class from the right part is used.
-     */
-    protected array $exceptionMap = [
-        'ORA-00001: unique constraint' => IntegrityException::class,
-    ];
-
     public function __construct(private ConnectionPDOInterface $db, SchemaCache $schemaCache)
     {
         $this->defaultSchema = strtoupper($db->getDriver()->getUsername());

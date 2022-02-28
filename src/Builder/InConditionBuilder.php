@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\Conditions;
+namespace Yiisoft\Db\Oracle\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Builder\InConditionBuilder as AbstractInConditionBuilder;
 use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\Conditions\InConditionBuilder as AbstractInConditionBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 final class InConditionBuilder extends AbstractInConditionBuilder
