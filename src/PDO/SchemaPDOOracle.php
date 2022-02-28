@@ -14,7 +14,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -22,7 +21,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\ColumnSchema;
 use Yiisoft\Db\Oracle\ColumnSchemaBuilder;
 use Yiisoft\Db\Oracle\TableSchema;
-use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 
 /**
@@ -679,63 +677,6 @@ SQL;
         $column->size(trim($length) === '' ? null : (int) $length);
         $column->precision(trim((string) $precision) === '' ? null : (int) $precision);
         $column->scale($scale === '' || $scale === null ? null : (int) $scale);
-    }
-
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException|Throwable
-     */
-    public function insert($table, $columns): bool|array
-    {
-        $params = [];
-        $returnParams = [];
-        $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-        $tableSchema = $this->getTableSchema($table);
-        $returnColumns = $tableSchema->getPrimaryKey();
-
-        if (!empty($returnColumns)) {
-            $columnSchemas = $tableSchema->getColumns();
-
-            $returning = [];
-            foreach ($returnColumns as $name) {
-                $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
-
-                $returnParams[$phName] = [
-                    'column' => $name,
-                    'value' => '',
-                ];
-
-                if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== 'integer') {
-                    $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
-                } else {
-                    $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
-                }
-
-                $returnParams[$phName]['size'] = $columnSchemas[$name]->getSize() ?? -1;
-
-                $returning[] = $this->db->getQuoter()->quoteColumnName($name);
-            }
-
-            $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
-        }
-
-        $command = $this->db->createCommand($sql, $params);
-
-        $command->prepare(false);
-
-        foreach ($returnParams as $name => &$value) {
-            $command->getPdoStatement()->bindParam($name, $value['value'], $value['dataType'], $value['size']);
-        }
-
-        if (!$command->execute()) {
-            return false;
-        }
-
-        $result = [];
-        foreach ($returnParams as $value) {
-            $result[$value['column']] = $value['value'];
-        }
-
-        return $result;
     }
 
     /**
