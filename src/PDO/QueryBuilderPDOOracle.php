@@ -56,6 +56,8 @@ final class QueryBuilderPDOOracle extends QueryBuilder
         Schema::TYPE_BOOLEAN => 'NUMBER(1)',
         Schema::TYPE_MONEY => 'NUMBER(19,4)',
     ];
+    private DDLQueryBuilder $ddlBuilder;
+    private DMLQueryBuilder $dmlBuilder;
 
     public function __construct(
         private CommandInterface $command,
@@ -65,7 +67,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
     ) {
         $this->ddlBuilder = new DDLQueryBuilder($this);
         $this->dmlBuilder = new DMLQueryBuilder($this);
-        parent::__construct($quoter, $schema);
+        parent::__construct($quoter, $schema, $this->ddlBuilder, $this->dmlBuilder);
     }
 
     public function addForeignKey(
