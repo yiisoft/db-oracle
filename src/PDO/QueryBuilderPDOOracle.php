@@ -31,7 +31,7 @@ use Yiisoft\Strings\NumericHelper;
 final class QueryBuilderPDOOracle extends QueryBuilder
 {
     /**
-     * @var array mapping from abstract column types (keys) to physical column types (values).
+     * @psalm-var string[] $typeMap Mapping from abstract column types (keys) to physical column types (values).
      */
     protected array $typeMap = [
         Schema::TYPE_PK => 'NUMBER(10) NOT NULL PRIMARY KEY',
@@ -142,9 +142,11 @@ final class QueryBuilderPDOOracle extends QueryBuilder
      * @param Generator|iterable $rows the rows to be batched inserted into the table.
      * @param array $params
      *
-     * @throws \Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws \Exception|InvalidArgumentException
      *
      * @return string the batch INSERT SQL statement.
+     *
+     * @psalm-suppress MixedArrayOffset
      */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
@@ -162,14 +164,17 @@ final class QueryBuilderPDOOracle extends QueryBuilder
 
         $values = [];
 
+        /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
             $vs = [];
             foreach ($row as $i => $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+                    /** @var mixed $value */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
 
                 if (is_string($value)) {
+                    /** @var mixed $value */
                     $value = $this->quoter->quoteValue($value);
                 } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
@@ -182,9 +187,11 @@ final class QueryBuilderPDOOracle extends QueryBuilder
                     $value = $this->buildExpression($value, $params);
                 }
 
+                /** @var mixed */
                 $vs[] = $value;
             }
 
+            /** @psalm-var string[] $vs */
             $values[] = '(' . implode(', ', $vs) . ')';
         }
 
@@ -192,6 +199,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
             return '';
         }
 
+        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $name) {
             $columns[$i] = $this->quoter->quoteColumnName($name);
         }
@@ -213,11 +221,11 @@ final class QueryBuilderPDOOracle extends QueryBuilder
         $filters = [];
 
         if ($this->hasOffset($offset)) {
-            $filters[] = 'rowNumId > ' . $offset;
+            $filters[] = 'rowNumId > ' . (string) $offset;
         }
 
         if ($this->hasLimit($limit)) {
-            $filters[] = 'rownum <= ' . $limit;
+            $filters[] = 'rownum <= ' . (string) $limit;
         }
 
         if (empty($filters)) {
@@ -286,7 +294,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
                     "Can't reset sequence for composite primary key in table: $tableName"
                 );
             }
-            $value = $this->command->setSql(
+            $value = (int) $this->command->setSql(
                 'SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") FROM "' . $tableSchema->getName() . '"'
             )->queryScalar() + 1;
         }
@@ -295,10 +303,10 @@ final class QueryBuilderPDOOracle extends QueryBuilder
          *  Oracle needs at least two queries to reset sequence (see adding transactions and/or use alter method to
          *  avoid grants' issue?)
          */
-        $this->command->setSQl('DROP SEQUENCE "' . $tableSchema->getSequenceName() . '"')->execute();
+        $this->command->setSQl('DROP SEQUENCE "' . (string) $tableSchema->getSequenceName() . '"')->execute();
         $this->command->setSql(
             'CREATE SEQUENCE "' .
-            $tableSchema->getSequenceName() .
+            (string) $tableSchema->getSequenceName() .
             '" START WITH ' .
             $value .
             ' INCREMENT BY 1 NOMAXVALUE NOCACHE'
@@ -307,6 +315,10 @@ final class QueryBuilderPDOOracle extends QueryBuilder
 
     public function prepareInsertValues(string $table, $columns, array $params = []): array
     {
+        /**
+         * @var array $names
+         * @var array $placeholders
+         */
         [$names, $placeholders, $values, $params] = parent::prepareInsertValues($table, $columns, $params);
 
         if (!$columns instanceof Query && empty($names)) {
@@ -317,6 +329,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
                 $columns = !empty($tableSchema->getPrimaryKey())
                     ? $tableSchema->getPrimaryKey() : [reset($tableColumns)->getName()];
                 foreach ($columns as $name) {
+                    /** @var mixed */
                     $names[] = $this->quoter->quoteColumnName($name);
                     $placeholders[] = 'DEFAULT';
                 }

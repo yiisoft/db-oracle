@@ -14,7 +14,7 @@ use Yiisoft\Db\Schema\Schema;
  */
 final class ColumnSchema extends AbstractColumnSchema
 {
-    public function dbTypecast($value)
+    public function dbTypecast(mixed $value): mixed
     {
         if ($this->getType() === Schema::TYPE_BINARY && $this->getDbType() === 'BLOB') {
             if ($value instanceof PdoValue && is_string($value->getValue())) {

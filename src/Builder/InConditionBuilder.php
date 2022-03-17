@@ -28,6 +28,8 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
+     *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

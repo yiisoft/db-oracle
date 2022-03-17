@@ -8,6 +8,7 @@ use PDO;
 use PDOException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
@@ -65,7 +66,8 @@ final class CommandPDOOracle extends Command
         $this->setSql($sql)->bindValues($params);
         $this->prepare(false);
 
-        foreach ($returnParams as $name => &$value) {
+        /** @psalm-var array<string, array{column: string, value: mixed, dataType: int, size: int}> $returnParams */
+        foreach ($returnParams as $name => $value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
 
@@ -74,7 +76,9 @@ final class CommandPDOOracle extends Command
         }
 
         $result = [];
+
         foreach ($returnParams as $value) {
+            /** @var mixed */
             $result[$value['column']] = $value['value'];
         }
 
@@ -103,10 +107,11 @@ final class CommandPDOOracle extends Command
         }
 
         try {
-            $this->pdoStatement = $pdo->prepare($sql);
+            $this->pdoStatement = $pdo?->prepare($sql);
             $this->bindPendingParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
+            /** @var array|null */
             $errorInfo = $e->errorInfo ?? null;
 
             throw new Exception($message, $errorInfo, $e);
@@ -117,14 +122,18 @@ final class CommandPDOOracle extends Command
     {
         $paramsPassedByReference = [];
 
-        foreach ($this->params as $name => $value) {
+        /** @psalm-var ParamInterface[] */
+        $params = $this->params;
+
+        foreach ($params as $name => $value) {
             if (PDO::PARAM_STR === $value->getType()) {
+                /** @var mixed */
                 $paramsPassedByReference[$name] = $value->getValue();
                 $this->pdoStatement?->bindParam(
                     $name,
                     $paramsPassedByReference[$name],
                     $value->getType(),
-                    strlen($value->getValue())
+                    strlen((string) $value->getValue())
                 );
             } else {
                 $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
@@ -153,9 +162,9 @@ final class CommandPDOOracle extends Command
                     && $this->isolationLevel !== null
                     && $this->db->getTransaction() === null
                 ) {
-                    $this->db->transaction(fn ($rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
+                    $this->db->transaction(fn (string $rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
                 } else {
-                    $this->pdoStatement->execute();
+                    $this->pdoStatement?->execute();
                 }
                 break;
             } catch (PDOException $e) {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Builder;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Expression\ExpressionInterface;
+use Exception;
 use Yiisoft\Db\Query\Conditions\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
+use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
@@ -32,7 +32,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
     /**
      * @throws Exception
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(LikeConditionInterface $expression, array &$params = []): string
     {
         if (!isset($this->escapingReplacements['\\'])) {
             /*

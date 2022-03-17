@@ -65,7 +65,7 @@ final class TransactionPDOOracle implements TransactionInterface
                 'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
                 . ' ' . __METHOD__
             );
-            $this->db->getPDO()->beginTransaction();
+            $this->db->getPDO()?->beginTransaction();
             $this->level = 1;
             return;
         }
@@ -101,7 +101,7 @@ final class TransactionPDOOracle implements TransactionInterface
 
         if ($this->level === 0) {
             $this->logger?->log(LogLevel::DEBUG, 'Commit transaction ' . __METHOD__);
-            $this->db->getPDO()->commit();
+            $this->db->getPDO()?->commit();
             return;
         }
 
@@ -144,7 +144,7 @@ final class TransactionPDOOracle implements TransactionInterface
         $this->level--;
         if ($this->level === 0) {
             $this->logger?->log(LogLevel::INFO, 'Roll back transaction ' . __METHOD__);
-            $this->db->getPDO()->rollBack();
+            $this->db->getPDO()?->rollBack();
             return;
         }
 

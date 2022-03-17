@@ -67,7 +67,7 @@ final class SchemaPDOOracle extends Schema
         }
 
         $fullName = ($resolvedName->getSchemaName() !== $this->defaultSchema
-            ? $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
+            ? (string) $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
 
         $resolvedName->fullName($fullName);
 
@@ -125,8 +125,9 @@ final class SchemaPDOOracle extends Schema
         $rows = $command->queryAll();
         $names = [];
 
+        /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
-            if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
             $names[] = $row['TABLE_NAME'];
@@ -165,7 +166,9 @@ final class SchemaPDOOracle extends Schema
      */
     protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
-        return $this->loadTableConstraints($tableName, 'primaryKey');
+        /** @var mixed */
+        $tablePrimaryKey = $this->loadTableConstraints($tableName, 'primaryKey');
+        return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
     /**
@@ -177,7 +180,9 @@ final class SchemaPDOOracle extends Schema
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
-        return $this->loadTableConstraints($tableName, 'foreignKeys');
+        /** @var mixed */
+        $tableForeingKeys = $this->loadTableConstraints($tableName, 'foreignKeys');
+        return is_array($tableForeingKeys) ? $tableForeingKeys : [];
     }
 
     /**
@@ -209,8 +214,8 @@ final class SchemaPDOOracle extends Schema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
+        /** @psalm-var array[] $indexes */
         $indexes = $this->normalizePdoRowKeyCase($indexes, true);
-
         $indexes = ArrayHelper::index($indexes, null, 'name');
 
         $result = [];
@@ -245,7 +250,9 @@ final class SchemaPDOOracle extends Schema
      */
     protected function loadTableUniques(string $tableName): array
     {
-        return $this->loadTableConstraints($tableName, 'uniques');
+        /** @var mixed */
+        $tableUniques = $this->loadTableConstraints($tableName, 'uniques');
+        return is_array($tableUniques) ? $tableUniques : [];
     }
 
     /**
@@ -257,7 +264,9 @@ final class SchemaPDOOracle extends Schema
      */
     protected function loadTableChecks(string $tableName): array
     {
-        return $this->loadTableConstraints($tableName, 'checks');
+        /** @var mixed */
+        $tableCheck = $this->loadTableConstraints($tableName, 'checks');
+        return is_array($tableCheck) ? $tableCheck : [];
     }
 
     /**
@@ -291,6 +300,8 @@ final class SchemaPDOOracle extends Schema
      * @param array|int|string|null $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
      *
      * @return ColumnSchemaBuilder column schema builder instance
+     *
+     * @psalm-param string[]|int|string|null $length
      */
     public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder
     {
@@ -316,7 +327,7 @@ final class SchemaPDOOracle extends Schema
         }
 
         $table->fullName($table->getSchemaName() !== $this->defaultSchema
-            ? $table->getSchemaName() . '.' . $table->getName() : $table->getName());
+            ? (string) $table->getSchemaName() . '.' . $table->getName() : $table->getName());
     }
 
     /**
@@ -359,7 +370,7 @@ SQL;
                 ':tableName' => $table->getName(),
                 ':schemaName' => $table->getSchemaName(),
             ])->queryAll();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
 
@@ -367,8 +378,9 @@ SQL;
             return false;
         }
 
+        /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
-            if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $column = array_change_key_case($column, CASE_UPPER);
             }
 
@@ -387,11 +399,11 @@ SQL;
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return int|string|null whether the sequence exists.
+     * @return bool|int|string|null whether the sequence exists.
      *
      * @internal TableSchema `$table->getName()` the table schema.
      */
-    protected function getTableSequenceName(string $tableName): string|int|null
+    protected function getTableSequenceName(string $tableName): bool|string|int|null
     {
         $sequenceNameSql = <<<SQL
         SELECT
@@ -427,7 +439,7 @@ SQL;
             /* get the last insert id from the master connection */
             $sequenceName = $this->quoteSimpleTableName($sequenceName);
 
-            return $this->db->useMaster(function (ConnectionPDOInterface $db) use ($sequenceName) {
+            return (string) $this->db->useMaster(static function (ConnectionPDOInterface $db) use ($sequenceName) {
                 return $db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
             });
         }
@@ -444,8 +456,21 @@ SQL;
      */
     protected function createColumn(array|string $column): ColumnSchema
     {
+
         $c = $this->createColumnSchema();
 
+        /**
+         * @psalm-var array{
+         *   COLUMN_NAME: string,
+         *   DATA_TYPE: string,
+         *   DATA_PRECISION: string,
+         *   DATA_SCALE: string,
+         *   DATA_LENGTH: string,
+         *   NULLABLE: string,
+         *   DATA_DEFAULT: string|null,
+         *   COLUMN_COMMENT: string|null
+         * } $column
+         */
         $c->name($column['COLUMN_NAME']);
         $c->allowNull($column['NULLABLE'] === 'Y');
         $c->comment($column['COLUMN_COMMENT'] ?? '');
@@ -482,7 +507,7 @@ SQL;
                         if (($len = strlen($defaultValue)) > 2 && $defaultValue[0] === "'"
                             && $defaultValue[$len - 1] === "'"
                         ) {
-                            $defaultValue = substr($column['DATA_DEFAULT'], 1, -1);
+                            $defaultValue = substr((string) $column['DATA_DEFAULT'], 1, -1);
                         } else {
                             $defaultValue = trim($defaultValue);
                         }
@@ -501,48 +526,64 @@ SQL;
      * @param TableSchema $table
      *
      * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @psalm-suppress PossiblyNullArrayOffset
      */
     protected function findConstraints(TableSchema $table): void
     {
-        $sql = <<<'SQL'
-SELECT
-    /*+ PUSH_PRED(C) PUSH_PRED(D) PUSH_PRED(E) */
-    D.CONSTRAINT_NAME,
-    D.CONSTRAINT_TYPE,
-    C.COLUMN_NAME,
-    C.POSITION,
-    D.R_CONSTRAINT_NAME,
-    E.TABLE_NAME AS TABLE_REF,
-    F.COLUMN_NAME AS COLUMN_REF,
-    C.TABLE_NAME
-FROM ALL_CONS_COLUMNS C
-    INNER JOIN ALL_CONSTRAINTS D ON D.OWNER = C.OWNER AND D.CONSTRAINT_NAME = C.CONSTRAINT_NAME
-    LEFT JOIN ALL_CONSTRAINTS E ON E.OWNER = D.R_OWNER AND E.CONSTRAINT_NAME = D.R_CONSTRAINT_NAME
-    LEFT JOIN ALL_CONS_COLUMNS F ON F.OWNER = E.OWNER AND F.CONSTRAINT_NAME = E.CONSTRAINT_NAME AND F.POSITION = C.POSITION
-WHERE
-    C.OWNER = :schemaName
-    AND C.TABLE_NAME = :tableName
-ORDER BY D.CONSTRAINT_NAME, C.POSITION
-SQL;
+        $sql = <<<SQL
+        SELECT
+            /*+ PUSH_PRED(C) PUSH_PRED(D) PUSH_PRED(E) */
+            D.CONSTRAINT_NAME,
+            D.CONSTRAINT_TYPE,
+            C.COLUMN_NAME,
+            C.POSITION,
+            D.R_CONSTRAINT_NAME,
+            E.TABLE_NAME AS TABLE_REF,
+            F.COLUMN_NAME AS COLUMN_REF,
+            C.TABLE_NAME
+        FROM ALL_CONS_COLUMNS C
+            INNER JOIN ALL_CONSTRAINTS D ON D.OWNER = C.OWNER AND D.CONSTRAINT_NAME = C.CONSTRAINT_NAME
+            LEFT JOIN ALL_CONSTRAINTS E ON E.OWNER = D.R_OWNER AND E.CONSTRAINT_NAME = D.R_CONSTRAINT_NAME
+            LEFT JOIN ALL_CONS_COLUMNS F ON F.OWNER = E.OWNER AND F.CONSTRAINT_NAME = E.CONSTRAINT_NAME AND F.POSITION = C.POSITION
+        WHERE
+            C.OWNER = :schemaName
+            AND C.TABLE_NAME = :tableName
+            ORDER BY D.CONSTRAINT_NAME, C.POSITION
+        SQL;
 
-        $command = $this->db->createCommand($sql, [
-            ':tableName' => $table->getName(),
-            ':schemaName' => $table->getSchemaName(),
-        ]);
+        /**
+         * @psalm-var array{
+         *   array{
+         *     CONSTRAINT_NAME: string,
+         *     CONSTRAINT_TYPE: string,
+         *     COLUMN_NAME: string,
+         *     POSITION: string|null,
+         *     R_CONSTRAINT_NAME: string|null,
+         *     TABLE_REF: string|null,
+         *     COLUMN_REF: string|null,
+         *     TABLE_NAME: string
+         *   }
+         * } $rows
+         */
+        $rows = $this->db->createCommand(
+            $sql,
+            [':tableName' => $table->getName(), ':schemaName' => $table->getSchemaName()]
+        )->queryAll();
 
         $constraints = [];
 
-        foreach ($command->queryAll() as $row) {
-            if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+        foreach ($rows as $row) {
+            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
 
             if ($row['CONSTRAINT_TYPE'] === 'P') {
-                $table->getColumns()[$row['COLUMN_NAME']]->primaryKey(true);
-                $table->primaryKey($row['COLUMN_NAME']);
+                $table->getColumns()[(string) $row['COLUMN_NAME']]->primaryKey(true);
+                $table->primaryKey((string) $row['COLUMN_NAME']);
 
                 if (empty($table->getSequenceName())) {
-                    $table->sequenceName($this->getTableSequenceName($table->getName()));
+                    $table->sequenceName((string) $this->getTableSequenceName($table->getName()));
                 }
             }
 
@@ -555,7 +596,7 @@ SQL;
                 continue;
             }
 
-            $name = $row['CONSTRAINT_NAME'];
+            $name = (string) $row['CONSTRAINT_NAME'];
 
             if (!isset($constraints[$name])) {
                 $constraints[$name] = [
@@ -568,7 +609,6 @@ SQL;
         }
 
         foreach ($constraints as $constraint) {
-            $name = current(array_keys($constraint));
             $table->foreignKey(array_merge([$constraint['tableName']], $constraint['columns']));
         }
     }
@@ -593,26 +633,27 @@ SQL;
      */
     public function findUniqueIndexes(TableSchema $table): array
     {
-        $query = <<<'SQL'
-SELECT
-    DIC.INDEX_NAME,
-    DIC.COLUMN_NAME
-FROM ALL_INDEXES DI
-    INNER JOIN ALL_IND_COLUMNS DIC ON DI.TABLE_NAME = DIC.TABLE_NAME AND DI.INDEX_NAME = DIC.INDEX_NAME
-WHERE
-    DI.UNIQUENESS = 'UNIQUE'
-    AND DIC.TABLE_OWNER = :schemaName
-    AND DIC.TABLE_NAME = :tableName
-ORDER BY DIC.TABLE_NAME, DIC.INDEX_NAME, DIC.COLUMN_POSITION
-SQL;
+        $query = <<<SQL
+        SELECT
+            DIC.INDEX_NAME,
+            DIC.COLUMN_NAME
+        FROM ALL_INDEXES DI
+            INNER JOIN ALL_IND_COLUMNS DIC ON DI.TABLE_NAME = DIC.TABLE_NAME AND DI.INDEX_NAME = DIC.INDEX_NAME
+        WHERE
+            DI.UNIQUENESS = 'UNIQUE'
+            AND DIC.TABLE_OWNER = :schemaName
+            AND DIC.TABLE_NAME = :tableName
+        ORDER BY DIC.TABLE_NAME, DIC.INDEX_NAME, DIC.COLUMN_POSITION
+        SQL;
         $result = [];
 
-        $command = $this->db->createCommand($query, [
-            ':tableName' => $table->getName(),
-            ':schemaName' => $table->getschemaName(),
-        ]);
+        $rows = $this->db->createCommand(
+            $query,
+            [':tableName' => $table->getName(), ':schemaName' => $table->getschemaName()]
+        )->queryAll();
 
-        foreach ($command->queryAll() as $row) {
+        /** @psalm-var array<array{INDEX_NAME: string, COLUMN_NAME: string}> $rows */
+        foreach ($rows as $row) {
             $result[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
         }
 
@@ -723,8 +764,8 @@ SQL;
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
+        /** @var Constraint[] $constraints */
         $constraints = $this->normalizePdoRowKeyCase($constraints, true);
-
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
@@ -870,7 +911,7 @@ SQL;
      */
     protected function normalizePdoRowKeyCase(array $row, bool $multiple): array
     {
-        if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
+        if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
             return $row;
         }
 
