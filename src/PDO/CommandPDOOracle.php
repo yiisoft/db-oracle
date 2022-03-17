@@ -67,7 +67,7 @@ final class CommandPDOOracle extends Command
         $this->prepare(false);
 
         /** @psalm-var array<string, array{column: string, value: mixed, dataType: int, size: int}> $returnParams */
-        foreach ($returnParams as $name => $value) {
+        foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
 
