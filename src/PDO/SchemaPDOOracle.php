@@ -456,7 +456,6 @@ SQL;
      */
     protected function createColumn(array|string $column): ColumnSchema
     {
-
         $c = $this->createColumnSchema();
 
         /**

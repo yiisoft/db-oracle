@@ -27,7 +27,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      *
      * @param string $table
-     * @param QueryInterface|array $insertColumns
+     * @param array|QueryInterface $insertColumns
      * @param array|bool $updateColumns
      * @param array $params
      *
