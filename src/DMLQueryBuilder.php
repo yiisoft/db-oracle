@@ -11,8 +11,14 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Oracle\PDO\QueryBuilderPDOOracle;
 use Yiisoft\Db\Query\DMLQueryBuilder as AbstractDMLQueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\Query\QueryInterface;
+
+use function implode;
+use function ltrim;
+use function strrpos;
 
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
@@ -25,16 +31,21 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      *
      * @param string $table
-     * @param $insertColumns
-     * @param $updateColumns
+     * @param array|QueryInterface $insertColumns
+     * @param array|bool $updateColumns
      * @param array $params
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
      *
      * @return string
      */
-    public function upsert(string $table, $insertColumns, $updateColumns, array &$params = []): string
-    {
+    public function upsert(
+        string $table,
+        QueryInterface|array $insertColumns,
+        array|bool $updateColumns,
+        array &$params = []
+    ): string {
+        $usingValues = null;
         $constraints = [];
 
         /** @var Constraint[] $constraints */
@@ -58,8 +69,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $quotedTableName = $this->queryBuilder->quoter()->quoteTableName($table);
 
         foreach ($constraints as $constraint) {
+            $columnNames = $constraint->getColumnNames() ?? [];
             $constraintCondition = ['and'];
-            foreach ($constraint->getColumnNames() as $name) {
+            /** @psalm-var string[] $columnNames */
+            foreach ($columnNames as $name) {
                 $quotedName = $this->queryBuilder->quoter()->quoteColumnName($name);
                 $constraintCondition[] = "$quotedTableName.$quotedName=\"EXCLUDED\".$quotedName";
             }
@@ -68,27 +81,31 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         $on = $this->queryBuilder->buildCondition($onCondition, $params);
+        /** @psalm-var string[] $placeholders */
         [, $placeholders, $values, $params] = $this->queryBuilder->prepareInsertValues($table, $insertColumns, $params);
 
         if (!empty($placeholders)) {
             $usingSelectValues = [];
+            /** @psalm-var string[] $insertNames */
             foreach ($insertNames as $index => $name) {
                 $usingSelectValues[$name] = new Expression($placeholders[$index]);
             }
 
-            /** @psalm-suppress UndefinedInterfaceMethod */
-            $usingSubQuery = $this->queryBuilder->query()->select($usingSelectValues)->from('DUAL');
-            [$usingValues, $params] = $this->queryBuilder->build($usingSubQuery, $params);
+            /** @var QueryBuilderPDOOracle $usingSubQuery */
+            $usingSubQuery = $this->queryBuilder;
+            $query = $usingSubQuery->query()->select($usingSelectValues)->from('DUAL');
+            [$usingValues, $params] = $this->queryBuilder->build($query, (array) $params);
         }
 
         $insertValues = [];
         $mergeSql = 'MERGE INTO '
             . $this->queryBuilder->quoter()->quoteTableName($table)
             . ' '
-            . 'USING (' . ($usingValues ?? ltrim($values, ' '))
+            . 'USING (' . ($usingValues ?? ltrim((string) $values, ' '))
             . ') "EXCLUDED" '
             . "ON ($on)";
 
+        /** @psalm-var string[] $insertNames */
         foreach ($insertNames as $name) {
             $quotedName = $this->queryBuilder->quoter()->quoteColumnName($name);
 
@@ -107,6 +124,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
         if ($updateColumns === true) {
             $updateColumns = [];
+            /** @psalm-var string[] $updateNames */
             foreach ($updateNames as $name) {
                 $quotedName = $this->queryBuilder->quoter()->quoteColumnName($name);
 
@@ -117,7 +135,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             }
         }
 
-        [$updates, $params] = $this->queryBuilder->prepareUpdateSets($table, $updateColumns, $params);
+        /** @psalm-var string[] $updates */
+        [$updates, $params] = $this->queryBuilder->prepareUpdateSets($table, $updateColumns, (array) $params);
         $updateSql = 'UPDATE SET ' . implode(', ', $updates);
 
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";

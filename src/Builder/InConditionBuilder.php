@@ -13,6 +13,11 @@ use Yiisoft\Db\Query\Conditions\Builder\InConditionBuilder as AbstractInConditio
 use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
+use function array_slice;
+use function array_unshift;
+use function count;
+use function is_array;
+
 final class InConditionBuilder extends AbstractInConditionBuilder
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
@@ -26,6 +31,8 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      *
      * @param ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
+     *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -72,7 +79,9 @@ final class InConditionBuilder extends AbstractInConditionBuilder
         $slices = [];
 
         for ($i = 0; $i < $count; $i += $maxParameters) {
-            $slices[] = $this->queryBuilder->createConditionFromArray([$operator, $column, array_slice($values, $i, $maxParameters)]);
+            $slices[] = $this->queryBuilder->createConditionFromArray(
+                [$operator, $column, array_slice($values, $i, $maxParameters)]
+            );
         }
 
         array_unshift($slices, ($operator === 'IN') ? 'OR' : 'AND');

@@ -14,14 +14,17 @@ use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Oracle\Quoter;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function array_keys;
 use function constant;
+use function is_string;
+use function strncmp;
 
 /**
  * The class Connection represents a connection to a database via [PDO](https://secure.php.net/manual/en/book.pdo.php).
