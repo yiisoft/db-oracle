@@ -182,7 +182,7 @@ final class SchemaPDOOracle extends Schema
     protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
         /** @var mixed */
-        $tablePrimaryKey = $this->loadTableConstraints($tableName, 'primaryKey');
+        $tablePrimaryKey = $this->loadTableConstraints($tableName, self::PRIMARY_KEY);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
@@ -196,7 +196,7 @@ final class SchemaPDOOracle extends Schema
     protected function loadTableForeignKeys(string $tableName): array
     {
         /** @var mixed */
-        $tableForeingKeys = $this->loadTableConstraints($tableName, 'foreignKeys');
+        $tableForeingKeys = $this->loadTableConstraints($tableName, self::FOREIGN_KEYS);
         return is_array($tableForeingKeys) ? $tableForeingKeys : [];
     }
 
@@ -266,7 +266,7 @@ final class SchemaPDOOracle extends Schema
     protected function loadTableUniques(string $tableName): array
     {
         /** @var mixed */
-        $tableUniques = $this->loadTableConstraints($tableName, 'uniques');
+        $tableUniques = $this->loadTableConstraints($tableName, self::UNIQUES);
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
@@ -280,7 +280,7 @@ final class SchemaPDOOracle extends Schema
     protected function loadTableChecks(string $tableName): array
     {
         /** @var mixed */
-        $tableCheck = $this->loadTableConstraints($tableName, 'checks');
+        $tableCheck = $this->loadTableConstraints($tableName, self::CHECKS);
         return is_array($tableCheck) ? $tableCheck : [];
     }
 
