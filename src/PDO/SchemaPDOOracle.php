@@ -301,11 +301,6 @@ final class SchemaPDOOracle extends Schema
         /* does nothing as Oracle does not support this */
     }
 
-    public function quoteSimpleTableName(string $name): string
-    {
-        return str_contains($name, '"') ? $name : '"' . $name . '"';
-    }
-
     /**
      * Create a column schema builder instance giving the type and value precision.
      *
@@ -452,11 +447,13 @@ final class SchemaPDOOracle extends Schema
     {
         if ($this->db->isActive()) {
             /* get the last insert id from the master connection */
-            $sequenceName = $this->quoteSimpleTableName($sequenceName);
+            $sequenceName = $this->db->getQuoter()->quoteSimpleTableName($sequenceName);
 
-            return (string) $this->db->useMaster(static function (ConnectionPDOInterface $db) use ($sequenceName) {
-                return $db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
-            });
+            return (string) $this->db->useMaster(
+                static function (ConnectionPDOInterface $db) use ($sequenceName): bool|int|null|string {
+                    return $db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
+                }
+            );
         }
 
         throw new InvalidCallException('DB Connection is not active.');
