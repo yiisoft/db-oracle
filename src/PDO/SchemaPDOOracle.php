@@ -23,6 +23,21 @@ use Yiisoft\Db\Oracle\ColumnSchemaBuilder;
 use Yiisoft\Db\Oracle\TableSchema;
 use Yiisoft\Db\Schema\Schema;
 
+use function array_change_key_case;
+use function array_map;
+use function array_merge;
+use function explode;
+use function is_array;
+use function md5;
+use function preg_replace;
+use function serialize;
+use function str_contains;
+use function str_replace;
+use function stripos;
+use function strlen;
+use function substr;
+use function trim;
+
 /**
  * Schema is the class for retrieving metadata from an Oracle database.
  *
@@ -341,29 +356,29 @@ final class SchemaPDOOracle extends Schema
      */
     protected function findColumns(TableSchema $table): bool
     {
-        $sql = <<<'SQL'
-SELECT
-    A.COLUMN_NAME,
-    A.DATA_TYPE,
-    A.DATA_PRECISION,
-    A.DATA_SCALE,
-    (
-      CASE A.CHAR_USED WHEN 'C' THEN A.CHAR_LENGTH
-        ELSE A.DATA_LENGTH
-      END
-    ) AS DATA_LENGTH,
-    A.NULLABLE,
-    A.DATA_DEFAULT,
-    COM.COMMENTS AS COLUMN_COMMENT
-FROM ALL_TAB_COLUMNS A
-    INNER JOIN ALL_OBJECTS B ON B.OWNER = A.OWNER AND LTRIM(B.OBJECT_NAME) = LTRIM(A.TABLE_NAME)
-    LEFT JOIN ALL_COL_COMMENTS COM ON (A.OWNER = COM.OWNER AND A.TABLE_NAME = COM.TABLE_NAME AND A.COLUMN_NAME = COM.COLUMN_NAME)
-WHERE
-    A.OWNER = :schemaName
-    AND B.OBJECT_TYPE IN ('TABLE', 'VIEW', 'MATERIALIZED VIEW')
-    AND B.OBJECT_NAME = :tableName
-ORDER BY A.COLUMN_ID
-SQL;
+        $sql = <<<SQL
+        SELECT
+            A.COLUMN_NAME,
+            A.DATA_TYPE,
+            A.DATA_PRECISION,
+            A.DATA_SCALE,
+            (
+            CASE A.CHAR_USED WHEN 'C' THEN A.CHAR_LENGTH
+                ELSE A.DATA_LENGTH
+            END
+            ) AS DATA_LENGTH,
+            A.NULLABLE,
+            A.DATA_DEFAULT,
+            COM.COMMENTS AS COLUMN_COMMENT
+        FROM ALL_TAB_COLUMNS A
+            INNER JOIN ALL_OBJECTS B ON B.OWNER = A.OWNER AND LTRIM(B.OBJECT_NAME) = LTRIM(A.TABLE_NAME)
+            LEFT JOIN ALL_COL_COMMENTS COM ON (A.OWNER = COM.OWNER AND A.TABLE_NAME = COM.TABLE_NAME AND A.COLUMN_NAME = COM.COLUMN_NAME)
+        WHERE
+            A.OWNER = :schemaName
+            AND B.OBJECT_TYPE IN ('TABLE', 'VIEW', 'MATERIALIZED VIEW')
+            AND B.OBJECT_NAME = :tableName
+        ORDER BY A.COLUMN_ID
+        SQL;
 
         try {
             $columns = $this->db->createCommand($sql, [

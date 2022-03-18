@@ -10,6 +10,8 @@ use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
+use function substr;
+
 final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
     protected ?string $escapeCharacter = '!';

@@ -25,6 +25,12 @@ use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Strings\NumericHelper;
 
+use function array_merge;
+use function implode;
+use function is_float;
+use function is_string;
+use function reset;
+
 /**
  * QueryBuilder is the query builder for Oracle databases.
  */

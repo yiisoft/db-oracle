@@ -15,6 +15,11 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
+use function array_keys;
+use function count;
+use function implode;
+use function strlen;
+
 /**
  * Command represents an Oracle SQL statement to be executed against a database.
  */

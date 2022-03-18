@@ -21,7 +21,10 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function array_keys;
 use function constant;
+use function is_string;
+use function strncmp;
 
 /**
  * The class Connection represents a connection to a database via [PDO](https://secure.php.net/manual/en/book.pdo.php).
