@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle\PDO;
 use PDO;
 use PDOException;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\CommandPdo;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
@@ -23,7 +23,7 @@ use function strlen;
 /**
  * Command represents an Oracle SQL statement to be executed against a database.
  */
-final class CommandPDOOracle extends Command
+final class CommandPDOOracle extends CommandPdo
 {
     public function __construct(private ConnectionPDOInterface $db, QueryCache $queryCache)
     {
@@ -146,10 +146,11 @@ final class CommandPDOOracle extends Command
         }
     }
 
-    protected function getCacheKey(string $rawSql): array
+    protected function getCacheKey(int $queryMode, string $rawSql): array
     {
         return [
             __CLASS__,
+            $queryMode,
             $this->db->getDriver()->getDsn(),
             $this->db->getDriver()->getUsername(),
             $rawSql,
