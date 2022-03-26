@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle\PDO;
 use PDO;
 use PDOException;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Command\CommandPdo;
+use Yiisoft\Db\Command\CommandPDO;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
@@ -23,7 +23,7 @@ use function strlen;
 /**
  * Command represents an Oracle SQL statement to be executed against a database.
  */
-final class CommandPDOOracle extends CommandPdo
+final class CommandPDOOracle extends CommandPDO
 {
     public function __construct(private ConnectionPDOInterface $db, QueryCache $queryCache)
     {
