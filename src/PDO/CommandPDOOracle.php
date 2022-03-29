@@ -8,7 +8,6 @@ use PDO;
 use PDOException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\CommandPDO;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
