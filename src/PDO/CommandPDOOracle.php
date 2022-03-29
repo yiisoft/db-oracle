@@ -127,10 +127,7 @@ final class CommandPDOOracle extends CommandPDO
     {
         $paramsPassedByReference = [];
 
-        /** @psalm-var ParamInterface[] */
-        $params = $this->params;
-
-        foreach ($params as $name => $value) {
+        foreach ($this->params as $name => $value) {
             if (PDO::PARAM_STR === $value->getType()) {
                 /** @var mixed */
                 $paramsPassedByReference[$name] = $value->getValue();
