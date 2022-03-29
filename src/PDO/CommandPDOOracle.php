@@ -8,6 +8,7 @@ use PDO;
 use PDOException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\CommandPDO;
+use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
@@ -126,7 +127,10 @@ final class CommandPDOOracle extends CommandPDO
     {
         $paramsPassedByReference = [];
 
-        foreach ($this->params as $name => $value) {
+        /** @psalm-var ParamInterface[] */
+        $params = $this->params;
+
+        foreach ($params as $name => $value) {
             if (PDO::PARAM_STR === $value->getType()) {
                 /** @var mixed */
                 $paramsPassedByReference[$name] = $value->getValue();
