@@ -68,6 +68,8 @@ final class QueryBuilderPDOOracle extends QueryBuilder
     public function __construct(
         private CommandInterface $command,
         private Query $query,
+        // @todo need refactoring? db-oracle/src/DMLQueryBuilder.php:96
+        // $query = $usingSubQuery->query()->select($usingSelectValues)->from('DUAL');
         private QuoterInterface $quoter,
         private SchemaInterface $schema
     ) {

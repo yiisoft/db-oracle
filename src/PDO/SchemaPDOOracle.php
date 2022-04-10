@@ -142,7 +142,7 @@ final class SchemaPDOOracle extends Schema
 
         /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
-            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->db->getOpenPDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
             $names[] = $row['TABLE_NAME'];
@@ -390,7 +390,7 @@ final class SchemaPDOOracle extends Schema
 
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
-            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->db->getOpenPDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $column = array_change_key_case($column, CASE_UPPER);
             }
 
@@ -446,14 +446,10 @@ final class SchemaPDOOracle extends Schema
     public function getLastInsertID(string $sequenceName = ''): string
     {
         if ($this->db->isActive()) {
-            /* get the last insert id from the master connection */
+            /* get the last insert id from connection */
             $sequenceName = $this->db->getQuoter()->quoteSimpleTableName($sequenceName);
 
-            return (string) $this->db->useMaster(
-                static function (ConnectionPDOInterface $db) use ($sequenceName): bool|int|null|string {
-                    return $db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
-                }
-            );
+            return $this->db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
         }
 
         throw new InvalidCallException('DB Connection is not active.');
@@ -585,7 +581,7 @@ final class SchemaPDOOracle extends Schema
         $constraints = [];
 
         foreach ($rows as $row) {
-            if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this->db->getOpenPDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
 
@@ -922,7 +918,7 @@ final class SchemaPDOOracle extends Schema
      */
     protected function normalizePdoRowKeyCase(array $row, bool $multiple): array
     {
-        if ($this->db->getSlavePdo()?->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
+        if ($this->db->getOpenPDO()?->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
             return $row;
         }
 
