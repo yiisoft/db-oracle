@@ -101,7 +101,12 @@ final class SchemaPDOOracle extends Schema
         ORDER BY "u"."USERNAME" ASC
         SQL;
 
-        return $this->db->createCommand($sql)->queryColumn();
+        $schemaNames = $this->db->createCommand($sql)->queryColumn();
+        if (!$schemaNames) {
+            return [];
+        }
+
+        return $schemaNames;
     }
 
     /**
@@ -449,7 +454,7 @@ final class SchemaPDOOracle extends Schema
             /* get the last insert id from connection */
             $sequenceName = $this->db->getQuoter()->quoteSimpleTableName($sequenceName);
 
-            return $this->db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
+            return (string) $this->db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
         }
 
         throw new InvalidCallException('DB Connection is not active.');
