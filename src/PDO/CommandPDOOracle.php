@@ -6,12 +6,9 @@ namespace Yiisoft\Db\Oracle\PDO;
 
 use PDO;
 use PDOException;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\CommandPDO;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -25,11 +22,6 @@ use function strlen;
  */
 final class CommandPDOOracle extends CommandPDO
 {
-    public function __construct(private ConnectionPDOInterface $db, QueryCache $queryCache)
-    {
-        parent::__construct($queryCache);
-    }
-
     public function queryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
@@ -88,39 +80,6 @@ final class CommandPDOOracle extends CommandPDO
         }
 
         return $result;
-    }
-
-    public function prepare(?bool $forRead = null): void
-    {
-        if (isset($this->pdoStatement)) {
-            $this->bindPendingParams();
-
-            return;
-        }
-
-        $sql = $this->getSql();
-
-        if ($this->db->getTransaction()) {
-            /** master is in a transaction. use the same connection. */
-            $forRead = false;
-        }
-
-        if ($forRead || ($forRead === null && $this->db->getSchema()->isReadQuery($sql))) {
-            $pdo = $this->db->getSlavePdo();
-        } else {
-            $pdo = $this->db->getMasterPdo();
-        }
-
-        try {
-            $this->pdoStatement = $pdo?->prepare($sql);
-            $this->bindPendingParams();
-        } catch (PDOException $e) {
-            $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
-            /** @var array|null */
-            $errorInfo = $e->errorInfo ?? null;
-
-            throw new Exception($message, $errorInfo, $e);
-        }
     }
 
     protected function bindPendingParams(): void
