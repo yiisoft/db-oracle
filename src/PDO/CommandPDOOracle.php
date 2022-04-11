@@ -6,10 +6,8 @@ namespace Yiisoft\Db\Oracle\PDO;
 
 use PDO;
 use PDOException;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\CommandPDO;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -24,11 +22,6 @@ use function strlen;
  */
 final class CommandPDOOracle extends CommandPDO
 {
-    public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
-    {
-        parent::__construct($queryCache);
-    }
-
     public function queryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
