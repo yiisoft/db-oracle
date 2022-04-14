@@ -5,14 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\PDO;
 
 use PDO;
-use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionPDO;
-use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Quoter;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -26,16 +22,6 @@ use function constant;
  */
 final class ConnectionPDOOracle extends ConnectionPDO
 {
-    private ?Query $query = null;
-
-    public function __construct(
-        protected PDODriver $driver,
-        protected QueryCache $queryCache,
-        protected SchemaCache $schemaCache
-    ) {
-        parent::__construct($queryCache);
-    }
-
     public function createCommand(?string $sql = null, array $params = []): CommandPDOOracle
     {
         $command = new CommandPDOOracle($this, $this->queryCache);
@@ -65,15 +51,6 @@ final class ConnectionPDOOracle extends ConnectionPDO
         return 'oci';
     }
 
-    public function getQuery(): Query
-    {
-        if ($this->query === null) {
-            $this->query = new Query($this);
-        }
-
-        return $this->query;
-    }
-
     /**
      * @throws Exception|InvalidConfigException
      */
@@ -82,7 +59,6 @@ final class ConnectionPDOOracle extends ConnectionPDO
         if ($this->queryBuilder === null) {
             $this->queryBuilder = new QueryBuilderPDOOracle(
                 $this->createCommand(),
-                $this->getQuery(),
                 $this->getQuoter(),
                 $this->getSchema(),
             );

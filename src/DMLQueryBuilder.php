@@ -11,7 +11,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\PDO\QueryBuilderPDOOracle;
 use Yiisoft\Db\Query\DMLQueryBuilder as AbstractDMLQueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -91,10 +90,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 $usingSelectValues[$name] = new Expression($placeholders[$index]);
             }
 
-            /** @var QueryBuilderPDOOracle $usingSubQuery */
-            $usingSubQuery = $this->queryBuilder;
-            $query = $usingSubQuery->query()->select($usingSelectValues)->from('DUAL');
-            [$usingValues, $params] = $this->queryBuilder->build($query, (array) $params);
+            $usingValues = $this->queryBuilder->buildSelect($usingSelectValues, $params) . ' ' . $this->queryBuilder->buildFrom(['DUAL'], $params);
         }
 
         $insertValues = [];
