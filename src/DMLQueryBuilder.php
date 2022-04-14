@@ -90,6 +90,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 $usingSelectValues[$name] = new Expression($placeholders[$index]);
             }
 
+            /** @psalm-var array $params */
             $usingValues = $this->queryBuilder->buildSelect($usingSelectValues, $params) . ' ' . $this->queryBuilder->buildFrom(['DUAL'], $params);
         }
 
