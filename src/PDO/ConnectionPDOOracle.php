@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Oracle\PDO;
 use PDO;
 use Yiisoft\Db\Connection\ConnectionPDO;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Quoter;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -49,6 +51,25 @@ final class ConnectionPDOOracle extends ConnectionPDO
     public function getDriverName(): string
     {
         return 'oci';
+    }
+
+    /**
+     * Override base behaviour
+     */
+    public function getLastInsertID(string $sequenceName = null): string
+    {
+        if ($sequenceName === null) {
+            throw new InvalidArgumentException('Oracle not support lastInsertId without sequence name');
+        }
+
+        if ($this->isActive()) {
+            /* get the last insert id from connection */
+            $sequenceName = $this->getQuoter()->quoteSimpleTableName($sequenceName);
+
+            return (string) $this->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
+        }
+
+        throw new InvalidCallException('DB Connection is not active.');
     }
 
     /**

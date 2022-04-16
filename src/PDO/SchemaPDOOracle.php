@@ -14,7 +14,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -436,28 +435,11 @@ final class SchemaPDOOracle extends Schema
     }
 
     /**
-     * @Overrides method in class 'Schema'
-     *
-     * {@see https://secure.php.net/manual/en/function.PDO-lastInsertId.php} -> Oracle does not support this.
-     *
-     * Returns the ID of the last inserted row or sequence value.
-     *
-     * @param string $sequenceName name of the sequence object (required by some DBMS)
-     *
-     * @throws Exception|InvalidCallException|InvalidConfigException|Throwable if the DB connection is not active.
-     *
-     * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object.
+     * @inheritDoc
      */
-    public function getLastInsertID(string $sequenceName = ''): string
+    public function getLastInsertID(string $sequenceName = null): string
     {
-        if ($this->db->isActive()) {
-            /* get the last insert id from connection */
-            $sequenceName = $this->db->getQuoter()->quoteSimpleTableName($sequenceName);
-
-            return (string) $this->db->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
-        }
-
-        throw new InvalidCallException('DB Connection is not active.');
+        return $this->db->getLastInsertID($sequenceName);
     }
 
     /**
