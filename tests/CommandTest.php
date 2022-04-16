@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PDO;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\PDO\SchemaPDOOracle;
 use Yiisoft\Db\Pdo\PdoValue;
@@ -75,7 +77,25 @@ final class CommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEquals(3, $db->getSchema()->getLastInsertID('profile_SEQ'));
+        $this->assertEquals(3, $db->getLastInsertID('profile_SEQ'));
+    }
+
+    public function testLastInsertIdException(): void
+    {
+        $db = $this->getConnection();
+        $db->close();
+
+        $this->expectException(InvalidCallException::class);
+        $db->getLastInsertID('profile_SEQ');
+    }
+
+    public function testLastInsertIdNotSupportedException(): void
+    {
+        $db = $this->getConnection();
+        $db->close();
+
+        $this->expectException(InvalidArgumentException::class);
+        $db->getLastInsertID();
     }
 
     public function testCLOBStringInsertion(): void
