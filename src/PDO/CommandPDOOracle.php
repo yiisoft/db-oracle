@@ -105,17 +105,6 @@ final class CommandPDOOracle extends CommandPDO
         }
     }
 
-    protected function getCacheKey(int $queryMode, string $rawSql): array
-    {
-        return [
-            __CLASS__,
-            $queryMode,
-            $this->db->getDriver()->getDsn(),
-            $this->db->getDriver()->getUsername(),
-            $rawSql,
-        ];
-    }
-
     protected function internalExecute(?string $rawSql): void
     {
         $attempt = 0;
