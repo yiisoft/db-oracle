@@ -19,12 +19,6 @@ final class ConnectionTest extends TestCase
 {
     use TestConnectionTrait;
 
-    public function testConstruct(): void
-    {
-        $db = $this->getConnection();
-        $this->assertEquals($this->dsn, $db->getDriver()->getDsn());
-    }
-
     public function testGetDriverName(): void
     {
         $db = $this->getConnection();

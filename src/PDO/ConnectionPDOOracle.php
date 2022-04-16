@@ -79,7 +79,7 @@ final class ConnectionPDOOracle extends ConnectionPDO
     public function getSchema(): SchemaInterface
     {
         if ($this->schema === null) {
-            $this->schema = new SchemaPDOOracle($this, $this->schemaCache);
+            $this->schema = new SchemaPDOOracle($this, $this->schemaCache, strtoupper($this->driver->getUsername()));
         }
 
         return $this->schema;
