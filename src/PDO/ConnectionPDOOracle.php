@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Quoter;
+use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -100,7 +101,7 @@ final class ConnectionPDOOracle extends ConnectionPDO
     public function getSchema(): SchemaInterface
     {
         if ($this->schema === null) {
-            $this->schema = new SchemaPDOOracle($this, $this->schemaCache, strtoupper($this->driver->getUsername()));
+            $this->schema = new Schema($this, $this->schemaCache, strtoupper($this->driver->getUsername()));
         }
 
         return $this->schema;
