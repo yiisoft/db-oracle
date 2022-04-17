@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\PDO;
+namespace Yiisoft\Db\Oracle;
 
-use PDO;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -17,10 +16,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\ColumnSchema;
-use Yiisoft\Db\Oracle\ColumnSchemaBuilder;
-use Yiisoft\Db\Oracle\TableSchema;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\Schema as AbstractSchema;
 
 use function array_change_key_case;
 use function array_map;
@@ -58,9 +54,9 @@ use function trim;
  *   }
  * >
  */
-final class SchemaPDOOracle extends Schema
+final class Schema extends AbstractSchema
 {
-    public function __construct(private ConnectionPDOInterface $db, SchemaCache $schemaCache, string $defaultSchema)
+    public function __construct(private ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
         parent::__construct($schemaCache);
@@ -146,10 +142,9 @@ final class SchemaPDOOracle extends Schema
 
         /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
-            if ($this->db->getActivePDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
-                $row = array_change_key_case($row, CASE_UPPER);
-            }
-            $names[] = $row['TABLE_NAME'];
+            /** @psalm-var string[] $row */
+            $row = $this->normalizeRowKeyCase($row, false);
+            $names[] = $row['table_name'];
         }
 
         return $names;
@@ -234,7 +229,7 @@ final class SchemaPDOOracle extends Schema
         ])->queryAll();
 
         /** @psalm-var array[] $indexes */
-        $indexes = $this->normalizePdoRowKeyCase($indexes, true);
+        $indexes = $this->normalizeRowKeyCase($indexes, true);
         $indexes = ArrayHelper::index($indexes, null, 'name');
 
         $result = [];
@@ -394,9 +389,7 @@ final class SchemaPDOOracle extends Schema
 
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
-            if ($this->db->getActivePDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
-                $column = array_change_key_case($column, CASE_UPPER);
-            }
+            $column = $this->normalizeRowKeyCase($column, false);
 
             $c = $this->createColumn($column);
 
@@ -455,44 +448,44 @@ final class SchemaPDOOracle extends Schema
 
         /**
          * @psalm-var array{
-         *   COLUMN_NAME: string,
-         *   DATA_TYPE: string,
-         *   DATA_PRECISION: string,
-         *   DATA_SCALE: string,
-         *   DATA_LENGTH: string,
-         *   NULLABLE: string,
-         *   DATA_DEFAULT: string|null,
-         *   COLUMN_COMMENT: string|null
+         *   column_name: string,
+         *   data_type: string,
+         *   data_precision: string,
+         *   data_scale: string,
+         *   data_length: string,
+         *   nullable: string,
+         *   data_default: string|null,
+         *   column_comment: string|null
          * } $column
          */
-        $c->name($column['COLUMN_NAME']);
-        $c->allowNull($column['NULLABLE'] === 'Y');
-        $c->comment($column['COLUMN_COMMENT'] ?? '');
+        $c->name($column['column_name']);
+        $c->allowNull($column['nullable'] === 'Y');
+        $c->comment($column['column_comment'] ?? '');
         $c->primaryKey(false);
 
         $this->extractColumnType(
             $c,
-            $column['DATA_TYPE'],
-            $column['DATA_PRECISION'],
-            $column['DATA_SCALE'],
-            $column['DATA_LENGTH']
+            $column['data_type'],
+            $column['data_precision'],
+            $column['data_scale'],
+            $column['data_length']
         );
 
         $this->extractColumnSize(
             $c,
-            $column['DATA_TYPE'],
-            $column['DATA_PRECISION'],
-            $column['DATA_SCALE'],
-            $column['DATA_LENGTH']
+            $column['data_type'],
+            $column['data_precision'],
+            $column['data_scale'],
+            $column['data_length']
         );
 
         $c->phpType($this->getColumnPhpType($c));
 
         if (!$c->isPrimaryKey()) {
-            if ($column['DATA_DEFAULT'] !== null && stripos($column['DATA_DEFAULT'], 'timestamp') !== false) {
+            if ($column['data_default'] !== null && stripos($column['data_default'], 'timestamp') !== false) {
                 $c->defaultValue(null);
             } else {
-                $defaultValue = $column['DATA_DEFAULT'];
+                $defaultValue = $column['data_default'];
 
                 if ($c->getType() === 'timestamp' && $defaultValue === 'CURRENT_TIMESTAMP') {
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
@@ -501,7 +494,7 @@ final class SchemaPDOOracle extends Schema
                         if (($len = strlen($defaultValue)) > 2 && $defaultValue[0] === "'"
                             && $defaultValue[$len - 1] === "'"
                         ) {
-                            $defaultValue = substr((string) $column['DATA_DEFAULT'], 1, -1);
+                            $defaultValue = substr((string) $column['data_default'], 1, -1);
                         } else {
                             $defaultValue = trim($defaultValue);
                         }
@@ -549,14 +542,14 @@ final class SchemaPDOOracle extends Schema
         /**
          * @psalm-var array{
          *   array{
-         *     CONSTRAINT_NAME: string,
-         *     CONSTRAINT_TYPE: string,
-         *     COLUMN_NAME: string,
-         *     POSITION: string|null,
-         *     R_CONSTRAINT_NAME: string|null,
-         *     TABLE_REF: string|null,
-         *     COLUMN_REF: string|null,
-         *     TABLE_NAME: string
+         *     constraint_name: string,
+         *     constraint_type: string,
+         *     column_name: string,
+         *     position: string|null,
+         *     r_constraint_name: string|null,
+         *     table_ref: string|null,
+         *     column_ref: string|null,
+         *     table_name: string
          *   }
          * } $rows
          */
@@ -568,20 +561,19 @@ final class SchemaPDOOracle extends Schema
         $constraints = [];
 
         foreach ($rows as $row) {
-            if ($this->db->getActivePDO()?->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
-                $row = array_change_key_case($row, CASE_UPPER);
-            }
+            /** @psalm-var string[] $row */
+            $row = $this->normalizeRowKeyCase($row, false);
 
-            if ($row['CONSTRAINT_TYPE'] === 'P') {
-                $table->getColumns()[(string) $row['COLUMN_NAME']]->primaryKey(true);
-                $table->primaryKey((string) $row['COLUMN_NAME']);
+            if ($row['constraint_type'] === 'P') {
+                $table->getColumns()[$row['column_name']]->primaryKey(true);
+                $table->primaryKey($row['column_name']);
 
                 if (empty($table->getSequenceName())) {
                     $table->sequenceName((string) $this->getTableSequenceName($table->getName()));
                 }
             }
 
-            if ($row['CONSTRAINT_TYPE'] !== 'R') {
+            if ($row['constraint_type'] !== 'R') {
                 /**
                  * This condition is not checked in SQL WHERE because of an Oracle Bug:
                  *
@@ -590,16 +582,16 @@ final class SchemaPDOOracle extends Schema
                 continue;
             }
 
-            $name = (string) $row['CONSTRAINT_NAME'];
+            $name = $row['constraint_name'];
 
             if (!isset($constraints[$name])) {
                 $constraints[$name] = [
-                    'tableName' => $row['TABLE_REF'],
+                    'tableName' => $row['table_ref'],
                     'columns' => [],
                 ];
             }
 
-            $constraints[$name]['columns'][$row['COLUMN_NAME']] = $row['COLUMN_REF'];
+            $constraints[$name]['columns'][$row['column_name']] = $row['column_ref'];
         }
 
         foreach ($constraints as $constraint) {
@@ -759,7 +751,7 @@ final class SchemaPDOOracle extends Schema
         ])->queryAll();
 
         /** @var Constraint[] $constraints */
-        $constraints = $this->normalizePdoRowKeyCase($constraints, true);
+        $constraints = $this->normalizeRowKeyCase($constraints, true);
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
@@ -885,21 +877,15 @@ final class SchemaPDOOracle extends Schema
     }
 
     /**
-     * Changes row's array key case to lower if PDO's one is set to uppercase.
+     * Changes row's array key case to lower.
      *
      * @param array $row row's array or an array of row's arrays.
      * @param bool $multiple whether multiple rows or a single row passed.
      *
-     * @throws Exception
-     *
      * @return array normalized row or rows.
      */
-    protected function normalizePdoRowKeyCase(array $row, bool $multiple): array
+    protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
-        if ($this->db->getActivePDO()?->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
-            return $row;
-        }
-
         if ($multiple) {
             return array_map(static function (array $row) {
                 return array_change_key_case($row, CASE_LOWER);

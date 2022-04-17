@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\PDO\SchemaPDOOracle;
+use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\TestSupport\TestCommandTrait;
@@ -106,7 +106,7 @@ final class CommandTest extends TestCase
             $db->createCommand()->dropTable('longstring')->execute();
         }
 
-        $db->createCommand()->createTable('longstring', ['message' => SchemaPDOOracle::TYPE_TEXT])->execute();
+        $db->createCommand()->createTable('longstring', ['message' => Schema::TYPE_TEXT])->execute();
 
         $longData = str_pad('-', 4001, '-=', STR_PAD_LEFT);
         $db->createCommand()->insert('longstring', [
@@ -566,7 +566,7 @@ SQL;
 
         $db->createCommand()->createTable(
             '{{testCreateTable}}',
-            ['id' => SchemaPDOOracle::TYPE_PK, 'bar' => SchemaPDOOracle::TYPE_INTEGER]
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
         )->execute();
 
         $db->createCommand('CREATE SEQUENCE testCreateTable_SEQ START with 1 INCREMENT BY 1')->execute();
@@ -601,8 +601,8 @@ SQL;
         }
 
         $db->createCommand()->createTable('testCreateViewTable', [
-            'id' => SchemaPDOOracle::TYPE_PK,
-            'bar' => SchemaPDOOracle::TYPE_INTEGER,
+            'id' => Schema::TYPE_PK,
+            'bar' => Schema::TYPE_INTEGER,
         ])->execute();
 
         $db->createCommand('CREATE SEQUENCE testCreateViewTable_SEQ START with 1 INCREMENT BY 1')->execute();
@@ -663,7 +663,7 @@ SQL;
 
         $db->createCommand()->createTable(
             'testAlterTable',
-            ['id' => SchemaPDOOracle::TYPE_PK, 'bar' => SchemaPDOOracle::TYPE_INTEGER]
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
         )->execute();
 
         $db->createCommand('CREATE SEQUENCE testAlterTable_SEQ START with 1 INCREMENT BY 1')->execute();
