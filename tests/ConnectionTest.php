@@ -9,8 +9,9 @@ use Yiisoft\Cache\CacheKeyNormalizer;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Oracle\PDO\TransactionPDOOracle;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\TestSupport\TestConnectionTrait;
+use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
  * @group oracle
@@ -112,12 +113,12 @@ final class ConnectionTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $transaction = $db->beginTransaction(TransactionPDOOracle::READ_COMMITTED);
+        $transaction = $db->beginTransaction(TransactionInterface::READ_COMMITTED);
         $transaction->commit();
         /* should not be any exception so far */
         $this->assertTrue(true);
 
-        $transaction = $db->beginTransaction(TransactionPDOOracle::SERIALIZABLE);
+        $transaction = $db->beginTransaction(TransactionInterface::SERIALIZABLE);
         $transaction->commit();
         /* should not be any exception so far */
         $this->assertTrue(true);
@@ -129,7 +130,7 @@ final class ConnectionTest extends TestCase
         $result = $db->transaction(static function (ConnectionInterface $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
             return true;
-        }, TransactionPDOOracle::READ_COMMITTED);
+        }, TransactionInterface::READ_COMMITTED);
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
         $profilesCount = $db->createCommand(
@@ -251,5 +252,13 @@ final class ConnectionTest extends TestCase
         $this->assertFalse($this->cache->psr()->has($cacheKey), 'Caching is disabled');
 
         $db->close();
+    }
+
+    public function testReleaseSavepoint(): void
+    {
+        $connection = $this->getConnection();
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\PDO\TransactionPDOOracle::releaseSavepoint is not supported.');
+        $connection->createTransaction()->releaseSavepoint('savepoint');
     }
 }
