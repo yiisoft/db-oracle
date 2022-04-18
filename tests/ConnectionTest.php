@@ -253,12 +253,4 @@ final class ConnectionTest extends TestCase
 
         $db->close();
     }
-
-    public function testReleaseSavepoint(): void
-    {
-        $connection = $this->getConnection();
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\PDO\TransactionPDOOracle::releaseSavepoint is not supported.');
-        $connection->createTransaction()->releaseSavepoint('savepoint');
-    }
 }

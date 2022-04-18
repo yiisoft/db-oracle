@@ -11,6 +11,6 @@ final class TransactionPDOOracle extends TransactionPDO
 {
     public function releaseSavepoint(string $name): void
     {
-        throw new NotSupportedException(__METHOD__ . ' is not supported.');
+        // does nothing as Oracle does not support this
     }
 }
