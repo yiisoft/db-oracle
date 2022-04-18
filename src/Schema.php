@@ -295,11 +295,6 @@ final class Schema extends AbstractSchema
         throw new NotSupportedException('Oracle does not support default value constraints.');
     }
 
-    public function releaseSavepoint(string $name): void
-    {
-        /* does nothing as Oracle does not support this */
-    }
-
     /**
      * Create a column schema builder instance giving the type and value precision.
      *
@@ -821,16 +816,6 @@ final class Schema extends AbstractSchema
         return new ColumnSchema();
     }
 
-    public function rollBackSavepoint(string $name): void
-    {
-        $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
-    }
-
-    public function setTransactionIsolationLevel(string $level): void
-    {
-        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
-    }
-
     /**
      * Returns the actual name of a given table name.
      *
@@ -901,17 +886,5 @@ final class Schema extends AbstractSchema
     public function supportsSavepoint(): bool
     {
         return $this->db->isSavepointEnabled();
-    }
-
-    /**
-     * Creates a new savepoint.
-     *
-     * @param string $name the savepoint name
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
-    public function createSavepoint(string $name): void
-    {
-        $this->db->createCommand("SAVEPOINT $name")->execute();
     }
 }
