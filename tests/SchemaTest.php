@@ -497,4 +497,9 @@ final class SchemaTest extends TestCase
 
         $this->assertMetadataEquals($expected, $constraints);
     }
+
+    public function testGetSchemaDefaultValues(): void
+    {
+        $this->markTestSkipped('Oracle does not support default value constraints.');
+    }
 }

@@ -11,6 +11,7 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Schema;
 
 use function array_keys;
 use function count;
@@ -47,7 +48,7 @@ final class CommandPDOOracle extends CommandPDO
                 'value' => '',
             ];
 
-            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== 'integer') {
+            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== Schema::PHP_TYPE_INTEGER) {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
             } else {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
