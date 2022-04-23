@@ -660,23 +660,23 @@ final class Schema extends AbstractSchema
         $column->dbType($dbType);
 
         if (str_contains($dbType, 'FLOAT') || str_contains($dbType, 'DOUBLE')) {
-            $column->type('double');
+            $column->type(self::TYPE_DOUBLE);
         } elseif (str_contains($dbType, 'NUMBER')) {
             if ($scale === null || $scale > 0) {
-                $column->type('decimal');
+                $column->type(self::TYPE_DECIMAL);
             } else {
-                $column->type('integer');
+                $column->type(self::TYPE_INTEGER);
             }
         } elseif (str_contains($dbType, 'INTEGER')) {
-            $column->type('integer');
+            $column->type(self::TYPE_INTEGER);
         } elseif (str_contains($dbType, 'BLOB')) {
-            $column->type('binary');
+            $column->type(self::TYPE_BINARY);
         } elseif (str_contains($dbType, 'CLOB')) {
-            $column->type('text');
+            $column->type(self::TYPE_TEXT);
         } elseif (str_contains($dbType, 'TIMESTAMP')) {
-            $column->type('timestamp');
+            $column->type(self::TYPE_TIMESTAMP);
         } else {
-            $column->type('string');
+            $column->type(self::TYPE_STRING);
         }
     }
 
@@ -750,10 +750,10 @@ final class Schema extends AbstractSchema
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
-            'primaryKey' => null,
-            'foreignKeys' => [],
-            'uniques' => [],
-            'checks' => [],
+            self::PRIMARY_KEY => null,
+            self::FOREIGN_KEYS => [],
+            self::UNIQUES => [],
+            self::CHECKS => [],
         ];
 
         /**
@@ -768,12 +768,12 @@ final class Schema extends AbstractSchema
             foreach ($names as $name => $constraint) {
                 switch ($type) {
                     case 'P':
-                        $result['primaryKey'] = (new Constraint())
+                        $result[self::PRIMARY_KEY] = (new Constraint())
                             ->name($name)
                             ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'));
                         break;
                     case 'R':
-                        $result['foreignKeys'][] = (new ForeignKeyConstraint())
+                        $result[self::FOREIGN_KEYS][] = (new ForeignKeyConstraint())
                             ->name($name)
                             ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'))
                             ->foreignSchemaName($constraint[0]['foreign_table_schema'])
@@ -783,12 +783,12 @@ final class Schema extends AbstractSchema
                             ->onUpdate(null);
                         break;
                     case 'U':
-                        $result['uniques'][] = (new Constraint())
+                        $result[self::UNIQUES][] = (new Constraint())
                             ->name($name)
                             ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'));
                         break;
                     case 'C':
-                        $result['checks'][] = (new CheckConstraint())
+                        $result[self::CHECKS][] = (new CheckConstraint())
                             ->name($name)
                             ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'))
                             ->expression($constraint[0]['check_expr']);
