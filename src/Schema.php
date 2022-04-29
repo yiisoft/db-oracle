@@ -17,6 +17,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Schema as AbstractSchema;
+use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_change_key_case;
 use function array_map;
@@ -315,10 +316,10 @@ final class Schema extends AbstractSchema
     /**
      * Resolves the table name and schema name (if any).
      *
-     * @param TableSchema $table the table metadata object
+     * @param TableSchemaInterface $table the table metadata object
      * @param string $name the table name
      */
-    protected function resolveTableNames(TableSchema $table, string $name): void
+    protected function resolveTableNames(TableSchemaInterface $table, string $name): void
     {
         $parts = explode('.', str_replace('"', '', $name));
 
@@ -337,13 +338,13 @@ final class Schema extends AbstractSchema
     /**
      * Collects the table column metadata.
      *
-     * @param TableSchema $table the table schema.
+     * @param TableSchemaInterface $table the table schema.
      *
      * @throws Exception|Throwable
      *
      * @return bool whether the table exists.
      */
-    protected function findColumns(TableSchema $table): bool
+    protected function findColumns(TableSchemaInterface $table): bool
     {
         $sql = <<<SQL
         SELECT
@@ -505,13 +506,13 @@ final class Schema extends AbstractSchema
     /**
      * Finds constraints and fills them into TableSchema object passed.
      *
-     * @param TableSchema $table
+     * @param TableSchemaInterface $table
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @psalm-suppress PossiblyNullArrayOffset
      */
-    protected function findConstraints(TableSchema $table): void
+    protected function findConstraints(TableSchemaInterface $table): void
     {
         $sql = <<<SQL
         SELECT
@@ -606,13 +607,13 @@ final class Schema extends AbstractSchema
      * ]
      * ```
      *
-     * @param TableSchema $table the table metadata.
+     * @param TableSchemaInterface $table the table metadata.
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes(TableSchema $table): array
+    public function findUniqueIndexes(TableSchemaInterface $table): array
     {
         $query = <<<SQL
         SELECT

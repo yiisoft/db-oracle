@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\PDO;
 
 use PDO;
+use Yiisoft\Db\Command\CommandPDOInterface;
 use Yiisoft\Db\Connection\ConnectionPDO;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -25,7 +26,7 @@ use function constant;
  */
 final class ConnectionPDOOracle extends ConnectionPDO
 {
-    public function createCommand(?string $sql = null, array $params = []): CommandPDOOracle
+    public function createCommand(?string $sql = null, array $params = []): CommandPDOInterface
     {
         $command = new CommandPDOOracle($this, $this->queryCache);
 
