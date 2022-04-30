@@ -590,8 +590,8 @@ final class Schema extends AbstractSchema
             $constraints[$name]['columns'][$row['column_name']] = $row['column_ref'];
         }
 
-        foreach ($constraints as $constraint) {
-            $table->foreignKey(array_merge([$constraint['tableName']], $constraint['columns']));
+        foreach ($constraints as $index => $constraint) {
+            $table->foreignKey($index, array_merge([$constraint['tableName']], $constraint['columns']));
         }
     }
 
