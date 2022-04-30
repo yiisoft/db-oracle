@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\PDO;
 
-use Yiisoft\Db\Transaction\TransactionPDO;
+use Yiisoft\Db\Driver\PDO\TransactionPDO;
 
 final class TransactionPDOOracle extends TransactionPDO
 {

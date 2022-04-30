@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Oracle\PDO;
 
 use PDO;
 use PDOException;
-use Yiisoft\Db\Command\CommandPDO;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Driver\PDO\CommandPDO;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
