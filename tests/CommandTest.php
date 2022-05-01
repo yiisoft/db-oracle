@@ -6,12 +6,12 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
 use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Driver\PDO\PDOValue;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Schema;
-use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\TestSupport\TestCommandTrait;
 
@@ -439,7 +439,7 @@ SQL;
             ],
             [
                 serialize(['string' => 'string', 'integer' => 1234]),
-                new PdoValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
+                new PDOValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
             ],
             [
                 'simple string',
