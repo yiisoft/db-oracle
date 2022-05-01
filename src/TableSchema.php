@@ -11,8 +11,8 @@ use Yiisoft\Db\Schema\TableSchema as AbstractTableSchema;
  */
 final class TableSchema extends AbstractTableSchema
 {
-    public function foreignKey(string|int $id, array $value): void
+    public function foreignKey(string|int $id, array $to): void
     {
-        $this->foreignKeys[] = $value;
+        $this->foreignKeys[] = $to;
     }
 }

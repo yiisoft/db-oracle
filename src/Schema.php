@@ -63,7 +63,7 @@ final class Schema extends AbstractSchema
         parent::__construct($schemaCache);
     }
 
-    protected function resolveTableName(string $name): TableSchema
+    protected function resolveTableName(string $name): TableSchemaInterface
     {
         $resolvedName = new TableSchema();
 
@@ -156,9 +156,9 @@ final class Schema extends AbstractSchema
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return TableSchema|null
+     * @return TableSchemaInterface|null
      */
-    protected function loadTableSchema(string $name): ?TableSchema
+    protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
         $table = new TableSchema();
 
@@ -404,7 +404,7 @@ final class Schema extends AbstractSchema
      *
      * @return bool|int|string|null whether the sequence exists.
      *
-     * @internal TableSchema `$table->getName()` the table schema.
+     * @internal TableSchemaInterface `$table->getName()` the table schema.
      */
     protected function getTableSequenceName(string $tableName): bool|string|int|null
     {
@@ -504,7 +504,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * Finds constraints and fills them into TableSchema object passed.
+     * Finds constraints and fills them into TableSchemaInterface object passed.
      *
      * @param TableSchemaInterface $table
      *

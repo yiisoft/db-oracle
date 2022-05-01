@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
 use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Schema;
@@ -46,16 +48,20 @@ final class CommandTest extends TestCase
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
 
         $db->createCommand()->addPrimaryKey($name, $tableName, ['int1'])->execute();
+        $pk = $schema->getTablePrimaryKey($tableName, true);
 
-        $this->assertEquals(['int1'], $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+        $this->assertNotNull($pk);
+        $this->assertEquals(['int1'], $pk->getColumnNames());
 
         $db->createCommand()->dropPrimaryKey($name, $tableName)->execute();
 
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
 
         $db->createCommand()->addPrimaryKey($name, $tableName, ['int1', 'int2'])->execute();
+        $pk = $schema->getTablePrimaryKey($tableName, true);
 
-        $this->assertEquals(['int1', 'int2'], $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+        $this->assertNotNull($pk);
+        $this->assertEquals(['int1', 'int2'], $pk->getColumnNames());
     }
 
     public function testAutoQuoting(): void
@@ -149,6 +155,8 @@ final class CommandTest extends TestCase
     public function testQueryCache()
     {
         $db = $this->getConnection(true);
+
+        $this->assertNotNull($this->queryCache);
 
         $this->queryCache->setEnable(true);
 
@@ -246,6 +254,7 @@ final class CommandTest extends TestCase
 
         $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
 
+        $this->assertIsArray($customer);
         $this->assertEquals('Some {{weird}} name', $customer['name']);
         $this->assertEquals('Some {{%weird}} address', $customer['address']);
 
@@ -260,6 +269,7 @@ final class CommandTest extends TestCase
 
         $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
 
+        $this->assertIsArray($customer);
         $this->assertEquals('Some {{updated}} name', $customer['name']);
         $this->assertEquals('Some {{%updated}} address', $customer['address']);
     }
@@ -311,6 +321,8 @@ SQL;
             'SELECT [[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[numeric_col]], [[bool_col]] FROM {{type}}'
         );
         $row = $command->queryOne();
+
+        $this->assertIsArray($row);
         $this->assertEquals($intCol, $row['int_col']);
         $this->assertEquals($charCol, $row['char_col']);
         $this->assertEquals($floatCol, $row['float_col']);
@@ -425,6 +437,9 @@ SQL;
             ->where(['id' => 1]);
 
         $resultData = $query->createCommand()->queryOne();
+
+        $this->assertIsArray($resultData);
+
         $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
 
         $this->assertEquals($expectedData, $resultBlob);
@@ -531,10 +546,13 @@ SQL;
         $query = $db->createCommand(
             "SELECT 't2@example.com' as [[email]], [[address]] as [[name]], [[name]] as [[address]] from {{customer}}"
         );
+        $row = $query->queryOne();
+
+        $this->assertIsArray($row);
 
         $command->insert(
             '{{customer}}',
-            $query->queryOne()
+            $row
         )->execute();
 
         $this->assertEquals(2, $db->createCommand('SELECT COUNT(*) FROM {{customer}}')->queryScalar());
@@ -717,9 +735,7 @@ SQL;
      * @param string $expected
      * @param array $expectedParams
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
+     * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * {@see https://github.com/yiisoft/yii2/issues/11242}
      */
@@ -823,16 +839,36 @@ SQL;
         $this->assertNotEquals($initialSchema, $newSchema);
 
         $db->createCommand()->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')->execute();
-        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+        $tableSchema = $db->getSchema()->getTableSchema($tableName);
+
+        $this->assertNotNull($tableSchema);
+        $this->assertNotEmpty($tableSchema->getForeignKeys());
 
         $db->createCommand()->dropForeignKey($fkName, $tableName)->execute();
-        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+        $tableSchema = $db->getSchema()->getTableSchema($tableName);
+
+        $this->assertNotNull($tableSchema);
+        $this->assertEmpty($tableSchema->getForeignKeys());
 
         $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
-        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+        $tableSchema = $db->getSchema()->getTableSchema($tableName);
+
+        $this->assertNotNull($tableSchema);
+
+        $column = $tableSchema->getColumn('id');
+
+        $this->assertNotNull($column);
+        $this->assertNotEmpty($column->getComment());
 
         $db->createCommand()->dropCommentFromColumn($tableName, 'id')->execute();
-        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+        $tableSchema = $db->getSchema()->getTableSchema($tableName);
+
+        $this->assertNotNull($tableSchema);
+
+        $column = $tableSchema->getColumn('id');
+
+        $this->assertNotNull($column);
+        $this->assertEmpty($column->getComment());
 
         $db->createCommand()->dropTable($tableName)->execute();
         $this->assertNull($db->getSchema()->getTableSchema($tableName));
