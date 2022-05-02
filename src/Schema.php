@@ -402,11 +402,11 @@ final class Schema extends AbstractSchema
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|int|string|null whether the sequence exists.
+     * @return bool|float|int|string|null whether the sequence exists.
      *
      * @internal TableSchemaInterface `$table->getName()` the table schema.
      */
-    protected function getTableSequenceName(string $tableName): bool|string|int|null
+    protected function getTableSequenceName(string $tableName): bool|float|int|string|null
     {
         $sequenceNameSql = <<<SQL
         SELECT

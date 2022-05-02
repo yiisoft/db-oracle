@@ -20,6 +20,7 @@ use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\LikeCondition;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilder;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -107,7 +108,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
      * @param string $table the table whose column is to be changed. The table name will be properly quoted by the
      * method.
      * @param string $column the name of the column to be changed. The name will be properly quoted by the method.
-     * @param string $type the new column type. The [[getColumnType]] method will be invoked to convert abstract column
+     * @param string|ColumnSchemaBuilder $type the new column type. The [[getColumnType]] method will be invoked to convert abstract column
      * type (if any) into the physical one. Anything that is not recognized as abstract type will be kept in the
      * generated SQL.
      *
@@ -116,7 +117,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
      *
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn(string $table, string $column, string $type): string
+    public function alterColumn(string $table, string $column, string|ColumnSchemaBuilder $type): string
     {
         $type = $this->getColumnType($type);
 
