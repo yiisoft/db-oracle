@@ -318,7 +318,7 @@ final class QueryBuilderTest extends TestCase
      * @param string|string[] $expectedSQL
      * @param array $expectedParams
      *
-     * @throws Exception|NotSupportedException|JsonException
+     * @throws Exception|JsonException|NotSupportedException
      */
     public function testUpsert(string $table, $insertColumns, $updateColumns, $expectedSQL, array $expectedParams): void
     {
