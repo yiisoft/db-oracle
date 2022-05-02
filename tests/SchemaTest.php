@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
-use Yiisoft\Db\Oracle\TableSchema;
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\TestSupport\AnyValue;
 use Yiisoft\Db\TestSupport\TestSchemaTrait;
 
@@ -372,7 +372,7 @@ final class SchemaTest extends TestCase
         $this->assertCount(count($schema->getTableNames()), $tables);
 
         foreach ($tables as $table) {
-            $this->assertInstanceOf(TableSchema::class, $table);
+            $this->assertInstanceOf(TableSchemaInterface::class, $table);
         }
     }
 
