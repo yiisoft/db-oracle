@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use Closure;
+use JsonException;
 use Yiisoft\Arrays\ArrayHelper;
-use yiisoft\Db\Query\Query;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Oracle\PDO\QueryBuilderPDOOracle;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\TestSupport\TestQueryBuilderTrait;
 
 /**
@@ -94,7 +102,10 @@ final class QueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $query = (new Query($db))->where($condition);
         [$sql, $params] = $db->getQueryBuilder()->build($query);
-        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $this->replaceQuotes($expected)), $sql);
+        $replaceQuotes = $this->replaceQuotes($expected);
+
+        $this->assertIsString($replaceQuotes);
+        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replaceQuotes), $sql);
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -112,7 +123,10 @@ final class QueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $query = (new Query($db))->filterWhere($condition);
         [$sql, $params] = $db->getQueryBuilder()->build($query);
-        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $this->replaceQuotes($expected)), $sql);
+        $replaceQuotes = $this->replaceQuotes($expected);
+
+        $this->assertIsString($replaceQuotes);
+        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replaceQuotes), $sql);
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -129,13 +143,16 @@ final class QueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $params = [];
         $sql = $db->getQueryBuilder()->buildFrom([$table], $params);
-        $this->assertEquals('FROM ' . $this->replaceQuotes($expected), $sql);
+        $replaceQuotes = $this->replaceQuotes($expected);
+
+        $this->assertIsString($replaceQuotes);
+        $this->assertEquals('FROM ' . $replaceQuotes, $sql);
     }
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildLikeConditionsProvider
      *
-     * @param array|object $condition
+     * @param array|ExpressionInterface $condition
      * @param string $expected
      * @param array $expectedParams
      *
@@ -146,7 +163,10 @@ final class QueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $query = (new Query($db))->where($condition);
         [$sql, $params] = $db->getQueryBuilder()->build($query);
-        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $this->replaceQuotes($expected)), $sql);
+        $replaceQuotes = $this->replaceQuotes($expected);
+
+        $this->assertIsString($replaceQuotes);
+        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replaceQuotes), $sql);
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -232,7 +252,7 @@ final class QueryBuilderTest extends TestCase
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::insertProvider
      *
      * @param string $table
-     * @param array|ColumnSchema $columns
+     * @param array|QueryInterface $columns
      * @param array $params
      * @param string $expectedSQL
      * @param array $expectedParams
@@ -251,6 +271,7 @@ final class QueryBuilderTest extends TestCase
     public function testResetSequence()
     {
         $db = $this->getConnection();
+        /** @var QueryBuilderPDOOracle $qb */
         $qb = $db->getQueryBuilder();
 
         $sqlResult = "SELECT last_number FROM user_sequences WHERE sequence_name = 'item_SEQ'";
@@ -292,12 +313,12 @@ final class QueryBuilderTest extends TestCase
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::upsertProvider
      *
      * @param string $table
-     * @param array|ColumnSchema $insertColumns
-     * @param array|bool|null $updateColumns
+     * @param array|QueryInterface $insertColumns
+     * @param array|bool $updateColumns
      * @param string|string[] $expectedSQL
      * @param array $expectedParams
      *
-     * @throws Exception|NotSupportedException
+     * @throws Exception|JsonException|NotSupportedException
      */
     public function testUpsert(string $table, $insertColumns, $updateColumns, $expectedSQL, array $expectedParams): void
     {
