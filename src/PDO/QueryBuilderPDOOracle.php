@@ -117,7 +117,7 @@ final class QueryBuilderPDOOracle extends QueryBuilder
      *
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn(string $table, string $column, string|ColumnSchemaBuilder $type): string
+    public function alterColumn(string $table, string $column, ColumnSchemaBuilder|string $type): string
     {
         $type = $this->getColumnType($type);
 
