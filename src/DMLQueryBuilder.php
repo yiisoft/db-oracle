@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Oracle;
 use Generator;
 use InvalidArgumentException;
 use JsonException;
-use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -259,7 +258,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
          *  Oracle needs at least many queries to reset sequence (see adding transactions and/or use alter method to avoid grants issue?)
          */
         return 'declare
-    lastSeq number' . ($value !== null ? (' := ' . $value) : ''). ';
+    lastSeq number' . ($value !== null ? (' := ' . $value) : '') . ';
 begin' . ($value === null ? '
     SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") + 1 INTO lastSeq FROM "' . $tableSchema->getName() . '";' : '') . '
     if lastSeq IS NULL then lastSeq := 1; end if;
