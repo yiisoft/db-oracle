@@ -268,20 +268,46 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $actualParams);
     }
 
-    public function testResetSequence()
+    public function testResetSequence(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
+
         /** @var QueryBuilderPDOOracle $qb */
         $qb = $db->getQueryBuilder();
 
-        $sqlResult = "SELECT last_number FROM user_sequences WHERE sequence_name = 'item_SEQ'";
+        $checkSql = "SELECT last_number FROM user_sequences WHERE sequence_name = 'item_SEQ'";
 
-        $qb->executeResetSequence('item');
-        $result = $db->createCommand($sqlResult)->queryScalar();
+        $sql = $qb->resetSequence('item');
+        $expected = <<<SQL
+declare
+    lastSeq number;
+begin
+    SELECT MAX("id") + 1 INTO lastSeq FROM "item";
+    if lastSeq IS NULL then lastSeq := 1; end if;
+    execute immediate 'DROP SEQUENCE "item_SEQ"';
+    execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+end;
+SQL;
+        $this->assertEquals($expected, $sql);
+
+        $db->createCommand($sql)->execute();
+        $result = $db->createCommand($checkSql)->queryScalar();
         $this->assertEquals(6, $result);
 
-        $qb->executeResetSequence('item', 4);
-        $result = $db->createCommand($sqlResult)->queryScalar();
+        $sql = $qb->resetSequence('item', 4);
+        $expected = <<<SQL
+declare
+    lastSeq number := 4;
+begin
+    if lastSeq IS NULL then lastSeq := 1; end if;
+    execute immediate 'DROP SEQUENCE "item_SEQ"';
+    execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+end;
+SQL;
+        $this->assertEquals($expected, $sql);
+
+        $db->createCommand($sql)->execute();
+        $result = $db->createCommand($checkSql)->queryScalar();
         $this->assertEquals(4, $result);
     }
 
