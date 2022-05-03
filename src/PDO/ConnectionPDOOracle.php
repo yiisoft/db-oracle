@@ -81,7 +81,6 @@ final class ConnectionPDOOracle extends ConnectionPDO
     {
         if ($this->queryBuilder === null) {
             $this->queryBuilder = new QueryBuilderPDOOracle(
-                $this->createCommand(),
                 $this->getQuoter(),
                 $this->getSchema(),
             );
