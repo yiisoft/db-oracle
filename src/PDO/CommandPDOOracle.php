@@ -12,6 +12,7 @@ use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
 use function count;
@@ -28,12 +29,17 @@ final class CommandPDOOracle extends CommandPDO
         return $this->db->getQueryBuilder();
     }
 
+    public function schema(): SchemaInterface
+    {
+        return $this->db->getSchema();
+    }
+
     public function insertEx(string $table, array $columns): bool|array
     {
         $params = [];
         $sql = $this->queryBuilder()->insertEx($table, $columns, $params);
 
-        $tableSchema = $this->queryBuilder()->schema()->getTableSchema($table);
+        $tableSchema = $this->db->getSchema()->getTableSchema($table);
 
         $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
         $columnSchemas = $tableSchema?->getColumns() ?? [];
