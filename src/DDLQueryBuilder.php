@@ -9,12 +9,17 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\DDLQueryBuilder as AbstractDDLQueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        parent::__construct($queryBuilder);
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private QuoterInterface $quoter,
+        SchemaInterface $schema
+    ) {
+        parent::__construct($queryBuilder, $quoter, $schema);
     }
 
     public function addForeignKey(string $name, string $table, array|string $columns, string $refTable, array|string $refColumns, ?string $delete = null, ?string $update = null): string

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use Generator;
-use InvalidArgumentException;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -16,6 +16,8 @@ use Yiisoft\Db\Query\DMLQueryBuilder as AbstractDMLQueryBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Strings\NumericHelper;
 
 use function implode;
@@ -27,9 +29,12 @@ use function reset;
 
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        parent::__construct($queryBuilder);
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema
+    ) {
+        parent::__construct($queryBuilder, $quoter, $schema);
     }
 
     /**
@@ -235,12 +240,15 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return [$names, $placeholders, $values, $params];
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         $tableSchema = $this->schema->getTableSchema($tableName);
 
         if ($tableSchema === null) {
-            throw new \Yiisoft\Db\Exception\InvalidArgumentException("Unknown table: $tableName");
+            throw new InvalidArgumentException("Unknown table: $tableName");
         }
 
         $sequenceName = $tableSchema->getSequenceName();
