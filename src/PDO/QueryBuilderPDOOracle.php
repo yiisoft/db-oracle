@@ -18,6 +18,11 @@ use Yiisoft\Db\Schema\SchemaInterface;
 final class QueryBuilderPDOOracle extends QueryBuilder
 {
     /**
+     * Defines a BITMAP index type for {@see createIndex()}.
+     */
+    public const INDEX_BITMAP = 'BITMAP';
+
+    /**
      * @psalm-var string[] $typeMap Mapping from abstract column types (keys) to physical column types (values).
      */
     protected array $typeMap = [
