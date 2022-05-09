@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use PDO;
 use Yiisoft\Cache\CacheKeyNormalizer;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -228,6 +229,13 @@ final class ConnectionTest extends TestCase
 
         $this->assertFalse($this->cache->psr()->has($cacheKey), 'Caching is disabled');
 
+        $db->close();
+    }
+
+    public function testSettingDefaultAttributes(): void
+    {
+        $db = $this->getConnection();
+        $this->assertEquals(PDO::ERRMODE_EXCEPTION, $db->getActivePDO()->getAttribute(PDO::ATTR_ERRMODE));
         $db->close();
     }
 }
