@@ -50,11 +50,6 @@ final class ConnectionPDOOracle extends ConnectionPDO
         return new TransactionPDOOracle($this);
     }
 
-    public function getDriverName(): string
-    {
-        return 'oci';
-    }
-
     /**
      * Override base behaviour
      */
@@ -120,11 +115,9 @@ final class ConnectionPDOOracle extends ConnectionPDO
      */
     protected function initConnection(): void
     {
-        $attributes = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
         if ($this->getEmulatePrepare() !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
-            $attributes[PDO::ATTR_EMULATE_PREPARES] = $this->getEmulatePrepare();
+            $this->driver->attributes([PDO::ATTR_EMULATE_PREPARES => $this->getEmulatePrepare()]);
         }
-        $this->driver->attributes($attributes);
 
         $this->pdo = $this->driver->createConnection();
     }
