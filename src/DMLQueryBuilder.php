@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\DMLQueryBuilder as AbstractDMLQueryBuilder;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -222,7 +221,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
          */
         [$names, $placeholders, $values, $params] = parent::prepareInsertValues($table, $columns, $params);
 
-        if (!$columns instanceof Query && empty($names)) {
+        if (!$columns instanceof QueryInterface && empty($names)) {
             $tableSchema = $this->schema->getTableSchema($table);
 
             if ($tableSchema !== null) {
