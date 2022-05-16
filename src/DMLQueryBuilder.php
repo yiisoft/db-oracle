@@ -222,7 +222,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
          */
         [$names, $placeholders, $values, $params] = parent::prepareInsertValues($table, $columns, $params);
 
-        if (!$columns instanceof Query && empty($names)) {
+        if (!$columns instanceof QueryInterface && empty($names)) {
             $tableSchema = $this->schema->getTableSchema($table);
 
             if ($tableSchema !== null) {
