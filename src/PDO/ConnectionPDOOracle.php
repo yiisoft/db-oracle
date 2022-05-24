@@ -18,8 +18,6 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-use function constant;
-
 /**
  * Database connection class prefilled for Oracle SQL Server.
  * The class Connection represents a connection to a database via [PDO](https://secure.php.net/manual/en/book.pdo.php).
@@ -115,7 +113,7 @@ final class ConnectionPDOOracle extends ConnectionPDO
      */
     protected function initConnection(): void
     {
-        if ($this->getEmulatePrepare() !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
+        if ($this->getEmulatePrepare() !== null) {
             $this->driver->attributes([PDO::ATTR_EMULATE_PREPARES => $this->getEmulatePrepare()]);
         }
 
