@@ -33,27 +33,46 @@ final class CommandTest extends TestCase
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
+            $db
+                ->createCommand()
+                ->dropTable($tableName)
+                ->execute();
         }
 
-        $db->createCommand()->createTable($tableName, [
-            'int1' => 'integer not null',
-            'int2' => 'integer not null',
-        ])->execute();
+        $db
+            ->createCommand()
+            ->createTable($tableName, [
+                'int1' => 'integer not null',
+                'int2' => 'integer not null',
+            ])
+            ->execute();
 
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
 
-        $db->createCommand()->addPrimaryKey($name, $tableName, ['int1'])->execute();
+        $db
+            ->createCommand()
+            ->addPrimaryKey($name, $tableName, ['int1'])
+            ->execute();
 
-        $this->assertEquals(['int1'], $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+        $this->assertEquals(['int1'], $schema
+            ->getTablePrimaryKey($tableName, true)
+            ->getColumnNames());
 
-        $db->createCommand()->dropPrimaryKey($name, $tableName)->execute();
+        $db
+            ->createCommand()
+            ->dropPrimaryKey($name, $tableName)
+            ->execute();
 
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
 
-        $db->createCommand()->addPrimaryKey($name, $tableName, ['int1', 'int2'])->execute();
+        $db
+            ->createCommand()
+            ->addPrimaryKey($name, $tableName, ['int1', 'int2'])
+            ->execute();
 
-        $this->assertEquals(['int1', 'int2'], $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+        $this->assertEquals(['int1', 'int2'], $schema
+            ->getTablePrimaryKey($tableName, true)
+            ->getColumnNames());
     }
 
     public function testAutoQuoting(): void
@@ -75,49 +94,75 @@ final class CommandTest extends TestCase
 
         $command->execute();
 
-        $this->assertEquals(3, $db->getSchema()->getLastInsertID('profile_SEQ'));
+        $this->assertEquals(3, $db
+            ->getSchema()
+            ->getLastInsertID('profile_SEQ'));
     }
 
     public function testCLOBStringInsertion(): void
     {
         $db = $this->getConnection();
 
-        if ($db->getSchema()->getTableSchema('longstring') !== null) {
-            $db->createCommand()->dropTable('longstring')->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema('longstring') !== null) {
+            $db
+                ->createCommand()
+                ->dropTable('longstring')
+                ->execute();
         }
 
-        $db->createCommand()->createTable('longstring', ['message' => Schema::TYPE_TEXT])->execute();
+        $db
+            ->createCommand()
+            ->createTable('longstring', ['message' => Schema::TYPE_TEXT])
+            ->execute();
 
         $longData = str_pad('-', 4001, '-=', STR_PAD_LEFT);
-        $db->createCommand()->insert('longstring', [
-            'message' => $longData,
-        ])->execute();
+        $db
+            ->createCommand()
+            ->insert('longstring', [
+                'message' => $longData,
+            ])
+            ->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT count(*) FROM {{longstring}}')->queryScalar());
+        $this->assertEquals(1, $db
+            ->createCommand('SELECT count(*) FROM {{longstring}}')
+            ->queryScalar());
 
-        $db->createCommand()->dropTable('longstring')->execute();
+        $db
+            ->createCommand()
+            ->dropTable('longstring')
+            ->execute();
     }
 
     public function testInsert(): void
     {
         $db = $this->getConnection();
 
-        $db->createCommand('DELETE FROM {{customer}}')->execute();
+        $db
+            ->createCommand('DELETE FROM {{customer}}')
+            ->execute();
 
         $command = $db->createCommand();
 
-        $command->insert(
-            '{{customer}}',
-            [
-                'email' => 't1@example.com',
-                'name' => 'test',
-                'address' => 'test address',
-            ]
-        )->execute();
+        $command
+            ->insert(
+                '{{customer}}',
+                [
+                    'email' => 't1@example.com',
+                    'name' => 'test',
+                    'address' => 'test address',
+                ]
+            )
+            ->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{customer}}')->queryScalar());
+        $this->assertEquals(1, $db
+            ->createCommand('SELECT COUNT(*) FROM {{customer}}')
+            ->queryScalar());
 
-        $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryOne();
+        $record = $db
+            ->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')
+            ->queryOne();
 
         $this->assertEquals([
             'email' => 't1@example.com',
@@ -134,35 +179,51 @@ final class CommandTest extends TestCase
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-        $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
+        $this->assertEquals('user1', $command
+            ->bindValue(':id', 1)
+            ->queryScalar());
 
         $update = $db->createCommand('UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id');
-        $update->bindValues([':id' => 1, ':name' => 'user11'])->execute();
+        $update
+            ->bindValues([':id' => 1, ':name' => 'user11'])
+            ->execute();
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
+        $this->assertEquals('user11', $command
+            ->bindValue(':id', 1)
+            ->queryScalar());
 
         $db->cache(function (Connection $db) use ($update) {
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
+            $this->assertEquals('user2', $command
+                ->bindValue(':id', 2)
+                ->queryScalar());
 
-            $update->bindValues([':id' => 2, ':name' => 'user22'])->execute();
+            $update
+                ->bindValues([':id' => 2, ':name' => 'user22'])
+                ->execute();
 
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
+            $this->assertEquals('user2', $command
+                ->bindValue(':id', 2)
+                ->queryScalar());
 
             $db->noCache(function () use ($db) {
                 $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-                $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
+                $this->assertEquals('user22', $command
+                    ->bindValue(':id', 2)
+                    ->queryScalar());
             });
 
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
+            $this->assertEquals('user2', $command
+                ->bindValue(':id', 2)
+                ->queryScalar());
         }, 10);
 
         $this->queryCache->setEnable(false);
@@ -170,39 +231,65 @@ final class CommandTest extends TestCase
         $db->cache(function (Connection $db) use ($update) {
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
+            $this->assertEquals('user22', $command
+                ->bindValue(':id', 2)
+                ->queryScalar());
 
-            $update->bindValues([':id' => 2, ':name' => 'user2'])->execute();
+            $update
+                ->bindValues([':id' => 2, ':name' => 'user2'])
+                ->execute();
 
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
+            $this->assertEquals('user2', $command
+                ->bindValue(':id', 2)
+                ->queryScalar());
         }, 10);
 
         $this->queryCache->setEnable(true);
 
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
+        $command = $db
+            ->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')
+            ->cache();
 
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
+        $this->assertEquals('user11', $command
+            ->bindValue(':id', 1)
+            ->queryScalar());
 
-        $update->bindValues([':id' => 1, ':name' => 'user1'])->execute();
+        $update
+            ->bindValues([':id' => 1, ':name' => 'user1'])
+            ->execute();
 
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
+        $command = $db
+            ->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')
+            ->cache();
 
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
+        $this->assertEquals('user11', $command
+            ->bindValue(':id', 1)
+            ->queryScalar());
 
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->noCache();
+        $command = $db
+            ->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')
+            ->noCache();
 
-        $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
+        $this->assertEquals('user1', $command
+            ->bindValue(':id', 1)
+            ->queryScalar());
 
         $db->cache(function (Connection $db) {
             $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
-            $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
+            $this->assertEquals('user11', $command
+                ->bindValue(':id', 1)
+                ->queryScalar());
 
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->noCache();
+            $command = $db
+                ->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')
+                ->noCache();
 
-            $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
+            $this->assertEquals('user1', $command
+                ->bindValue(':id', 1)
+                ->queryScalar());
         }, 10);
     }
 
@@ -213,32 +300,42 @@ final class CommandTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $db->createCommand()->insert(
-            '{{customer}}',
-            [
-                'name' => 'Some {{weird}} name',
-                'email' => 'test@example.com',
-                'address' => 'Some {{%weird}} address',
-            ]
-        )->execute();
+        $db
+            ->createCommand()
+            ->insert(
+                '{{customer}}',
+                [
+                    'name' => 'Some {{weird}} name',
+                    'email' => 'test@example.com',
+                    'address' => 'Some {{%weird}} address',
+                ]
+            )
+            ->execute();
 
         $customerId = $db->getLastInsertID('customer_SEQ');
 
-        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
+        $customer = $db
+            ->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)
+            ->queryOne();
 
         $this->assertEquals('Some {{weird}} name', $customer['name']);
         $this->assertEquals('Some {{%weird}} address', $customer['address']);
 
-        $db->createCommand()->update(
-            '{{customer}}',
-            [
-                'name' => 'Some {{updated}} name',
-                'address' => 'Some {{%updated}} address',
-            ],
-            ['id' => $customerId]
-        )->execute();
+        $db
+            ->createCommand()
+            ->update(
+                '{{customer}}',
+                [
+                    'name' => 'Some {{updated}} name',
+                    'address' => 'Some {{%updated}} address',
+                ],
+                ['id' => $customerId]
+            )
+            ->execute();
 
-        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
+        $customer = $db
+            ->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)
+            ->queryOne();
 
         $this->assertEquals('Some {{updated}} name', $customer['name']);
         $this->assertEquals('Some {{%updated}} address', $customer['address']);
@@ -330,10 +427,13 @@ SQL;
     {
         $db = $this->getConnection(true);
 
-        $db->createCommand()->insert(
-            '{{customer}}',
-            ['name' => 'testParams', 'email' => 'testParams@example.com', 'address' => '1']
-        )->execute();
+        $db
+            ->createCommand()
+            ->insert(
+                '{{customer}}',
+                ['name' => 'testParams', 'email' => 'testParams@example.com', 'address' => '1']
+            )
+            ->execute();
 
         $params = [
             ':email' => 'testParams@example.com',
@@ -371,17 +471,21 @@ SQL;
         $db = $this->getConnection();
         $query = new Query($db);
 
-        $query->select($invalidSelectColumns)->from('{{customer}}');
+        $query
+            ->select($invalidSelectColumns)
+            ->from('{{customer}}');
 
         $command = $db->createCommand();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('select query object with enumerated (named) parameters');
 
-        $command->insert(
-            '{{customer}}',
-            $query
-        )->execute();
+        $command
+            ->insert(
+                '{{customer}}',
+                $query
+            )
+            ->execute();
     }
 
     /**
@@ -395,16 +499,24 @@ SQL;
     {
         $db = $this->getConnection();
 
-        $db->createCommand()->delete('T_upsert_varbinary')->execute();
+        $db
+            ->createCommand()
+            ->delete('T_upsert_varbinary')
+            ->execute();
 
-        $db->createCommand()->insert('T_upsert_varbinary', ['id' => 1, 'blob_col' => $testData])->execute();
+        $db
+            ->createCommand()
+            ->insert('T_upsert_varbinary', ['id' => 1, 'blob_col' => $testData])
+            ->execute();
 
         $query = (new Query($db))
             ->select(['blob_col'])
             ->from('T_upsert_varbinary')
             ->where(['id' => 1]);
 
-        $resultData = $query->createCommand()->queryOne();
+        $resultData = $query
+            ->createCommand()
+            ->queryOne();
         $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
 
         $this->assertEquals($expectedData, $resultBlob);
@@ -438,9 +550,13 @@ SQL;
     {
         $db = $this->getConnection(true);
 
-        $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $this->assertEquals(0, $db
+            ->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')
+            ->queryScalar());
         $this->performAndCompareUpsertResult($db, $firstData);
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $this->assertEquals(1, $db
+            ->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')
+            ->queryScalar());
         $this->performAndCompareUpsertResult($db, $secondData);
     }
 
@@ -450,42 +566,57 @@ SQL;
 
         $time = time();
 
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
+        $db
+            ->createCommand('DELETE FROM {{order_with_null_fk}}')
+            ->execute();
 
         $command = $db->createCommand();
 
-        $command->insert('{{order}}', [
-            'customer_id' => 1,
-            'created_at' => $time,
-            'total' => 42,
-        ])->execute();
+        $command
+            ->insert('{{order}}', [
+                'customer_id' => 1,
+                'created_at' => $time,
+                'total' => 42,
+            ])
+            ->execute();
 
         $columnValueQuery = new Query($db);
 
         $orderId = $db->getLastInsertID('order_SEQ');
 
-        $columnValueQuery->select('created_at')->from('{{order}}')->where(['id' => $orderId]);
+        $columnValueQuery
+            ->select('created_at')
+            ->from('{{order}}')
+            ->where(['id' => $orderId]);
 
         $command = $db->createCommand();
 
-        $command->insert(
-            '{{order_with_null_fk}}',
-            [
-                'customer_id' => $orderId,
-                'created_at' => $columnValueQuery,
-                'total' => 42,
-            ]
-        )->execute();
+        $command
+            ->insert(
+                '{{order_with_null_fk}}',
+                [
+                    'customer_id' => $orderId,
+                    'created_at' => $columnValueQuery,
+                    'total' => 42,
+                ]
+            )
+            ->execute();
 
         $this->assertEquals(
             $time,
-            $db->createCommand(
-                'SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = ' . $orderId
-            )->queryScalar()
+            $db
+                ->createCommand(
+                    'SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = ' . $orderId
+                )
+                ->queryScalar()
         );
 
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
-        $db->createCommand('DELETE FROM {{order}} WHERE [[id]] = ' . $orderId)->execute();
+        $db
+            ->createCommand('DELETE FROM {{order_with_null_fk}}')
+            ->execute();
+        $db
+            ->createCommand('DELETE FROM {{order}} WHERE [[id]] = ' . $orderId)
+            ->execute();
     }
 
     /**
@@ -495,31 +626,41 @@ SQL;
     {
         $db = $this->getConnection();
 
-        $db->createCommand('DELETE FROM {{customer}}')->execute();
+        $db
+            ->createCommand('DELETE FROM {{customer}}')
+            ->execute();
 
         $command = $db->createCommand();
 
-        $command->insert(
-            '{{customer}}',
-            [
-                'email' => 't1@example.com',
-                'name' => 'test',
-                'address' => 'test address',
-            ]
-        )->execute();
+        $command
+            ->insert(
+                '{{customer}}',
+                [
+                    'email' => 't1@example.com',
+                    'name' => 'test',
+                    'address' => 'test address',
+                ]
+            )
+            ->execute();
 
         $query = $db->createCommand(
             "SELECT 't2@example.com' as [[email]], [[address]] as [[name]], [[name]] as [[address]] from {{customer}}"
         );
 
-        $command->insert(
-            '{{customer}}',
-            $query->queryOne()
-        )->execute();
+        $command
+            ->insert(
+                '{{customer}}',
+                $query->queryOne()
+            )
+            ->execute();
 
-        $this->assertEquals(2, $db->createCommand('SELECT COUNT(*) FROM {{customer}}')->queryScalar());
+        $this->assertEquals(2, $db
+            ->createCommand('SELECT COUNT(*) FROM {{customer}}')
+            ->queryScalar());
 
-        $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryAll();
+        $record = $db
+            ->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')
+            ->queryAll();
 
         $this->assertEquals([
             [
@@ -539,23 +680,39 @@ SQL;
     {
         $db = $this->getConnection(true);
 
-        if ($db->getSchema()->getTableSchema('testCreateTable') !== null) {
-            $db->createCommand('DROP SEQUENCE testCreateTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testCreateTable')->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema('testCreateTable') !== null) {
+            $db
+                ->createCommand('DROP SEQUENCE testCreateTable_SEQ')
+                ->execute();
+            $db
+                ->createCommand()
+                ->dropTable('testCreateTable')
+                ->execute();
         }
 
-        $db->createCommand()->createTable(
-            '{{testCreateTable}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
-        )->execute();
+        $db
+            ->createCommand()
+            ->createTable(
+                '{{testCreateTable}}',
+                ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
+            )
+            ->execute();
 
-        $db->createCommand('CREATE SEQUENCE testCreateTable_SEQ START with 1 INCREMENT BY 1')->execute();
+        $db
+            ->createCommand('CREATE SEQUENCE testCreateTable_SEQ START with 1 INCREMENT BY 1')
+            ->execute();
 
-        $db->createCommand(
-            'INSERT INTO {{testCreateTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
-        )->execute();
+        $db
+            ->createCommand(
+                'INSERT INTO {{testCreateTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
+            )
+            ->execute();
 
-        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testCreateTable}}')->queryAll();
+        $records = $db
+            ->createCommand('SELECT [[id]], [[bar]] FROM {{testCreateTable}}')
+            ->queryAll();
 
         $this->assertEquals([
             ['id' => 1, 'bar' => 1],
@@ -571,33 +728,59 @@ SQL;
             ->from('testCreateViewTable')
             ->where(['>', 'bar', '5']);
 
-        if ($db->getSchema()->getTableSchema('testCreateView') !== null) {
-            $db->createCommand()->dropView('testCreateView')->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema('testCreateView') !== null) {
+            $db
+                ->createCommand()
+                ->dropView('testCreateView')
+                ->execute();
         }
 
-        if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
-            $db->createCommand('DROP SEQUENCE testCreateViewTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testCreateViewTable')->execute();
+        if ($db
+            ->getSchema()
+            ->getTableSchema('testCreateViewTable')) {
+            $db
+                ->createCommand('DROP SEQUENCE testCreateViewTable_SEQ')
+                ->execute();
+            $db
+                ->createCommand()
+                ->dropTable('testCreateViewTable')
+                ->execute();
         }
 
-        $db->createCommand()->createTable('testCreateViewTable', [
-            'id' => Schema::TYPE_PK,
-            'bar' => Schema::TYPE_INTEGER,
-        ])->execute();
+        $db
+            ->createCommand()
+            ->createTable('testCreateViewTable', [
+                'id' => Schema::TYPE_PK,
+                'bar' => Schema::TYPE_INTEGER,
+            ])
+            ->execute();
 
-        $db->createCommand('CREATE SEQUENCE testCreateViewTable_SEQ START with 1 INCREMENT BY 1')->execute();
+        $db
+            ->createCommand('CREATE SEQUENCE testCreateViewTable_SEQ START with 1 INCREMENT BY 1')
+            ->execute();
 
-        $db->createCommand(
-            'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
-        )->execute();
+        $db
+            ->createCommand(
+                'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
+            )
+            ->execute();
 
-        $db->createCommand(
-            'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)'
-        )->execute();
+        $db
+            ->createCommand(
+                'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)'
+            )
+            ->execute();
 
-        $db->createCommand()->createView('testCreateView', $subquery)->execute();
+        $db
+            ->createCommand()
+            ->createView('testCreateView', $subquery)
+            ->execute();
 
-        $records = $db->createCommand('SELECT [[bar]] FROM {{testCreateView}}')->queryAll();
+        $records = $db
+            ->createCommand('SELECT [[bar]] FROM {{testCreateView}}')
+            ->queryAll();
 
         $this->assertEquals([['bar' => 6]], $records);
     }
@@ -611,21 +794,29 @@ SQL;
     {
         $db = $this->getConnection();
 
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
+        $db
+            ->createCommand('DELETE FROM {{order_with_null_fk}}')
+            ->execute();
 
         $command = $db->createCommand();
 
-        $command->insert(
-            '{{order_with_null_fk}}',
-            [
-                'created_at' => new Expression('EXTRACT(YEAR FROM sysdate)'),
-                'total' => 1,
-            ]
-        )->execute();
+        $command
+            ->insert(
+                '{{order_with_null_fk}}',
+                [
+                    'created_at' => new Expression('EXTRACT(YEAR FROM sysdate)'),
+                    'total' => 1,
+                ]
+            )
+            ->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{order_with_null_fk}}')->queryScalar());
+        $this->assertEquals(1, $db
+            ->createCommand('SELECT COUNT(*) FROM {{order_with_null_fk}}')
+            ->queryScalar());
 
-        $record = $db->createCommand('SELECT [[created_at]] FROM {{order_with_null_fk}}')->queryOne();
+        $record = $db
+            ->createCommand('SELECT [[created_at]] FROM {{order_with_null_fk}}')
+            ->queryOne();
 
         $this->assertEquals([
             'created_at' => date('Y'),
@@ -636,35 +827,61 @@ SQL;
     {
         $db = $this->getConnection();
 
-        if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
-            $db->createCommand('DROP SEQUENCE testAlterTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testAlterTable')->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema('testAlterTable') !== null) {
+            $db
+                ->createCommand('DROP SEQUENCE testAlterTable_SEQ')
+                ->execute();
+            $db
+                ->createCommand()
+                ->dropTable('testAlterTable')
+                ->execute();
         }
 
-        $db->createCommand()->createTable(
-            'testAlterTable',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
-        )->execute();
+        $db
+            ->createCommand()
+            ->createTable(
+                'testAlterTable',
+                ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
+            )
+            ->execute();
 
-        $db->createCommand('CREATE SEQUENCE testAlterTable_SEQ START with 1 INCREMENT BY 1')->execute();
+        $db
+            ->createCommand('CREATE SEQUENCE testAlterTable_SEQ START with 1 INCREMENT BY 1')
+            ->execute();
 
-        $db->createCommand(
-            'INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 1)'
-        )->execute();
+        $db
+            ->createCommand(
+                'INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 1)'
+            )
+            ->execute();
 
-        $db->createCommand('ALTER TABLE {{testAlterTable}} ADD ([[bar_tmp]] VARCHAR(20))')->execute();
+        $db
+            ->createCommand('ALTER TABLE {{testAlterTable}} ADD ([[bar_tmp]] VARCHAR(20))')
+            ->execute();
 
-        $db->createCommand('UPDATE {{testAlterTable}} SET [[bar_tmp]] = [[bar]]')->execute();
+        $db
+            ->createCommand('UPDATE {{testAlterTable}} SET [[bar_tmp]] = [[bar]]')
+            ->execute();
 
-        $db->createCommand('ALTER TABLE {{testAlterTable}} DROP COLUMN [[bar]]')->execute();
+        $db
+            ->createCommand('ALTER TABLE {{testAlterTable}} DROP COLUMN [[bar]]')
+            ->execute();
 
-        $db->createCommand('ALTER TABLE {{testAlterTable}} RENAME COLUMN [[bar_tmp]] TO [[bar]]')->execute();
+        $db
+            ->createCommand('ALTER TABLE {{testAlterTable}} RENAME COLUMN [[bar_tmp]] TO [[bar]]')
+            ->execute();
 
-        $db->createCommand(
-            "INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 'hello')"
-        )->execute();
+        $db
+            ->createCommand(
+                "INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 'hello')"
+            )
+            ->execute();
 
-        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')->queryAll();
+        $records = $db
+            ->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')
+            ->queryAll();
 
         $this->assertEquals([
             ['id' => 1, 'bar' => 1],
@@ -732,23 +949,37 @@ SQL;
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
+            $db
+                ->createCommand()
+                ->dropTable($tableName)
+                ->execute();
         }
 
-        $db->createCommand()->createTable($tableName, [
-            'int1' => 'integer',
-        ])->execute();
+        $db
+            ->createCommand()
+            ->createTable($tableName, [
+                'int1' => 'integer',
+            ])
+            ->execute();
 
         $this->assertEmpty($schema->getTableChecks($tableName, true));
 
-        $db->createCommand()->addCheck($name, $tableName, '[[int1]] > 1')->execute();
+        $db
+            ->createCommand()
+            ->addCheck($name, $tableName, '[[int1]] > 1')
+            ->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks($tableName, true)[0]->getExpression()
+            $schema
+                ->getTableChecks($tableName, true)
+                ->getExpression()
         );
 
-        $db->createCommand()->dropCheck($name, $tableName)->execute();
+        $db
+            ->createCommand()
+            ->dropCheck($name, $tableName)
+            ->execute();
 
         $this->assertEmpty($schema->getTableChecks($tableName, true));
     }
@@ -784,37 +1015,85 @@ SQL;
         $tableName = 'test';
         $fkName = 'test_fk';
 
-        if ($db->getSchema()->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema($tableName) !== null) {
+            $db
+                ->createCommand()
+                ->dropTable($tableName)
+                ->execute();
         }
 
-        $this->assertNull($db->getSchema()->getTableSchema($tableName));
+        $this->assertNull($db
+            ->getSchema()
+            ->getTableSchema($tableName));
 
-        $db->createCommand()->createTable($tableName, [
-            'id' => 'pk',
-            'fk' => 'int',
-            'name' => 'string',
-        ])->execute();
-        $initialSchema = $db->getSchema()->getTableSchema($tableName);
+        $db
+            ->createCommand()
+            ->createTable($tableName, [
+                'id' => 'pk',
+                'fk' => 'int',
+                'name' => 'string',
+            ])
+            ->execute();
+        $initialSchema = $db
+            ->getSchema()
+            ->getTableSchema($tableName);
         $this->assertNotNull($initialSchema);
 
-        $db->createCommand()->addColumn($tableName, 'value', 'integer')->execute();
-        $newSchema = $db->getSchema()->getTableSchema($tableName);
+        $db
+            ->createCommand()
+            ->addColumn($tableName, 'value', 'integer')
+            ->execute();
+        $newSchema = $db
+            ->getSchema()
+            ->getTableSchema($tableName);
         $this->assertNotEquals($initialSchema, $newSchema);
 
-        $db->createCommand()->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')->execute();
-        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+        $db
+            ->createCommand()
+            ->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')
+            ->execute();
+        $this->assertNotEmpty($db
+            ->getSchema()
+            ->getTableSchema($tableName)
+            ->getForeignKeys());
 
-        $db->createCommand()->dropForeignKey($fkName, $tableName)->execute();
-        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
+        $db
+            ->createCommand()
+            ->dropForeignKey($fkName, $tableName)
+            ->execute();
+        $this->assertEmpty($db
+            ->getSchema()
+            ->getTableSchema($tableName)
+            ->getForeignKeys());
 
-        $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
-        $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+        $db
+            ->createCommand()
+            ->addCommentOnColumn($tableName, 'id', 'Test comment')
+            ->execute();
+        $this->assertNotEmpty($db
+            ->getSchema()
+            ->getTableSchema($tableName)
+            ->getColumn('id')
+            ->getComment());
 
-        $db->createCommand()->dropCommentFromColumn($tableName, 'id')->execute();
-        $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
+        $db
+            ->createCommand()
+            ->dropCommentFromColumn($tableName, 'id')
+            ->execute();
+        $this->assertEmpty($db
+            ->getSchema()
+            ->getTableSchema($tableName)
+            ->getColumn('id')
+            ->getComment());
 
-        $db->createCommand()->dropTable($tableName)->execute();
-        $this->assertNull($db->getSchema()->getTableSchema($tableName));
+        $db
+            ->createCommand()
+            ->dropTable($tableName)
+            ->execute();
+        $this->assertNull($db
+            ->getSchema()
+            ->getTableSchema($tableName));
     }
 }

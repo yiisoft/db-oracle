@@ -66,7 +66,9 @@ final class ConnectionTest extends TestCase
         $serialized = serialize($db);
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(Connection::class, $unserialized);
-        $this->assertEquals(123, $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
+        $this->assertEquals(123, $unserialized
+            ->createCommand('SELECT 123 FROM DUAL')
+            ->queryScalar());
     }
 
     public function testQuoteTableName()
@@ -144,15 +146,20 @@ final class ConnectionTest extends TestCase
         $db = $this->getConnection(true);
 
         $result = $db->transaction(static function (Connection $db) {
-            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            $db
+                ->createCommand()
+                ->insert('profile', ['description' => 'test transaction shortcut'])
+                ->execute();
             return true;
         }, Transaction::READ_COMMITTED);
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
-        $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
-        )->queryScalar();
+        $profilesCount = $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
+            )
+            ->queryScalar();
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
 
@@ -204,12 +211,16 @@ final class ConnectionTest extends TestCase
             ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially', $db->getDsn()]
         );
 
-        $this->assertFalse($this->cache->psr()->has($cacheKey));
+        $this->assertFalse($this->cache
+            ->psr()
+            ->has($cacheKey));
 
         $db->open();
 
         $this->assertFalse(
-            $this->cache->psr()->has($cacheKey),
+            $this->cache
+                ->psr()
+                ->has($cacheKey),
             'Connection was successful – cache must not contain information about this DSN'
         );
 
@@ -231,7 +242,9 @@ final class ConnectionTest extends TestCase
         }
 
         $this->assertTrue(
-            $this->cache->psr()->has($cacheKey),
+            $this->cache
+                ->psr()
+                ->has($cacheKey),
             'Connection was not successful – cache must contain information about this DSN'
         );
 
@@ -254,11 +267,15 @@ final class ConnectionTest extends TestCase
             ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially::', $db->getDsn()]
         );
 
-        $this->assertFalse($this->cache->psr()->has($cacheKey));
+        $this->assertFalse($this->cache
+            ->psr()
+            ->has($cacheKey));
 
         $db->open();
 
-        $this->assertFalse($this->cache->psr()->has($cacheKey), 'Caching is disabled');
+        $this->assertFalse($this->cache
+            ->psr()
+            ->has($cacheKey), 'Caching is disabled');
 
         $db->close();
 
@@ -273,7 +290,9 @@ final class ConnectionTest extends TestCase
         } catch (InvalidConfigException $e) {
         }
 
-        $this->assertFalse($this->cache->psr()->has($cacheKey), 'Caching is disabled');
+        $this->assertFalse($this->cache
+            ->psr()
+            ->has($cacheKey), 'Caching is disabled');
 
         $db->close();
     }

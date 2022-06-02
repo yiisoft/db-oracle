@@ -62,7 +62,7 @@ final class Schema extends AbstractSchema
         }
 
         $fullName = ($resolvedName->getSchemaName() !== $this->defaultSchema
-            ? $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
+                ? $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
 
         $resolvedName->fullName($fullName);
 
@@ -81,7 +81,10 @@ WHERE "u"."DEFAULT_TABLESPACE" NOT IN ('SYSTEM', 'SYSAUX')
 ORDER BY "u"."USERNAME" ASC
 SQL;
 
-        return $this->getDb()->createCommand($sql)->queryColumn();
+        return $this
+            ->getDb()
+            ->createCommand($sql)
+            ->queryColumn();
     }
 
     /**
@@ -109,7 +112,9 @@ FROM USER_MVIEWS
 ORDER BY TABLE_NAME
 SQL;
 
-            $command = $this->getDb()->createCommand($sql);
+            $command = $this
+                ->getDb()
+                ->createCommand($sql);
         } else {
             $sql = <<<'SQL'
 SELECT
@@ -120,14 +125,19 @@ WHERE
     AND OWNER = :schema
 ORDER BY OBJECT_NAME
 SQL;
-            $command = $this->getDb()->createCommand($sql, [':schema' => $schema]);
+            $command = $this
+                ->getDb()
+                ->createCommand($sql, [':schema' => $schema]);
         }
 
         $rows = $command->queryAll();
         $names = [];
 
         foreach ($rows as $row) {
-            if ($this->getDb()->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this
+                    ->getDb()
+                    ->getSlavePdo()
+                    ->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
             $names[] = $row['TABLE_NAME'];
@@ -208,10 +218,13 @@ SQL;
 
         $resolvedName = $this->resolveTableName($tableName);
 
-        $indexes = $this->getDb()->createCommand($sql, [
-            ':schemaName' => $resolvedName->getSchemaName(),
-            ':tableName' => $resolvedName->getName(),
-        ])->queryAll();
+        $indexes = $this
+            ->getDb()
+            ->createCommand($sql, [
+                ':schemaName' => $resolvedName->getSchemaName(),
+                ':tableName' => $resolvedName->getName(),
+            ])
+            ->queryAll();
 
         $indexes = $this->normalizePdoRowKeyCase($indexes, true);
 
@@ -359,10 +372,13 @@ ORDER BY A.COLUMN_ID
 SQL;
 
         try {
-            $columns = $this->getDb()->createCommand($sql, [
-                ':tableName' => $table->getName(),
-                ':schemaName' => $table->getSchemaName(),
-            ])->queryAll();
+            $columns = $this
+                ->getDb()
+                ->createCommand($sql, [
+                    ':tableName' => $table->getName(),
+                    ':schemaName' => $table->getSchemaName(),
+                ])
+                ->queryAll();
         } catch (Exception $e) {
             return false;
         }
@@ -372,7 +388,10 @@ SQL;
         }
 
         foreach ($columns as $column) {
-            if ($this->getDb()->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this
+                    ->getDb()
+                    ->getSlavePdo()
+                    ->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $column = array_change_key_case($column, CASE_UPPER);
             }
 
@@ -407,7 +426,10 @@ WHERE
     AND UD.TYPE = 'TRIGGER'
     AND UD.REFERENCED_TYPE = 'SEQUENCE'
 SQL;
-        $sequenceName = $this->getDb()->createCommand($sequenceNameSql, [':tableName' => $tableName])->queryScalar();
+        $sequenceName = $this
+            ->getDb()
+            ->createCommand($sequenceNameSql, [':tableName' => $tableName])
+            ->queryScalar();
 
         return $sequenceName === false ? null : $sequenceName;
     }
@@ -427,13 +449,19 @@ SQL;
      */
     public function getLastInsertID(string $sequenceName = ''): string
     {
-        if ($this->getDb()->isActive()) {
+        if ($this
+            ->getDb()
+            ->isActive()) {
             /* get the last insert id from the master connection */
             $sequenceName = $this->quoteSimpleTableName($sequenceName);
 
-            return $this->getDb()->useMaster(function (Connection $db) use ($sequenceName) {
-                return $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar();
-            });
+            return $this
+                ->getDb()
+                ->useMaster(function (Connection $db) use ($sequenceName) {
+                    return $db
+                        ->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")
+                        ->queryScalar();
+                });
         }
 
         throw new InvalidCallException('DB Connection is not active.');
@@ -529,20 +557,27 @@ WHERE
 ORDER BY D.CONSTRAINT_NAME, C.POSITION
 SQL;
 
-        $command = $this->getDb()->createCommand($sql, [
-            ':tableName' => $table->getName(),
-            ':schemaName' => $table->getSchemaName(),
-        ]);
+        $command = $this
+            ->getDb()
+            ->createCommand($sql, [
+                ':tableName' => $table->getName(),
+                ':schemaName' => $table->getSchemaName(),
+            ]);
 
         $constraints = [];
 
         foreach ($command->queryAll() as $row) {
-            if ($this->getDb()->getSlavePdo()->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
+            if ($this
+                    ->getDb()
+                    ->getSlavePdo()
+                    ->getAttribute(PDO::ATTR_CASE) === PDO::CASE_LOWER) {
                 $row = array_change_key_case($row, CASE_UPPER);
             }
 
             if ($row['CONSTRAINT_TYPE'] === 'P') {
-                $table->getColumns()[$row['COLUMN_NAME']]->primaryKey(true);
+                $table
+                    ->getColumns()
+                    ->primaryKey(true);
                 $table->primaryKey($row['COLUMN_NAME']);
 
                 if (empty($table->getSequenceName())) {
@@ -612,10 +647,12 @@ ORDER BY DIC.TABLE_NAME, DIC.INDEX_NAME, DIC.COLUMN_POSITION
 SQL;
         $result = [];
 
-        $command = $this->getDb()->createCommand($query, [
-            ':tableName' => $table->getName(),
-            ':schemaName' => $table->getschemaName(),
-        ]);
+        $command = $this
+            ->getDb()
+            ->createCommand($query, [
+                ':tableName' => $table->getName(),
+                ':schemaName' => $table->getschemaName(),
+            ]);
 
         foreach ($command->queryAll() as $row) {
             $result[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
@@ -688,7 +725,10 @@ SQL;
     {
         $params = [];
         $returnParams = [];
-        $sql = $this->getDb()->getQueryBuilder()->insert($table, $columns, $params);
+        $sql = $this
+            ->getDb()
+            ->getQueryBuilder()
+            ->insert($table, $columns, $params);
         $tableSchema = $this->getTableSchema($table);
         $returnColumns = $tableSchema->getPrimaryKey();
 
@@ -718,12 +758,16 @@ SQL;
             $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
         }
 
-        $command = $this->getDb()->createCommand($sql, $params);
+        $command = $this
+            ->getDb()
+            ->createCommand($sql, $params);
 
         $command->prepare(false);
 
         foreach ($returnParams as $name => &$value) {
-            $command->getPdoStatement()->bindParam($name, $value['value'], $value['dataType'], $value['size']);
+            $command
+                ->getPdoStatement()
+                ->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
 
         if (!$command->execute()) {
@@ -778,10 +822,13 @@ SQL;
 
         $resolvedName = $this->resolveTableName($tableName);
 
-        $constraints = $this->getDb()->createCommand($sql, [
-            ':schemaName' => $resolvedName->getSchemaName(),
-            ':tableName' => $resolvedName->getName(),
-        ])->queryAll();
+        $constraints = $this
+            ->getDb()
+            ->createCommand($sql, [
+                ':schemaName' => $resolvedName->getSchemaName(),
+                ':tableName' => $resolvedName->getName(),
+            ])
+            ->queryAll();
 
         $constraints = $this->normalizePdoRowKeyCase($constraints, true);
 

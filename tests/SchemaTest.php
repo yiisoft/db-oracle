@@ -230,8 +230,13 @@ final class SchemaTest extends TestCase
      */
     public function testAutoincrementDisabled(): void
     {
-        $table = $this->getConnection(false)->getSchema()->getTableSchema('order', true);
-        $this->assertFalse($table->getColumns()['id']->isAutoIncrement());
+        $table = $this
+            ->getConnection(false)
+            ->getSchema()
+            ->getTableSchema('order', true);
+        $this->assertFalse($table
+            ->getColumns()
+            ->isAutoIncrement());
     }
 
     public function testFindUniqueIndexes()
@@ -239,15 +244,21 @@ final class SchemaTest extends TestCase
         $db = $this->getConnection();
 
         try {
-            $db->createCommand()->dropTable('uniqueIndex')->execute();
+            $db
+                ->createCommand()
+                ->dropTable('uniqueIndex')
+                ->execute();
         } catch (\Exception $e) {
         }
 
-        $db->createCommand()->createTable('uniqueIndex', [
-            'somecol' => 'string',
-            'someCol2' => 'string',
-            'someCol3' => 'string',
-        ])->execute();
+        $db
+            ->createCommand()
+            ->createTable('uniqueIndex', [
+                'somecol' => 'string',
+                'someCol2' => 'string',
+                'someCol3' => 'string',
+            ])
+            ->execute();
 
         /* @var $schema Schema */
         $schema = $db->getSchema();
@@ -255,7 +266,10 @@ final class SchemaTest extends TestCase
         $uniqueIndexes = $schema->findUniqueIndexes($schema->getTableSchema('uniqueIndex', true));
         $this->assertEquals([], $uniqueIndexes);
 
-        $db->createCommand()->createIndex('somecolUnique', 'uniqueIndex', 'somecol', true)->execute();
+        $db
+            ->createCommand()
+            ->createIndex('somecolUnique', 'uniqueIndex', 'somecol', true)
+            ->execute();
 
         $uniqueIndexes = $schema->findUniqueIndexes($schema->getTableSchema('uniqueIndex', true));
         $this->assertEquals([
@@ -266,7 +280,10 @@ final class SchemaTest extends TestCase
          * Create another column with upper case letter that fails postgres
          * {@see https://github.com/yiisoft/yii2/issues/10613}
          */
-        $db->createCommand()->createIndex('someCol2Unique', 'uniqueIndex', 'someCol2', true)->execute();
+        $db
+            ->createCommand()
+            ->createIndex('someCol2Unique', 'uniqueIndex', 'someCol2', true)
+            ->execute();
 
         $uniqueIndexes = $schema->findUniqueIndexes($schema->getTableSchema('uniqueIndex', true));
         $this->assertEquals([
@@ -277,7 +294,10 @@ final class SchemaTest extends TestCase
         /**
          * {@see https://github.com/yiisoft/yii2/issues/13814}
          */
-        $db->createCommand()->createIndex('another unique index', 'uniqueIndex', 'someCol3', true)->execute();
+        $db
+            ->createCommand()
+            ->createIndex('another unique index', 'uniqueIndex', 'someCol3', true)
+            ->execute();
 
         $uniqueIndexes = $schema->findUniqueIndexes($schema->getTableSchema('uniqueIndex', true));
         $this->assertEquals([
@@ -289,7 +309,9 @@ final class SchemaTest extends TestCase
 
     public function testGetSchemaNames(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         $schemas = $schema->getSchemaNames();
 
@@ -313,7 +335,9 @@ final class SchemaTest extends TestCase
         $connection = $this->getConnection(true);
 
         foreach ($pdoAttributes as $name => $value) {
-            $connection->getPDO()->setAttribute($name, $value);
+            $connection
+                ->getPDO()
+                ->setAttribute($name, $value);
         }
 
         $schema = $connection->getSchema();
@@ -346,7 +370,9 @@ final class SchemaTest extends TestCase
         $db = $this->getConnection(true);
 
         foreach ($pdoAttributes as $name => $value) {
-            $db->getPDO()->setAttribute($name, $value);
+            $db
+                ->getPDO()
+                ->setAttribute($name, $value);
         }
 
         $schema = $db->getSchema();
@@ -443,7 +469,9 @@ final class SchemaTest extends TestCase
             $this->expectException(NotSupportedException::class);
         }
 
-        $constraints = $this->getConnection()->getSchema()->{'getTable' . ucfirst($type)}($tableName);
+        $constraints = $this
+            ->getConnection()
+            ->getSchema()->{'getTable' . ucfirst($type)}($tableName);
 
         $this->assertMetadataEquals($expected, $constraints);
     }
@@ -466,7 +494,9 @@ final class SchemaTest extends TestCase
 
         $connection = $this->getConnection();
 
-        $connection->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $connection
+            ->getSlavePdo()
+            ->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $constraints = $connection->getSchema()->{'getTable' . ucfirst($type)}($tableName, true);
 
@@ -491,7 +521,9 @@ final class SchemaTest extends TestCase
 
         $connection = $this->getConnection();
 
-        $connection->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $connection
+            ->getSlavePdo()
+            ->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $constraints = $connection->getSchema()->{'getTable' . ucfirst($type)}($tableName, true);
 
