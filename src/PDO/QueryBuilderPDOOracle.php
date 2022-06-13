@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle\PDO;
 use Yiisoft\Db\Oracle\DDLQueryBuilder;
 use Yiisoft\Db\Oracle\DMLQueryBuilder;
 use Yiisoft\Db\Oracle\DQLQueryBuilder;
-use Yiisoft\Db\Query\QueryBuilder;
+use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaInterface;

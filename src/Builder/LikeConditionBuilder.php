@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Exception;
-use Yiisoft\Db\Query\Conditions\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
-use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\Conditions\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
+use Yiisoft\Db\QueryBuilder\Conditions\Interface\LikeConditionInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
 use function substr;

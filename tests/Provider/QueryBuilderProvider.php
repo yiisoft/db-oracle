@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\TestCase;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\TestSupport\Provider\QueryBuilderProvider as BaseQueryBuilderProvider;
 
 final class QueryBuilderProvider extends TestCase
