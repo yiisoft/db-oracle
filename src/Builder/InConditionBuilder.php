@@ -9,9 +9,9 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Builder\InConditionBuilder as AbstractInConditionBuilder;
-use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\Conditions\Builder\InConditionBuilder as AbstractInConditionBuilder;
+use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_slice;
 use function array_unshift;

@@ -6,9 +6,9 @@ namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
-use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\Conditions\LikeCondition;
-use Yiisoft\Db\Query\DQLQueryBuilder as AbstractDQLQueryBuilder;
+use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
+use Yiisoft\Db\QueryBuilder\DQLQueryBuilder as AbstractDQLQueryBuilder;
 
 use function array_merge;
 use function implode;
