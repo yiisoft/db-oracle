@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\PDO;
+namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Driver\PDO\TransactionPDO;
+use Yiisoft\Db\Driver\PDO\TransactionPDO as AbstractTransactionPDO;
 
-final class TransactionPDOOracle extends TransactionPDO
+final class TransactionPDO extends AbstractTransactionPDO
 {
     public function releaseSavepoint(string $name): void
     {

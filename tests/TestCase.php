@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use Exception;
 use PHPUnit\Framework\TestCase as AbstractTestCase;
-use Yiisoft\Db\Oracle\PDO\PDODriver;
-use Yiisoft\Db\Oracle\PDO\ConnectionPDOOracle;
+use Yiisoft\Db\Oracle\PDODriver;
+use Yiisoft\Db\Oracle\ConnectionPDO;
 use Yiisoft\Db\TestSupport\TestTrait;
 
 class TestCase extends AbstractTestCase
@@ -22,20 +22,20 @@ class TestCase extends AbstractTestCase
     protected array $dataProvider;
     protected string $likeEscapeCharSql = '';
     protected array $likeParameterReplacements = [];
-    protected ?ConnectionPDOOracle $db = null;
+    protected ?ConnectionPDO $db = null;
 
     /**
      * @param bool $reset whether to clean up the test database.
      *
-     * @return ConnectionPDOOracle
+     * @return ConnectionPDO
      */
     protected function getConnection(
         $reset = false,
         ?string $dsn = null,
         string $fixture = __DIR__ . '/Fixture/oci.sql'
-    ): ConnectionPDOOracle {
+    ): ConnectionPDO {
         $pdoDriver = new PDODriver($dsn ?? $this->dsn, $this->username, $this->password);
-        $this->db = new ConnectionPDOOracle($pdoDriver, $this->createQueryCache(), $this->createSchemaCache());
+        $this->db = new ConnectionPDO($pdoDriver, $this->createQueryCache(), $this->createSchemaCache());
         $this->db->setLogger($this->createLogger());
         $this->db->setProfiler($this->createProfiler());
 

@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\PDO;
+namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
-use Yiisoft\Db\Driver\PDO\ConnectionPDO;
+use Yiisoft\Db\Driver\PDO\ConnectionPDO as AbstractConnectionPDO;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Oracle\Quoter;
-use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -22,11 +20,11 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * Database connection class prefilled for Oracle SQL Server.
  * The class Connection represents a connection to a database via [PDO](https://secure.php.net/manual/en/book.pdo.php).
  */
-final class ConnectionPDOOracle extends ConnectionPDO
+final class ConnectionPDO extends AbstractConnectionPDO
 {
     public function createCommand(?string $sql = null, array $params = []): CommandPDOInterface
     {
-        $command = new CommandPDOOracle($this, $this->queryCache);
+        $command = new CommandPDO($this, $this->queryCache);
 
         if ($sql !== null) {
             $command->setSql($sql);
@@ -45,7 +43,7 @@ final class ConnectionPDOOracle extends ConnectionPDO
 
     public function createTransaction(): TransactionInterface
     {
-        return new TransactionPDOOracle($this);
+        return new TransactionPDO($this);
     }
 
     /**
@@ -73,7 +71,7 @@ final class ConnectionPDOOracle extends ConnectionPDO
     public function getQueryBuilder(): QueryBuilderInterface
     {
         if ($this->queryBuilder === null) {
-            $this->queryBuilder = new QueryBuilderPDOOracle(
+            $this->queryBuilder = new QueryBuilder(
                 $this->getQuoter(),
                 $this->getSchema(),
             );

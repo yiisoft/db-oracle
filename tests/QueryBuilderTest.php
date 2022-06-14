@@ -12,7 +12,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Oracle\PDO\QueryBuilderPDOOracle;
+use Yiisoft\Db\Oracle\QueryBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\TestSupport\TestQueryBuilderTrait;
@@ -272,7 +272,7 @@ final class QueryBuilderTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        /** @var QueryBuilderPDOOracle $qb */
+        /** @var QueryBuilder $qb */
         $qb = $db->getQueryBuilder();
 
         $checkSql = "SELECT last_number FROM user_sequences WHERE sequence_name = 'item_SEQ'";

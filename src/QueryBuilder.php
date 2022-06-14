@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\PDO;
+namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Oracle\DDLQueryBuilder;
-use Yiisoft\Db\Oracle\DMLQueryBuilder;
-use Yiisoft\Db\Oracle\DQLQueryBuilder;
-use Yiisoft\Db\QueryBuilder\QueryBuilder;
+use Yiisoft\Db\QueryBuilder\QueryBuilder as AbstractQueryBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -15,7 +12,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 /**
  * QueryBuilder is the query builder for Oracle databases.
  */
-final class QueryBuilderPDOOracle extends QueryBuilder
+final class QueryBuilder extends AbstractQueryBuilder
 {
     /**
      * Defines a BITMAP index type for {@see createIndex()}.

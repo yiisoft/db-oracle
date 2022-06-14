@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\PDO;
+namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use PDOException;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Driver\PDO\CommandPDO;
+use Yiisoft\Db\Driver\PDO\CommandPDO as AbstractCommandPDO;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -22,7 +22,7 @@ use function strlen;
 /**
  * Command represents an Oracle SQL statement to be executed against a database.
  */
-final class CommandPDOOracle extends CommandPDO
+final class CommandPDO extends AbstractCommandPDO
 {
     public function queryBuilder(): QueryBuilderInterface
     {
