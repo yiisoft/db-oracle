@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use PDOException;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\PDO\CommandPDO as AbstractCommandPDO;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
@@ -93,7 +92,6 @@ final class CommandPDO extends AbstractCommandPDO
     {
         $paramsPassedByReference = [];
 
-        /** @psalm-var ParamInterface[] */
         $params = $this->params;
 
         foreach ($params as $name => $value) {
