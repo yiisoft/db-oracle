@@ -93,7 +93,6 @@ final class CommandPDO extends AbstractCommandPDO
     {
         $paramsPassedByReference = [];
 
-        /** @psalm-var ParamInterface[] */
         $params = $this->params;
 
         foreach ($params as $name => $value) {
