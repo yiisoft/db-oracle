@@ -14,9 +14,6 @@ build:
       ini:
         xdebug.mode: coverage
 
-    variables:
-      COMPOSER_ROOT_VERSION: dev-dev
-
   nodes:
     analysis:
       tests:
