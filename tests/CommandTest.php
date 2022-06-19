@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Driver\PDO\PDOValue;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -454,7 +454,7 @@ SQL;
             ],
             [
                 serialize(['string' => 'string', 'integer' => 1234]),
-                new PDOValue(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
+                new Param(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
             ],
             [
                 'simple string',
