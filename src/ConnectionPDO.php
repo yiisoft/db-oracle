@@ -65,6 +65,11 @@ final class ConnectionPDO extends AbstractConnectionPDO
         throw new InvalidCallException('DB Connection is not active.');
     }
 
+    public function getName(): string
+    {
+        return $this->getDriver()->getName();
+    }
+
     /**
      * @throws Exception|InvalidConfigException
      */
