@@ -86,7 +86,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @see https://docs.oracle.com/cd/B28359_01/server.111/b28337/tdpsg_user_accounts.htm
+     * @link https://docs.oracle.com/cd/B28359_01/server.111/b28337/tdpsg_user_accounts.htm
      */
     protected function findSchemaNames(): array
     {
@@ -97,12 +97,7 @@ final class Schema extends AbstractSchema
         ORDER BY "u"."USERNAME" ASC
         SQL;
 
-        $schemaNames = $this->db->createCommand($sql)->queryColumn();
-        if (!$schemaNames) {
-            return [];
-        }
-
-        return $schemaNames;
+        return $this->db->createCommand($sql)->queryColumn();
     }
 
     /**
