@@ -22,13 +22,10 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_change_key_case;
 use function array_map;
 use function array_merge;
-use function explode;
 use function is_array;
 use function md5;
-use function preg_replace;
 use function serialize;
 use function str_contains;
-use function str_replace;
 use function stripos;
 use function strlen;
 use function substr;
@@ -74,7 +71,8 @@ final class Schema extends AbstractSchema
         $resolvedName->name($parts[0] ?? '');
         $resolvedName->schemaName($parts[1] ?? $this->defaultSchema);
 
-        $resolvedName->fullName($resolvedName->getSchemaName() !== $this->defaultSchema ?
+        $resolvedName->fullName(
+            $resolvedName->getSchemaName() !== $this->defaultSchema ?
             implode('.', array_reverse($parts)) : $resolvedName->getName()
         );
 
