@@ -22,13 +22,10 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_change_key_case;
 use function array_map;
 use function array_merge;
-use function explode;
 use function is_array;
 use function md5;
-use function preg_replace;
 use function serialize;
 use function str_contains;
-use function str_replace;
 use function stripos;
 use function strlen;
 use function substr;
@@ -57,30 +54,27 @@ use function trim;
  */
 final class Schema extends AbstractSchema
 {
-    public function __construct(private ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
+    public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
-        parent::__construct($schemaCache);
+        parent::__construct($db, $schemaCache);
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
     {
         $resolvedName = new TableSchema();
 
-        $parts = explode('.', str_replace('"', '', $name));
+        $parts = array_reverse(
+            $this->db->getQuoter()->getTableNameParts($name)
+        );
 
-        if (isset($parts[1])) {
-            $resolvedName->schemaName($parts[0]);
-            $resolvedName->name($parts[1]);
-        } else {
-            $resolvedName->schemaName($this->defaultSchema);
-            $resolvedName->name($name);
-        }
+        $resolvedName->name($parts[0] ?? '');
+        $resolvedName->schemaName($parts[1] ?? $this->defaultSchema);
 
-        $fullName = ($resolvedName->getSchemaName() !== $this->defaultSchema
-            ? (string) $resolvedName->getSchemaName() . '.' : '') . $resolvedName->getName();
-
-        $resolvedName->fullName($fullName);
+        $resolvedName->fullName(
+            $resolvedName->getSchemaName() !== $this->defaultSchema ?
+            implode('.', array_reverse($parts)) : $resolvedName->getName()
+        );
 
         return $resolvedName;
     }
@@ -786,27 +780,6 @@ final class Schema extends AbstractSchema
     protected function createColumnSchema(): ColumnSchema
     {
         return new ColumnSchema();
-    }
-
-    /**
-     * Returns the actual name of a given table name.
-     *
-     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
-     * {@see ConnectionInterface::tablePrefix}.
-     *
-     * @param string $name the table name to be converted.
-     *
-     * @return string the real name of the given table name.
-     */
-    public function getRawTableName(string $name): string
-    {
-        if (str_contains($name, '{{')) {
-            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
-
-            return str_replace('%', $this->db->getTablePrefix(), $name);
-        }
-
-        return $name;
     }
 
     /**
