@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
+use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -518,5 +520,76 @@ final class SchemaTest extends TestCase
     public function testGetSchemaDefaultValues(): void
     {
         $this->markTestSkipped('Oracle does not support default value constraints.');
+    }
+
+    /**
+     * @dataProvider tableSchemaWithDbSchemesDataProvider
+     */
+    public function testTableSchemaWithDbSchemes(string $tableName, string $expectedTableName, string $expectedSchemaName = ''): void
+    {
+        $db = $this->getConnection();
+
+        $commandMock = $this->createMock(CommandInterface::class);
+        $commandMock
+            ->method('queryAll')
+            ->willReturn([]);
+
+        $mockDb = $this->createMock(ConnectionInterface::class);
+
+        $mockDb->method('getQuoter')
+            ->willReturn($db->getQuoter());
+
+        $mockDb
+            ->method('createCommand')
+            ->with(self::callback(function ($sql) {
+                return true;
+            }), self::callback(function ($params) use ($expectedTableName, $expectedSchemaName) {
+                $this->assertEquals($expectedTableName, $params[':tableName']);
+                $this->assertEquals($expectedSchemaName, $params[':schemaName']);
+                return true;
+            }))
+            ->willReturn($commandMock);
+
+        $schema = new Schema($mockDb, $this->createSchemaCache(), 'dbo');
+
+        $schema->getTablePrimaryKey($tableName);
+    }
+
+    public function tableSchemaWithDbSchemesDataProvider(): array
+    {
+        return [
+            ['animal', 'animal', 'dbo'],
+            ['dbo.animal', 'animal', 'dbo'],
+            ['"dbo"."animal"', 'animal', 'dbo'],
+            ['"other"."animal2"', 'animal2', 'other',],
+            ['other."animal2"', 'animal2', 'other',],
+            ['other.animal2', 'animal2', 'other',],
+            ['catalog.other.animal2', 'animal2', 'other'],
+        ];
+    }
+
+    /**
+     * @dataProvider quoterTablePartsDataProvider
+     */
+    public function testQuoterTableParts(string $tableName, ...$expectedParts): void
+    {
+        $quoter = $this->getConnection()->getQuoter();
+
+        $parts = $quoter->getTableNameParts($tableName);
+
+        $this->assertEquals($expectedParts, array_reverse($parts));
+    }
+
+    public function quoterTablePartsDataProvider(): array
+    {
+        return [
+            ['animal', 'animal',],
+            ['dbo.animal', 'animal', 'dbo'],
+            ['"dbo"."animal"', 'animal', 'dbo'],
+            ['"other"."animal2"', 'animal2', 'other'],
+            ['other."animal2"', 'animal2', 'other'],
+            ['other.animal2', 'animal2', 'other'],
+            ['catalog.other.animal2', 'animal2', 'other'],
+        ];
     }
 }
