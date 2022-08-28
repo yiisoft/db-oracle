@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Schema\Quoter as BaseQuoter;
-use Yiisoft\Db\Schema\QuoterInterface;
 
 use function str_contains;
 
