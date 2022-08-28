@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 
 use function str_contains;
 
-final class Quoter extends BaseQuoter implements QuoterInterface
+final class Quoter extends BaseQuoter
 {
     public function quoteSimpleTableName(string $name): string
     {
