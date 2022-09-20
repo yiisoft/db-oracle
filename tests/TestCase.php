@@ -66,7 +66,8 @@ class TestCase extends AbstractTestCase
         );
     }
 
-    protected function changeSqlForOracleBatchInsert(string &$str) {
-        $str = str_replace('INSERT INTO', 'INSERT ALL  INTO', $str) .' SELECT 1 FROM SYS.DUAL';
+    protected function changeSqlForOracleBatchInsert(string &$str)
+    {
+        $str = str_replace('INSERT INTO', 'INSERT ALL  INTO', $str) . ' SELECT 1 FROM SYS.DUAL';
     }
 }

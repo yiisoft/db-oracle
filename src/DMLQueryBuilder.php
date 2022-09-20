@@ -17,13 +17,11 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Strings\NumericHelper;
 
 use function implode;
 use function ltrim;
 use function strrpos;
 use function count;
-use function is_string;
 use function reset;
 
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
