@@ -714,12 +714,19 @@ SQL;
     {
         $data = $this->batchInsertSqlProviderTrait();
 
-        $data['issue11242']['expected'] = 'INSERT ALL  INTO "type" ("int_col", "float_col", "char_col") ' .
-            "VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
-        $data['wrongBehavior']['expected'] = 'INSERT ALL  INTO "type" ("type"."int_col", "float_col", "char_col") ' .
-            "VALUES ('', '', 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
-        $data['batchInsert binds params from expression']['expected'] = 'INSERT ALL  INTO "type" ("int_col") ' .
-            'VALUES (:qp1) SELECT 1 FROM SYS.DUAL';
+        $data['multirow']['expected'] = 'INSERT ALL  INTO "type" ("int_col", "float_col", "char_col", "bool_col") ' .
+            'VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL';
+        $data['multirow']['expectedParams'][':qp3'] = '1';
+        $data['multirow']['expectedParams'][':qp7'] = '0';
+
+        $this->changeSqlForOracleBatchInsert($data['issue11242']['expected']);
+        $data['issue11242']['expectedParams'][':qp3'] = '1';
+
+        $this->changeSqlForOracleBatchInsert($data['wrongBehavior']['expected']);
+        $data['wrongBehavior']['expectedParams'][':qp3'] = '0';
+
+        $this->changeSqlForOracleBatchInsert($data['batchInsert binds params from expression']['expected']);
+        $data['batchInsert binds params from expression']['expectedParams'][':qp3'] = '0';
 
         return $data;
     }
@@ -734,6 +741,7 @@ SQL;
      * @param array $values
      * @param string $expected
      * @param array $expectedParams
+     * @param int $insertedRow
      *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
@@ -744,7 +752,8 @@ SQL;
         array $columns,
         array $values,
         string $expected,
-        array $expectedParams = []
+        array $expectedParams = [],
+        int $insertedRow = 1
     ): void {
         $db = $this->getConnection(true);
 
@@ -756,6 +765,9 @@ SQL;
 
         $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
+
+        $command->execute();
+        $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
     }
 
     public function testAddDropCheck(): void

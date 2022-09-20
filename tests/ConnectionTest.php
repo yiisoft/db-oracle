@@ -238,4 +238,19 @@ final class ConnectionTest extends TestCase
         $this->assertEquals(PDO::ERRMODE_EXCEPTION, $db->getActivePDO()->getAttribute(PDO::ATTR_ERRMODE));
         $db->close();
     }
+
+    public function testLastInsertIdTwoConnection()
+    {
+        $db1 = $this->getConnection();
+        $db2 = $this->getConnection();
+
+        $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate1\')';
+        $db1->createCommand($sql)->execute();
+
+        $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate2\')';
+        $db2->createCommand($sql)->execute();
+
+        $this->assertNotEquals($db1->getLastInsertID('profile_SEQ'), $db2->getLastInsertID('profile_SEQ'));
+        $this->assertNotEquals($db2->getLastInsertID('profile_SEQ'), $db1->getLastInsertID('profile_SEQ'));
+    }
 }

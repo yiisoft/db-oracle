@@ -81,24 +81,15 @@ final class QueryBuilderProvider extends TestCase
     {
         $data = (new BaseQueryBuilderProvider($this->getConnection()))->batchInsertProvider();
 
-        $data[0][3] = 'INSERT ALL  INTO "customer" ("email", "name", "address") ' .
-            "VALUES ('test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine') SELECT 1 FROM SYS.DUAL";
+        $this->changeSqlForOracleBatchInsert($data['simple']['expected']) ;
+        $this->changeSqlForOracleBatchInsert($data['escape-danger-chars']['expected']) ;
+        $this->changeSqlForOracleBatchInsert($data['customer3']['expected']) ;
+        $this->changeSqlForOracleBatchInsert($data['bool-false, bool2-null']['expected']);
 
-        $data['escape-danger-chars']['expected'] = 'INSERT ALL  INTO "customer" ("address") ' .
-            "VALUES ('SQL-danger chars are escaped: ''); --') SELECT 1 FROM SYS.DUAL";
+        $data['wrong']['expected'] = 'INSERT ALL  INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) ' .
+            'VALUES (:qp0, now()) INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL';
 
-        $data[2][3] = 'INSERT ALL  INTO "customer" () ' .
-            "VALUES ('no columns passed') SELECT 1 FROM SYS.DUAL";
-
-        $data['bool-false, bool2-null'][1] = ['[[bool_col]]', '[[bool_col2]]'];
-        $data['bool-false, bool2-null']['expected'] = 'INSERT ALL  INTO "type" ([[bool_col]], [[bool_col2]]) ' .
-            'VALUES (0, NULL) SELECT 1 FROM SYS.DUAL';
-
-        $data[3][3] = 'INSERT ALL  INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) ' .
-            'VALUES (NULL, now()) SELECT 1 FROM SYS.DUAL';
-
-        $data['bool-false, time-now()']['expected'] = 'INSERT ALL  INTO {{%type}} ({{%type}}.[[bool_col]], [[time]]) ' .
-            'VALUES (0, now()) SELECT 1 FROM SYS.DUAL';
+        $this->changeSqlForOracleBatchInsert($data['bool-false, time-now()']['expected']);
 
         return $data;
     }
