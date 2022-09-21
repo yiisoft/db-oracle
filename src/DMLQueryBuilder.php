@@ -17,13 +17,11 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Strings\NumericHelper;
 
 use function implode;
 use function ltrim;
 use function strrpos;
 use function count;
-use function is_string;
 use function reset;
 
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
@@ -45,9 +43,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $schema = $this->schema;
-
-        if (($tableSchema = $schema->getTableSchema($table)) !== null) {
+        if (($tableSchema = $this->schema->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->getColumns();
         } else {
             $columnSchemas = [];
@@ -55,35 +51,22 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
         $values = [];
 
-        /** @psalm-var string[][] $rows */
+        /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
-            $vs = [];
-            foreach ($row as $i => $value) {
-                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+            $placeholders = [];
+            foreach ($row as $index => $value) {
+                if (isset($columns[$index], $columnSchemas[$columns[$index]])) {
                     /** @var mixed $value */
-                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
+                    $value = $this->getTypecastValue($value, $columnSchemas[$columns[$index]]);
                 }
 
-                if (is_string($value)) {
-                    /** @var mixed $value */
-                    $value = $this->quoter->quoteValue($value);
-                } elseif (is_float($value)) {
-                    /* ensure type cast always has . as decimal separator in all locales */
-                    $value = NumericHelper::normalize($value);
-                } elseif ($value === false) {
-                    $value = 0;
-                } elseif ($value === null) {
-                    $value = 'NULL';
-                } elseif ($value instanceof ExpressionInterface) {
-                    $value = $this->queryBuilder->buildExpression($value, $params);
+                if ($value instanceof ExpressionInterface) {
+                    $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
+                } else {
+                    $placeholders[] = $this->queryBuilder->bindParam($value, $params);
                 }
-
-                /** @var mixed */
-                $vs[] = $value;
             }
-
-            /** @psalm-var string[] $vs */
-            $values[] = '(' . implode(', ', $vs) . ')';
+            $values[] = '(' . implode(', ', $placeholders) . ')';
         }
 
         if (empty($values)) {
