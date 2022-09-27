@@ -95,11 +95,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $schema
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
-     * @return array
      */
     protected function findTableNames(string $schema = ''): array
     {
@@ -141,11 +137,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $name
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
-     * @return TableSchemaInterface|null
      */
     protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
@@ -160,11 +152,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
-     * @return Constraint|null
      */
     protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
@@ -174,11 +162,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
-     * @return array
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
@@ -188,11 +172,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
-     * @return array
      */
     protected function loadTableIndexes(string $tableName): array
     {
@@ -244,11 +224,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
-     * @return array
      */
     protected function loadTableUniques(string $tableName): array
     {
@@ -258,11 +234,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
-     * @return array
      */
     protected function loadTableChecks(string $tableName): array
     {
@@ -272,11 +244,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @param string $tableName
-     *
      * @throws NotSupportedException if this method is called.
-     *
-     * @return array
      */
     protected function loadTableDefaultValues(string $tableName): array
     {
@@ -363,8 +331,6 @@ final class Schema extends AbstractSchema
     /**
      * Sequence name of table.
      *
-     * @param string $tableName
-     *
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @return bool|float|int|string|null whether the sequence exists.
@@ -398,10 +364,6 @@ final class Schema extends AbstractSchema
 
     /**
      * Creates ColumnSchema instance.
-     *
-     * @param array|string $column
-     *
-     * @return ColumnSchema
      */
     protected function createColumn(array|string $column): ColumnSchema
     {
@@ -471,10 +433,7 @@ final class Schema extends AbstractSchema
     /**
      * Finds constraints and fills them into TableSchemaInterface object passed.
      *
-     * @param TableSchemaInterface $table
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
      * @psalm-suppress PossiblyNullArrayOffset
      */
     protected function findConstraints(TableSchemaInterface $table): void
@@ -610,7 +569,6 @@ final class Schema extends AbstractSchema
     /**
      * Extracts the data types for the given column.
      *
-     * @param ColumnSchema $column
      * @param string $dbType DB type.
      * @param string|null $precision total number of digits.
      * @param string|null $scale number of digits on the right of the decimal separator.
@@ -649,7 +607,6 @@ final class Schema extends AbstractSchema
     /**
      * Extracts size, precision and scale information from column's DB type.
      *
-     * @param ColumnSchema $column
      * @param string $dbType the column's DB type.
      * @param string|null $precision total number of digits.
      * @param string|null $scale number of digits on the right of the decimal separator.
@@ -791,7 +748,7 @@ final class Schema extends AbstractSchema
      */
     protected function getCacheKey(string $name): array
     {
-        return array_merge([__CLASS__], $this->db->getCacheKey(), [$this->getRawTableName($name)]);
+        return array_merge([self::class], $this->db->getCacheKey(), [$this->getRawTableName($name)]);
     }
 
     /**
@@ -803,7 +760,7 @@ final class Schema extends AbstractSchema
      */
     protected function getCacheTag(): string
     {
-        return md5(serialize(array_merge([__CLASS__], $this->db->getCacheKey())));
+        return md5(serialize(array_merge([self::class], $this->db->getCacheKey())));
     }
 
     /**
@@ -817,9 +774,7 @@ final class Schema extends AbstractSchema
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
         if ($multiple) {
-            return array_map(static function (array $row) {
-                return array_change_key_case($row, CASE_LOWER);
-            }, $row);
+            return array_map(static fn (array $row) => array_change_key_case($row, CASE_LOWER), $row);
         }
 
         return array_change_key_case($row, CASE_LOWER);
