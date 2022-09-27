@@ -355,8 +355,6 @@ SQL;
      * Test whether param binding works in other places than WHERE.
      *
      * @dataProvider bindParamsNonWhereProvider
-     *
-     * @param string $sql
      */
     public function testBindParamsNonWhere(string $sql): void
     {
@@ -395,10 +393,8 @@ SQL;
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
      * @dataProvider invalidSelectColumns
-     *
-     * @param mixed $invalidSelectColumns
      */
-    public function testInsertSelectFailed($invalidSelectColumns): void
+    public function testInsertSelectFailed(mixed $invalidSelectColumns): void
     {
         $db = $this->getConnection();
         $query = new Query($db);
@@ -465,9 +461,6 @@ SQL;
 
     /**
      * @dataProvider upsertProviderTrait
-     *
-     * @param array $firstData
-     * @param array $secondData
      */
     public function testUpsert(array $firstData, array $secondData): void
     {

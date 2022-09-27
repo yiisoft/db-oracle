@@ -155,6 +155,7 @@ final class ConnectionTest extends TestCase
 
     public function testServerStatusCacheWorks(): void
     {
+        $db = null;
         $this->markTestSkipped('Only for master/slave');
 
         $db = $this->getConnection();
@@ -185,7 +186,7 @@ final class ConnectionTest extends TestCase
 
         try {
             $db->open();
-        } catch (InvalidConfigException $e) {
+        } catch (InvalidConfigException) {
         }
 
         $this->assertTrue(
@@ -198,6 +199,7 @@ final class ConnectionTest extends TestCase
 
     public function testServerStatusCacheCanBeDisabled(): void
     {
+        $db = null;
         $this->markTestSkipped('Only for master/slave');
 
         $db = $this->getConnection();
@@ -224,7 +226,7 @@ final class ConnectionTest extends TestCase
 
         try {
             $db->open();
-        } catch (InvalidConfigException $e) {
+        } catch (InvalidConfigException) {
         }
 
         $this->assertFalse($this->cache->psr()->has($cacheKey), 'Caching is disabled');
