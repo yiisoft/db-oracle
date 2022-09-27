@@ -95,9 +95,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
      */
     protected function findTableNames(string $schema = ''): array
     {
@@ -139,9 +137,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
      */
     protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
@@ -156,9 +152,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
      */
     protected function loadTablePrimaryKey(string $tableName): ?Constraint
     {
@@ -168,9 +162,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
@@ -180,9 +172,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
      */
     protected function loadTableIndexes(string $tableName): array
     {
@@ -234,9 +224,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
      */
     protected function loadTableUniques(string $tableName): array
     {
@@ -246,9 +234,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
-     *
      */
     protected function loadTableChecks(string $tableName): array
     {
@@ -258,9 +244,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     *
      * @throws NotSupportedException if this method is called.
-     *
      */
     protected function loadTableDefaultValues(string $tableName): array
     {
@@ -347,10 +331,10 @@ final class Schema extends AbstractSchema
     /**
      * Sequence name of table.
      *
-     *
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @return bool|float|int|string|null whether the sequence exists.
+     *
      * @internal TableSchemaInterface `$table->getName()` the table schema.
      */
     protected function getTableSequenceName(string $tableName): bool|float|int|string|null
@@ -380,8 +364,6 @@ final class Schema extends AbstractSchema
 
     /**
      * Creates ColumnSchema instance.
-     *
-     *
      */
     protected function createColumn(array|string $column): ColumnSchema
     {
@@ -450,7 +432,6 @@ final class Schema extends AbstractSchema
 
     /**
      * Finds constraints and fills them into TableSchemaInterface object passed.
-     *
      *
      * @throws Exception|InvalidConfigException|Throwable
      * @psalm-suppress PossiblyNullArrayOffset
@@ -793,7 +774,7 @@ final class Schema extends AbstractSchema
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
         if ($multiple) {
-            return array_map(static fn(array $row) => array_change_key_case($row, CASE_LOWER), $row);
+            return array_map(static fn (array $row) => array_change_key_case($row, CASE_LOWER), $row);
         }
 
         return array_change_key_case($row, CASE_LOWER);
