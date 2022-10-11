@@ -87,14 +87,9 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
     /**
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      *
-     * @param string $table
-     * @param array|QueryInterface $insertColumns
-     * @param array|bool $updateColumns
-     * @param array $params
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
      *
-     * @return string
      */
     public function upsert(
         string $table,
@@ -245,15 +240,14 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         /**
-         *  Oracle needs at least many queries to reset sequence (see adding transactions and/or use alter method to avoid grants issue?)
+         * Oracle needs at least many queries to reset sequence (see adding transactions and/or use alter method to
+         * avoid grants issue?)
          */
-        return 'declare
-    lastSeq number' . ($value !== null ? (' := ' . $value) : '') . ';
-begin' . ($value === null ? '
-    SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") + 1 INTO lastSeq FROM "' . $tableSchema->getName() . '";' : '') . '
-    if lastSeq IS NULL then lastSeq := 1; end if;
-    execute immediate \'DROP SEQUENCE "' . $sequenceName . '"\';
-    execute immediate \'CREATE SEQUENCE "' . $sequenceName . '" START WITH \' || lastSeq || \' INCREMENT BY 1 NOMAXVALUE NOCACHE\';
-end;';
+        return 'declare lastSeq number' . ($value !== null ? (' := ' . $value) : '') . '; begin' .
+            ($value === null ? 'SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") + 1 INTO lastSeq FROM "' .
+            $tableSchema->getName() . '";' : '') .
+            'if lastSeq IS NULL then lastSeq := 1; end if; execute immediate \'DROP SEQUENCE "' . $sequenceName .
+            '"\'; execute immediate \'CREATE SEQUENCE "' . $sequenceName .
+            '" START WITH \' || lastSeq || \' INCREMENT BY 1 NOMAXVALUE NOCACHE\'; end;';
     }
 }
