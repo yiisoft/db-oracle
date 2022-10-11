@@ -46,7 +46,7 @@ final class CommandPDO extends AbstractCommandPDO
         $returnParams = [];
         $returning = [];
         foreach ($returnColumns as $name) {
-            $phName = QueryBuilder::PARAM_PREFIX . ((is_countable($params) ? count($params) : 0) + count($returnParams));
+            $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
 
             $returnParams[$phName] = [
                 'column' => $name,

@@ -217,6 +217,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     /**
      * @throws InvalidArgumentException
+     *
+     * @psalm-suppress RiskyCast
      */
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
