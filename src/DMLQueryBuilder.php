@@ -241,11 +241,13 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
          * Oracle needs at least many queries to reset sequence (see adding transactions and/or use alter method to
          * avoid grants issue?)
          */
-        return 'declare lastSeq number' . ($value !== null ? (' := ' . $value) : '') . '; begin' .
-            ($value === null ? 'SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") + 1 INTO lastSeq FROM "' .
-            $tableSchema->getName() . '";' : '') .
-            'if lastSeq IS NULL then lastSeq := 1; end if; execute immediate \'DROP SEQUENCE "' . $sequenceName .
-            '"\'; execute immediate \'CREATE SEQUENCE "' . $sequenceName .
-            '" START WITH \' || lastSeq || \' INCREMENT BY 1 NOMAXVALUE NOCACHE\'; end;';
+        return 'declare
+    lastSeq number' . ($value !== null ? (' := ' . $value) : '') . ';
+begin' . ($value === null ? '
+    SELECT MAX("' . $tableSchema->getPrimaryKey()[0] . '") + 1 INTO lastSeq FROM "' . $tableSchema->getName() . '";' : '') . '
+    if lastSeq IS NULL then lastSeq := 1; end if;
+    execute immediate \'DROP SEQUENCE "' . $sequenceName . '"\';
+    execute immediate \'CREATE SEQUENCE "' . $sequenceName . '" START WITH \' || lastSeq || \' INCREMENT BY 1 NOMAXVALUE NOCACHE\';
+end;';
     }
 }
