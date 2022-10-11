@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
 /**
  * ColumnSchemaBuilder is the schema builder for Oracle databases.
  */
-final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
+final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder implements \Stringable
 {
     /**
      * Builds the unsigned string for column. Defaults to unsupported.
