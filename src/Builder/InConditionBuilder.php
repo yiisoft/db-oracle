@@ -55,6 +55,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     *
      * @return string|null null when split is not required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InCondition $condition, array &$params): ?string
