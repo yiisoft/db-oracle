@@ -87,9 +87,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
     /**
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      *
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
-     *
      */
     public function upsert(
         string $table,

@@ -355,7 +355,6 @@ SQL;
      * Test whether param binding works in other places than WHERE.
      *
      * @dataProvider bindParamsNonWhereProvider
-     *
      */
     public function testBindParamsNonWhere(string $sql): void
     {
@@ -394,7 +393,6 @@ SQL;
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
      * @dataProvider invalidSelectColumns
-     *
      */
     public function testInsertSelectFailed(mixed $invalidSelectColumns): void
     {
@@ -463,7 +461,6 @@ SQL;
 
     /**
      * @dataProvider upsertProviderTrait
-     *
      */
     public function testUpsert(array $firstData, array $secondData): void
     {
