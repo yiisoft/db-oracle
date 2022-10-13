@@ -139,7 +139,7 @@ final class Schema extends AbstractSchema
     /**
      * @throws Exception|InvalidConfigException|Throwable
      */
-    protected function loadTableSchema(string $name): ?TableSchemaInterface
+    protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
         $table = $this->resolveTableName($name);
 
@@ -154,7 +154,7 @@ final class Schema extends AbstractSchema
     /**
      * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
      */
-    protected function loadTablePrimaryKey(string $tableName): ?Constraint
+    protected function loadTablePrimaryKey(string $tableName): Constraint|null
     {
         /** @var mixed */
         $tablePrimaryKey = $this->loadTableConstraints($tableName, self::PRIMARY_KEY);
@@ -577,8 +577,8 @@ final class Schema extends AbstractSchema
     protected function extractColumnType(
         ColumnSchema $column,
         string $dbType,
-        ?string $precision,
-        ?string $scale,
+        string|null $precision,
+        string|null $scale,
         string $length
     ): void {
         $column->dbType($dbType);
@@ -615,8 +615,8 @@ final class Schema extends AbstractSchema
     protected function extractColumnSize(
         ColumnSchema $column,
         string $dbType,
-        ?string $precision,
-        ?string $scale,
+        string|null $precision,
+        string|null $scale,
         string $length
     ): void {
         $column->size(trim($length) === '' ? null : (int) $length);

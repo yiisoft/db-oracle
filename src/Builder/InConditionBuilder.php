@@ -58,7 +58,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      *
      * @return string|null null when split is not required. Otherwise - built SQL condition.
      */
-    protected function splitCondition(InCondition $condition, array &$params): ?string
+    protected function splitCondition(InCondition $condition, array &$params): string|null
     {
         $operator = $condition->getOperator();
         $values = $condition->getValues();
