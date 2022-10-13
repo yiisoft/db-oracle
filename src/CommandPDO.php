@@ -46,6 +46,7 @@ final class CommandPDO extends AbstractCommandPDO
         $returnParams = [];
         $returning = [];
         foreach ($returnColumns as $name) {
+            /** @noRector \Rector\Php71\Rector\FuncCall\CountOnNullRector */
             $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
 
             $returnParams[$phName] = [

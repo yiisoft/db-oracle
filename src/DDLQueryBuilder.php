@@ -22,8 +22,15 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         parent::__construct($queryBuilder, $quoter, $schema);
     }
 
-    public function addForeignKey(string $name, string $table, array|string $columns, string $refTable, array|string $refColumns, ?string $delete = null, ?string $update = null): string
-    {
+    public function addForeignKey(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $refTable,
+        array|string $refColumns,
+        string $delete = null,
+        string $update = null
+    ): string {
         $sql = 'ALTER TABLE ' . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' FOREIGN KEY (' . $this->queryBuilder->buildColumns($columns) . ')'
