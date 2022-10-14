@@ -9,20 +9,26 @@
     <br>
 </p>
 
-This extension provides the Oracle database support for the [Yii framework](http://www.yiiframework.com).
+This package provides [Oracle] extension for [Yii DataBase] library.
+It is used in [Yii Framework] but is supposed to be usable separately.
 
-For license information check the [LICENSE](LICENSE.md)-file.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+[Oracle]: https://www.oracle.com/database/technologies/
+[Yii DataBase]: https://github.com/yiisoft/db
+[Yii Framework]: https://www.yiiframework.com/
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
-[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml)
+[![rector](https://github.com/yiisoft/db-oracle/actions/workflows/rector.yml/badge.svg)](https://github.com/yiisoft/db-oracle/actions/workflows/rector.yml)
 [![codecov](https://codecov.io/gh/yiisoft/db-oracle/branch/dev/graph/badge.svg?token=XGJAFXVHSH)](https://codecov.io/gh/yiisoft/db-oracle)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master)
-[![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml)
-[![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
+[![StyleCI](https://github.styleci.io/repos/114756574/shield?branch=master)](https://github.styleci.io/repos/114756574?branch=master)
 
+
+
+## Support version
+
+|  PHP | Oracle Version           |  CI-Actions
+|:----:|:------------------------:|:---:|
+|**8.0 - 8.2**| **11G - 12G**|[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml) [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master) [![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml) [![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
 
 Installation
 ------------
@@ -100,6 +106,15 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ```shell
 ./vendor/bin/psalm
+```
+
+### Rector
+
+Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or 
+use either newest or any specific version of PHP: 
+
+```shell
+./vendor/bin/rector
 ```
 
 ### Support the project
