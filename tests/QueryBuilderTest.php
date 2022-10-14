@@ -316,7 +316,7 @@ SQL;
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
 
         if (is_string($expectedSQL)) {
-            $this->assertEqualsWithoutLE($expectedSQL, $actualSQL);
+            $this->assertSame($expectedSQL, $actualSQL);
         } else {
             $this->assertContains($actualSQL, $expectedSQL);
         }
