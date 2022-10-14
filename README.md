@@ -9,11 +9,7 @@
     <br>
 </p>
 
-This extension provides the Oracle database support for the [Yii framework](http://www.yiiframework.com).
-
-For license information check the [LICENSE](LICENSE.md)-file.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+This package provides Oracle extension for Yii DataBase library. It is used in Yii Framework but is supposed to be usable separately.
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
