@@ -266,6 +266,22 @@ SQL;
         $db->createCommand($sql)->execute();
         $result = $db->createCommand($checkSql)->queryScalar();
         $this->assertEquals(4, $result);
+
+        $sql = $qb->resetSequence('item', '1');
+        $expected = <<<SQL
+declare
+    lastSeq number := 1;
+begin
+    if lastSeq IS NULL then lastSeq := 1; end if;
+    execute immediate 'DROP SEQUENCE "item_SEQ"';
+    execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+end;
+SQL;
+        $this->assertEquals($expected, $sql);
+
+        $db->createCommand($sql)->execute();
+        $result = $db->createCommand($checkSql)->queryScalar();
+        $this->assertEquals(1, $result);
     }
 
     /**

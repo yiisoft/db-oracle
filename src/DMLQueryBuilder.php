@@ -217,10 +217,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @psalm-suppress RiskyCast
      */
-    public function resetSequence(string $tableName, array|int|string|null $value = null): string
+    public function resetSequence(string $tableName, int|string $value = null): string
     {
         $tableSchema = $this->schema->getTableSchema($tableName);
 
@@ -229,13 +227,12 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         $sequenceName = $tableSchema->getSequenceName();
+
         if ($sequenceName === null) {
             throw new InvalidArgumentException("There is no sequence associated with table: $tableName");
         }
 
-        if ($value !== null) {
-            $value = (int) $value;
-        } elseif (count($tableSchema->getPrimaryKey()) > 1) {
+        if ($value === null && count($tableSchema->getPrimaryKey()) > 1) {
             throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $tableName");
         }
 
