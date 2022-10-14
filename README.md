@@ -9,7 +9,12 @@
     <br>
 </p>
 
-This package provides Oracle extension for Yii DataBase library. It is used in Yii Framework but is supposed to be usable separately.
+This package provides [Oracle] extension for [Yii DataBase] library.
+It is used in [Yii Framework] but is supposed to be usable separately.
+
+[Oracle]: https://www.oracle.com/database/technologies/
+[Yii DataBase]: https://github.com/yiisoft/db
+[Yii Framework]: https://www.yiiframework.com/
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
