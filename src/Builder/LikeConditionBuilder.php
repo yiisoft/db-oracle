@@ -26,7 +26,7 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
         '!' => '!!',
     ];
 
-    public function __construct(QueryBuilderInterface $queryBuilder)
+    public function __construct(private QueryBuilderInterface $queryBuilder)
     {
         parent::__construct($queryBuilder, $this->getEscapeSql());
     }
