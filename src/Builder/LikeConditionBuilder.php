@@ -14,7 +14,7 @@ use function substr;
 
 final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
-    protected string|null $escapeCharacter = '!';
+    private string|null $escapeCharacter = '\\';
 
     /**
      * `\` is initialized in {@see buildLikeCondition()} method since we need to choose replacement value based on
@@ -26,9 +26,9 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
         '!' => '!!',
     ];
 
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(QueryBuilderInterface $queryBuilder)
     {
-        parent::__construct($queryBuilder);
+        parent::__construct($queryBuilder, $this->getEscapeSql());
     }
 
     /**
@@ -45,5 +45,18 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
         }
 
         return parent::build($expression, $params);
+    }
+
+    /**
+     * @return string character used to escape special characters in LIKE conditions. By default,
+     * it's assumed to be `\`.
+     */
+    private function getEscapeSql(): string
+    {
+        if ($this->escapeCharacter !== null) {
+            return " ESCAPE '{$this->escapeCharacter}'";
+        }
+
+        return '';
     }
 }
