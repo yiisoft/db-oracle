@@ -14,7 +14,7 @@ use function substr;
 
 final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
-    private string|null $escapeCharacter = '\\';
+    private string|null $escapeCharacter = '!';
 
     /**
      * `\` is initialized in {@see buildLikeCondition()} method since we need to choose replacement value based on
