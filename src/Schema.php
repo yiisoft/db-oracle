@@ -355,14 +355,6 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @inheritDoc
-     */
-    public function getLastInsertID(string $sequenceName = null): string
-    {
-        return $this->db->getLastInsertID($sequenceName);
-    }
-
-    /**
      * Creates ColumnSchema instance.
      */
     protected function createColumn(array|string $column): ColumnSchema
@@ -778,13 +770,5 @@ final class Schema extends AbstractSchema
         }
 
         return array_change_key_case($row, CASE_LOWER);
-    }
-
-    /**
-     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
-     */
-    public function supportsSavepoint(): bool
-    {
-        return $this->db->isSavepointEnabled();
     }
 }
