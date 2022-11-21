@@ -14,7 +14,7 @@ use function substr;
 
 final class LikeConditionBuilder extends AbstractLikeConditionBuilder
 {
-    private string|null $escapeCharacter = '!';
+    private string $escapeCharacter = '!';
 
     /**
      * `\` is initialized in {@see buildLikeCondition()} method since we need to choose replacement value based on
@@ -53,10 +53,6 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
      */
     private function getEscapeSql(): string
     {
-        if ($this->escapeCharacter !== null) {
-            return " ESCAPE '{$this->escapeCharacter}'";
-        }
-
-        return '';
+        return $this->escapeCharacter !== '' ? " ESCAPE '{$this->escapeCharacter}'" : '';
     }
 }
