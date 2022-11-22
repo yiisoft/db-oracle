@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Exception;
-use Yiisoft\Db\QueryBuilder\Conditions\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
-use Yiisoft\Db\QueryBuilder\Conditions\Interface\LikeConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
