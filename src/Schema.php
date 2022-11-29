@@ -94,6 +94,24 @@ final class Schema extends AbstractSchema
         return $this->db->createCommand($sql)->queryColumn();
     }
 
+    protected function findTableComment(TableSchemaInterface $tableSchema): void
+    {
+        $sql = <<<SQL
+        SELECT "COMMENTS"
+        FROM ALL_TAB_COMMENTS
+        WHERE
+              "OWNER" = :schemaName AND
+              "TABLE_NAME" = :tableName
+        SQL;
+
+        $comment = $this->db->createCommand($sql, [
+            ':schemaName' => $tableSchema->getSchemaName(),
+            ':tableName' => $tableSchema->getName(),
+        ])->queryScalar();
+
+        $tableSchema->comment(is_string($comment) ? $comment : null);
+    }
+
     /**
      * @throws Exception|InvalidConfigException|Throwable
      */
@@ -142,6 +160,7 @@ final class Schema extends AbstractSchema
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
         $table = $this->resolveTableName($name);
+        $this->findTableComment($table);
 
         if ($this->findColumns($table)) {
             $this->findConstraints($table);
