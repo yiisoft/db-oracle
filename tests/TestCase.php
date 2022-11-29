@@ -10,6 +10,8 @@ use Yiisoft\Db\Oracle\PDODriver;
 use Yiisoft\Db\Oracle\ConnectionPDO;
 use Yiisoft\Db\TestSupport\TestTrait;
 
+use function str_replace;
+
 class TestCase extends AbstractTestCase
 {
     use TestTrait;
@@ -24,15 +26,10 @@ class TestCase extends AbstractTestCase
     protected array $likeParameterReplacements = [];
     protected ?ConnectionPDO $db = null;
 
-    /**
-     * @param bool $reset whether to clean up the test database.
-     *
-     * @return ConnectionPDO
-     */
     protected function getConnection(
-        $reset = false,
+        bool $reset = false,
         ?string $dsn = null,
-        string $fixture = __DIR__ . '/Fixture/oci.sql'
+        string $fixture = __DIR__ . '/Support/Fixture/oci.sql'
     ): ConnectionPDO {
         $pdoDriver = new PDODriver($dsn ?? $this->dsn, $this->username, $this->password);
         $this->db = new ConnectionPDO($pdoDriver, $this->createQueryCache(), $this->createSchemaCache());

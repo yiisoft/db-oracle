@@ -25,8 +25,6 @@ BEGIN EXECUTE IMMEDIATE 'DROP TABLE "dossier"'; EXCEPTION WHEN OTHERS THEN IF SQ
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "employee"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "department"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP VIEW "animal_view"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
-BEGIN EXECUTE IMMEDIATE 'DROP TABLE "validator_main"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
-BEGIN EXECUTE IMMEDIATE 'DROP TABLE "validator_ref"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "bit_values"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END; --
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "T_constraints_4"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
 BEGIN EXECUTE IMMEDIATE 'DROP TABLE "T_constraints_3"'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;--
@@ -305,23 +303,6 @@ CREATE TABLE "T_upsert"
 );
 CREATE SEQUENCE "T_upsert_SEQ";
 
-/**
- * (Postgres-)Database Schema for validator tests
- */
-
-CREATE TABLE "validator_main" (
-  "id" integer not null,
-  "field1" varchar2(255),
-  CONSTRAINT "validator_main_PK" PRIMARY KEY ("id") ENABLE
-);
-
-CREATE TABLE "validator_ref" (
-  "id" integer not null,
-  "a_field" varchar2(255),
-  "ref"     integer,
-  CONSTRAINT "validator_ref_PK" PRIMARY KEY ("id") ENABLE
-);
-
 CREATE TABLE "T_upsert_varbinary"
 (
     "id" integer not null,
@@ -443,17 +424,6 @@ INSERT INTO "employee" ("id", "department_id", "first_name", "last_name") VALUES
 INSERT INTO "dossier" ("id", "department_id", "employee_id", "summary") VALUES (1, 1, 1, 'Excellent employee.');
 INSERT INTO "dossier" ("id", "department_id", "employee_id", "summary") VALUES (2, 2, 1, 'Brilliant employee.');
 INSERT INTO "dossier" ("id", "department_id", "employee_id", "summary") VALUES (3, 2, 2, 'Good employee.');
-
-INSERT INTO "validator_main" ("id", "field1") VALUES (1, 'just a string1');
-INSERT INTO "validator_main" ("id", "field1") VALUES (2, 'just a string2');
-INSERT INTO "validator_main" ("id", "field1") VALUES (3, 'just a string3');
-INSERT INTO "validator_main" ("id", "field1") VALUES (4, 'just a string4');
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (1, 'ref_to_2', 2);
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (2, 'ref_to_2', 2);
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (3, 'ref_to_3', 3);
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (4, 'ref_to_4', 4);
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (5, 'ref_to_4', 4);
-INSERT INTO "validator_ref" ("id", "a_field", "ref") VALUES (6, 'ref_to_5', 5);
 
 INSERT INTO "bit_values" ("id", "val")
   SELECT 1, '0' FROM SYS.DUAL

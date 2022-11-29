@@ -6,12 +6,13 @@ namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use PDOException;
+use Throwable;
 use Yiisoft\Db\Driver\PDO\CommandPDO as AbstractCommandPDO;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
 use function count;
@@ -28,11 +29,6 @@ final class CommandPDO extends AbstractCommandPDO
         return $this->db->getQueryBuilder();
     }
 
-    public function schema(): SchemaInterface
-    {
-        return $this->db->getSchema();
-    }
-
     public function insertEx(string $table, array $columns): bool|array
     {
         $params = [];
@@ -45,6 +41,7 @@ final class CommandPDO extends AbstractCommandPDO
 
         $returnParams = [];
         $returning = [];
+
         foreach ($returnColumns as $name) {
             /** @noRector \Rector\Php71\Rector\FuncCall\CountOnNullRector */
             $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
@@ -82,7 +79,7 @@ final class CommandPDO extends AbstractCommandPDO
         $result = [];
 
         foreach ($returnParams as $value) {
-            /** @var mixed */
+            /** @psalm-var mixed */
             $result[$value['column']] = $value['value'];
         }
 
@@ -111,6 +108,11 @@ final class CommandPDO extends AbstractCommandPDO
         }
     }
 
+    /**
+     * @psalm-suppress UnusedClosureParam
+     *
+     * @throws Throwable
+     */
     protected function internalExecute(?string $rawSql): void
     {
         $attempt = 0;
@@ -122,7 +124,10 @@ final class CommandPDO extends AbstractCommandPDO
                     && $this->isolationLevel !== null
                     && $this->db->getTransaction() === null
                 ) {
-                    $this->db->transaction(fn (string $rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
+                    $this->db->transaction(
+                        fn (ConnectionPDOInterface $db) => $this->internalExecute($rawSql),
+                        $this->isolationLevel
+                    );
                 } else {
                     $this->pdoStatement?->execute();
                 }
