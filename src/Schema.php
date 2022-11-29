@@ -95,7 +95,9 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     protected function findTableNames(string $schema = ''): array
     {
@@ -137,7 +139,9 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
@@ -152,7 +156,10 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function loadTablePrimaryKey(string $tableName): Constraint|null
     {
@@ -162,7 +169,10 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
@@ -172,7 +182,10 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function loadTableIndexes(string $tableName): array
     {
@@ -224,7 +237,10 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function loadTableUniques(string $tableName): array
     {
@@ -234,7 +250,10 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function loadTableChecks(string $tableName): array
     {
@@ -248,7 +267,7 @@ final class Schema extends AbstractSchema
      */
     protected function loadTableDefaultValues(string $tableName): array
     {
-        throw new NotSupportedException('Oracle does not support default value constraints.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
 
     /**
@@ -273,7 +292,8 @@ final class Schema extends AbstractSchema
      *
      * @param TableSchemaInterface $table the table schema.
      *
-     * @throws Exception|Throwable
+     * @throws Exception
+     * @throws Throwable
      *
      * @return bool whether the table exists.
      */
@@ -331,7 +351,9 @@ final class Schema extends AbstractSchema
     /**
      * Sequence name of table.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
      * @return bool|float|int|string|null whether the sequence exists.
      *
@@ -425,7 +447,10 @@ final class Schema extends AbstractSchema
     /**
      * Finds constraints and fills them into TableSchemaInterface object passed.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     *
      * @psalm-suppress PossiblyNullArrayOffset
      */
     protected function findConstraints(TableSchemaInterface $table): void
@@ -525,7 +550,9 @@ final class Schema extends AbstractSchema
      *
      * @param TableSchemaInterface $table the table metadata.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
      * @return array all unique indexes for the given table.
      */
@@ -626,7 +653,10 @@ final class Schema extends AbstractSchema
      * - uniques
      * - checks
      *
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      *
      * @return mixed constraints.
      */

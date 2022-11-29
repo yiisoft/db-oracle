@@ -4,529 +4,366 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use PDO;
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Connection\Connection;
+use ReflectionException;
+use Throwable;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\Schema;
+use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\TestSupport\TestCommandTrait;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Common\CommonCommandTest;
+use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Transaction\TransactionInterface;
+
+use function is_resource;
+use function str_pad;
+use function stream_get_contents;
 
 /**
  * @group oracle
- * @group upsert
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
-final class CommandTest extends TestCase
+final class CommandTest extends CommonCommandTest
 {
-    use TestCommandTrait;
+    use TestTrait;
 
     protected string $upsertTestCharCast = 'CAST([[address]] AS VARCHAR(255))';
 
-    public function testAddDropPrimaryKey(): void
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
 
-        $tableName = 'test_pk';
-        $name = 'test_pk_constraint';
+        $command = $db->createCommand();
 
-        $schema = $db->getSchema();
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.'
+        );
 
-        if ($schema->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
-        }
-
-        $db->createCommand()->createTable($tableName, [
-            'int1' => 'integer not null',
-            'int2' => 'integer not null',
-        ])->execute();
-
-        $this->assertNull($schema->getTablePrimaryKey($tableName, true));
-
-        $db->createCommand()->addPrimaryKey($name, $tableName, ['int1'])->execute();
-        $pk = $schema->getTablePrimaryKey($tableName, true);
-
-        $this->assertNotNull($pk);
-        $this->assertEquals(['int1'], $pk->getColumnNames());
-
-        $db->createCommand()->dropPrimaryKey($name, $tableName)->execute();
-
-        $this->assertNull($schema->getTablePrimaryKey($tableName, true));
-
-        $db->createCommand()->addPrimaryKey($name, $tableName, ['int1', 'int2'])->execute();
-        $pk = $schema->getTablePrimaryKey($tableName, true);
-
-        $this->assertNotNull($pk);
-        $this->assertEquals(['int1', 'int2'], $pk->getColumnNames());
+        $command->addDefaultValue('{{name}}', '{{table}}', 'column', 'value');
     }
 
-    public function testAutoQuoting(): void
-    {
-        $db = $this->getConnection();
-
-        $sql = 'SELECT [[id]], [[t.name]] FROM {{customer}} t';
-        $command = $db->createCommand($sql);
-        $this->assertEquals('SELECT "id", "t"."name" FROM "customer" t', $command->getSql());
+    /**
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::batchInsert()
+     *
+     * @throws Throwable
+     */
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        array $values,
+        string $expected,
+        array $expectedParams = [],
+        int $insertedRow = 1
+    ): void {
+        parent::testBatchInsert($table, $columns, $values, $expected, $expectedParams, $insertedRow);
     }
 
-    public function testLastInsertId(): void
-    {
-        $db = $this->getConnection(true);
-
-        $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate\')';
-
-        $command = $db->createCommand($sql);
-
-        $command->execute();
-
-        $this->assertEquals(3, $db->getLastInsertID('profile_SEQ'));
-    }
-
-    public function testLastInsertIdException(): void
-    {
-        $db = $this->getConnection();
-        $db->close();
-
-        $this->expectException(InvalidCallException::class);
-        $db->getLastInsertID('profile_SEQ');
-    }
-
-    public function testLastInsertIdNotSupportedException(): void
-    {
-        $db = $this->getConnection();
-        $db->close();
-
-        $this->expectException(InvalidArgumentException::class);
-        $db->getLastInsertID();
-    }
-
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     public function testCLOBStringInsertion(): void
     {
         $db = $this->getConnection();
 
-        if ($db->getSchema()->getTableSchema('longstring') !== null) {
-            $db->createCommand()->dropTable('longstring')->execute();
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('longstring') !== null) {
+            $command->dropTable('longstring')->execute();
         }
 
-        $db->createCommand()->createTable('longstring', ['message' => Schema::TYPE_TEXT])->execute();
-
+        $command->createTable('longstring', ['message' => Schema::TYPE_TEXT])->execute();
         $longData = str_pad('-', 4001, '-=', STR_PAD_LEFT);
-        $db->createCommand()->insert('longstring', [
-            'message' => $longData,
-        ])->execute();
+        $command->insert('longstring', ['message' => $longData])->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT count(*) FROM {{longstring}}')->queryScalar());
+        $this->assertSame(
+            '1',
+            $command->setSql(
+                <<<SQL
+                SELECT count(*) FROM [[longstring]]
+                SQL,
+            )->queryScalar(),
+        );
 
-        $db->createCommand()->dropTable('longstring')->execute();
-    }
-
-    public function testInsert(): void
-    {
-        $db = $this->getConnection();
-
-        $db->createCommand('DELETE FROM {{customer}}')->execute();
-
-        $command = $db->createCommand();
-
-        $command->insert(
-            '{{customer}}',
-            [
-                'email' => 't1@example.com',
-                'name' => 'test',
-                'address' => 'test address',
-            ]
-        )->execute();
-
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{customer}}')->queryScalar());
-
-        $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryOne();
-
-        $this->assertEquals([
-            'email' => 't1@example.com',
-            'name' => 'test',
-            'address' => 'test address',
-        ], $record);
-    }
-
-    public function testQueryCache()
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNotNull($this->queryCache);
-
-        $this->queryCache->setEnable(true);
-
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-        $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
-
-        $update = $db->createCommand('UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id');
-        $update->bindValues([':id' => 1, ':name' => 'user11'])->execute();
-
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
-
-        $db->cache(function (Connection $db) use ($update) {
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
-
-            $update->bindValues([':id' => 2, ':name' => 'user22'])->execute();
-
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
-
-            $db->noCache(function () use ($db) {
-                $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-                $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
-            });
-
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
-        }, 10);
-
-        $this->queryCache->setEnable(false);
-
-        $db->cache(function (Connection $db) use ($update) {
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
-
-            $update->bindValues([':id' => 2, ':name' => 'user2'])->execute();
-
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
-        }, 10);
-
-        $this->queryCache->setEnable(true);
-
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
-
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
-
-        $update->bindValues([':id' => 1, ':name' => 'user1'])->execute();
-
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
-
-        $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
-
-        $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->noCache();
-
-        $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
-
-        $db->cache(function (Connection $db) {
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
-
-            $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
-
-            $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->noCache();
-
-            $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
-        }, 10);
+        $command->dropTable('longstring')->execute();
     }
 
     /**
-     * verify that {{}} are not going to be replaced in parameters.
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
-    public function testNoTablenameReplacement(): void
+    public function testCreateTable(): void
     {
         $db = $this->getConnection(true);
 
-        $db->createCommand()->insert(
-            '{{customer}}',
-            [
-                'name' => 'Some {{weird}} name',
-                'email' => 'test@example.com',
-                'address' => 'Some {{%weird}} address',
-            ]
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('testCreateTable') !== null) {
+            $command->setSql(
+                <<<SQL
+                DROP SEQUENCE testCreateTable_SEQ
+                SQL,
+            )->execute();
+            $command->dropTable('testCreateTable')->execute();
+        }
+
+        $command->createTable(
+            '{{testCreateTable}}',
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
         )->execute();
-
-        $customerId = $db->getLastInsertID('customer_SEQ');
-
-        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
-
-        $this->assertIsArray($customer);
-        $this->assertEquals('Some {{weird}} name', $customer['name']);
-        $this->assertEquals('Some {{%weird}} address', $customer['address']);
-
-        $db->createCommand()->update(
-            '{{customer}}',
-            [
-                'name' => 'Some {{updated}} name',
-                'address' => 'Some {{%updated}} address',
-            ],
-            ['id' => $customerId]
+        $command->setSql(
+            <<<SQL
+            CREATE SEQUENCE testCreateTable_SEQ START with 1 INCREMENT BY 1
+            SQL,
         )->execute();
+        $command->setSql(
+            <<<SQL
+            INSERT INTO [[testCreateTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)
+            SQL,
+        )->execute();
+        $records = $command->setSql(
+            <<<SQL
+            SELECT [[id]], [[bar]] FROM [[testCreateTable]]
+            SQL,
+        )->queryAll();
 
-        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE "id"=' . $customerId)->queryOne();
-
-        $this->assertIsArray($customer);
-        $this->assertEquals('Some {{updated}} name', $customer['name']);
-        $this->assertEquals('Some {{%updated}} address', $customer['address']);
+        $this->assertSame([['id' => '1', 'bar' => '1']], $records);
     }
 
-    public function testBindParamValue(): void
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testCreateView(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('testCreateView') !== null) {
+            $command->dropView('testCreateView')->execute();
+        }
+
+        if ($schema->getTableSchema('testCreateViewTable') !== null) {
+            $command->setSql(
+                <<<SQL
+                DROP SEQUENCE testCreateViewTable_SEQ
+                SQL,
+            )->execute();
+            $command->dropTable('testCreateViewTable')->execute();
+        }
+
+        $subquery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', '{{bar}}', '5']);
+        $command->createTable(
+            '{{testCreateViewTable}}',
+            [
+                '[[id]]' => Schema::TYPE_PK,
+                '[[bar]]' => Schema::TYPE_INTEGER,
+            ],
+        )->execute();
+        $command->setSql(
+            <<<SQL
+            CREATE SEQUENCE testCreateViewTable_SEQ START with 1 INCREMENT BY 1
+            SQL,
+        )->execute();
+        $command->setSql(
+            <<<SQL
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)
+            SQL,
+        )->execute();
+        $command->setSql(
+            <<<SQL
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)
+            SQL,
+        )->execute();
+        $command->createView('{{testCreateView}}', $subquery)->execute();
+
+        $records = $db->createCommand(
+            <<<SQL
+            SELECT [[bar]] FROM [[testCreateView]]
+            SQL,
+        )->queryAll();
+
+        $this->assertSame([['bar' => '6']], $records);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function testDropDefaultValue(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.'
+        );
+
+        $command->dropDefaultValue('{{name}}', '{{table}}');
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws ReflectionException
+     * @throws Throwable
+     */
+    public function testExecuteWithTransaction(): void
     {
         $db = $this->getConnection(true);
 
-        /** bindParam */
-        $sql = 'INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES (:email, :name, :address)';
-        $command = $db->createCommand($sql);
-        $email = 'user4@example.com';
-        $name = 'user4';
-        $address = 'address4';
-        $command->bindParam(':email', $email);
-        $command->bindParam(':name', $name);
-        $command->bindParam(':address', $address);
-        $command->execute();
-
-        $sql = 'SELECT [[name]] FROM {{customer}} WHERE [[email]] = :email';
-        $command = $db->createCommand($sql);
-        $command->bindParam(':email', $email);
-        $this->assertEquals($name, $command->queryScalar());
-
-        $sql = <<<'SQL'
-INSERT INTO {{type}} ([[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[numeric_col]], [[bool_col]])
-  VALUES (:int_col, :char_col, :float_col, :blob_col, :numeric_col, :bool_col)
-SQL;
-        $command = $db->createCommand($sql);
-        $intCol = 123;
-        $charCol = str_repeat('abc', 33) . 'x'; // a 100 char string
-        $boolCol = '0';
-        $command->bindParam(':int_col', $intCol, PDO::PARAM_INT);
-        $command->bindParam(':char_col', $charCol);
-        $command->bindParam(':bool_col', $boolCol, PDO::PARAM_BOOL);
-
-        /** can't bind floats without support from a custom PDO driver */
-        $floatCol = 2;
-        $numericCol = 3;
-        /** can't use blobs without support from a custom PDO driver */
-        $blobCol = null;
-        $command->bindParam(':float_col', $floatCol, PDO::PARAM_INT);
-        $command->bindParam(':numeric_col', $numericCol, PDO::PARAM_INT);
-        $command->bindParam(':blob_col', $blobCol);
-
-        $this->assertEquals(1, $command->execute());
+        $this->assertNull($db->getTransaction());
 
         $command = $db->createCommand(
-            'SELECT [[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[numeric_col]], [[bool_col]] FROM {{type}}'
+            <<<SQL
+            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 1')
+            SQL,
         );
-        $row = $command->queryOne();
 
-        $this->assertIsArray($row);
-        $this->assertEquals($intCol, $row['int_col']);
-        $this->assertEquals($charCol, $row['char_col']);
-        $this->assertEquals($floatCol, $row['float_col']);
-        $this->assertEquals($blobCol, $row['blob_col']);
-        $this->assertEquals($numericCol, $row['numeric_col']);
-        $this->assertEquals($boolCol, (int)$row['bool_col']);
+        Assert::invokeMethod($command, 'requireTransaction');
 
-        /** bindValue */
-        $sql = 'INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES (:email, \'user5\', \'address5\')';
-        $command = $db->createCommand($sql);
-        $command->bindValue(':email', 'user5@example.com');
         $command->execute();
 
-        $sql = 'SELECT [[email]] FROM {{customer}} WHERE [[name]] = :name';
-        $command = $db->createCommand($sql);
-        $command->bindValue(':name', 'user5');
-        $this->assertEquals('user5@example.com', $command->queryScalar());
-    }
+        $this->assertNull($db->getTransaction());
 
-    public function bindParamsNonWhereProvider(): array
-    {
-        return [
-            ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email GROUP BY SUBSTR("name", :len)'],
-            ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email ORDER BY SUBSTR("name", :len)'],
-            ['SELECT SUBSTR("name", :len) FROM {{customer}} WHERE [[email]] = :email'],
-        ];
+        $this->assertEquals(
+            1,
+            $db->createCommand(
+                <<<SQL
+                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 1'
+                SQL,
+            )->queryScalar(),
+        );
+
+        $command = $db->createCommand(
+            <<<SQL
+            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 2')
+            SQL,
+        );
+
+        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_COMMITTED]);
+
+        $command->execute();
+
+        $this->assertNull($db->getTransaction());
+
+        $this->assertEquals(
+            1,
+            $db->createCommand(
+                <<<SQL
+                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 2'
+                SQL,
+            )->queryScalar(),
+        );
     }
 
     /**
-     * Test whether param binding works in other places than WHERE.
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::rawSql()
      *
-     * @dataProvider bindParamsNonWhereProvider
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
-    public function testBindParamsNonWhere(string $sql): void
+    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
-        $db = $this->getConnection(true);
-
-        $db->createCommand()->insert(
-            '{{customer}}',
-            ['name' => 'testParams', 'email' => 'testParams@example.com', 'address' => '1']
-        )->execute();
-
-        $params = [
-            ':email' => 'testParams@example.com',
-            ':len' => 5,
-        ];
-
-        $command = $db->createCommand($sql, $params);
-
-        $this->assertEquals('Params', $command->queryScalar());
+        parent::testGetRawSql($sql, $params, $expectedRawSql);
     }
 
     /**
-     * Data provider for testInsertSelectFailed.
-     *
-     * @return array
+     * @throws Exception
+     * @throws InvalidCallException
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
-    public function invalidSelectColumns()
-    {
-        return [
-            [[]],
-            ['*'],
-            [['*']],
-        ];
-    }
-
-    /**
-     * Test INSERT INTO ... SELECT SQL statement with wrong query object.
-     *
-     * @dataProvider invalidSelectColumns
-     */
-    public function testInsertSelectFailed(mixed $invalidSelectColumns): void
-    {
-        $db = $this->getConnection();
-        $query = new Query($db);
-
-        $query->select($invalidSelectColumns)->from('{{customer}}');
-
-        $command = $db->createCommand();
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('select query object with enumerated (named) parameters');
-
-        $command->insert(
-            '{{customer}}',
-            $query
-        )->execute();
-    }
-
-    /**
-     * @dataProvider dataInsertVarbinary
-     *
-     * @throws \Throwable
-     * @throws \Yiisoft\Db\Exception\Exception
-     * @throws \Yiisoft\Db\Exception\InvalidConfigException
-     */
-    public function testInsertVarbinary($expectedData, $testData)
-    {
-        $db = $this->getConnection();
-
-        $db->createCommand()->delete('T_upsert_varbinary')->execute();
-
-        $db->createCommand()->insert('T_upsert_varbinary', ['id' => 1, 'blob_col' => $testData])->execute();
-
-        $query = (new Query($db))
-            ->select(['blob_col'])
-            ->from('T_upsert_varbinary')
-            ->where(['id' => 1]);
-
-        $resultData = $query->createCommand()->queryOne();
-
-        $this->assertIsArray($resultData);
-
-        $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
-
-        $this->assertEquals($expectedData, $resultBlob);
-    }
-
-    public function dataInsertVarbinary()
-    {
-        return [
-            [
-                json_encode(['string' => 'string', 'integer' => 1234]),
-                json_encode(['string' => 'string', 'integer' => 1234]),
-            ],
-            [
-                serialize(['string' => 'string', 'integer' => 1234]),
-                new Param(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
-            ],
-            [
-                'simple string',
-                'simple string',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider upsertProviderTrait
-     */
-    public function testUpsert(array $firstData, array $secondData): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
-        $this->performAndCompareUpsertResult($db, $firstData);
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
-        $this->performAndCompareUpsertResult($db, $secondData);
-    }
-
     public function testsInsertQueryAsColumnValue(): void
     {
         $db = $this->getConnection(true);
 
-        $time = time();
-
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
-
         $command = $db->createCommand();
+        $time = (string) time();
 
-        $command->insert('{{order}}', [
-            'customer_id' => 1,
-            'created_at' => $time,
-            'total' => 42,
-        ])->execute();
-
+        $command->delete('{{order_with_null_fk}}')->execute();
+        $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
         $columnValueQuery = new Query($db);
-
         $orderId = $db->getLastInsertID('order_SEQ');
-
         $columnValueQuery->select('created_at')->from('{{order}}')->where(['id' => $orderId]);
-
-        $command = $db->createCommand();
-
         $command->insert(
             '{{order_with_null_fk}}',
             [
                 'customer_id' => $orderId,
                 'created_at' => $columnValueQuery,
                 'total' => 42,
-            ]
+            ],
         )->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             $time,
-            $db->createCommand(
-                'SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = ' . $orderId
-            )->queryScalar()
+            $command->setSql(
+                <<<SQL
+                SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = :orderId
+                SQL,
+            )->bindValues([':orderId' => $orderId])->queryScalar(),
         );
 
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
-        $db->createCommand('DELETE FROM {{order}} WHERE [[id]] = ' . $orderId)->execute();
+        $command->delete('{{order_with_null_fk}}')->execute();
+        $command->delete('{{order}}', ['id' => $orderId])->execute();
     }
 
     /**
-     * Test INSERT INTO ... SELECT SQL statement with alias syntax.
+     * @throws Exception
+     * @throws InvalidCallException
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testInsertExWithPrimaryKeyString(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_insert_ex_string}}') !== null) {
+            $command->dropTable('{{test_insert_ex_string}}')->execute();
+        }
+
+        $command->createTable(
+            '{{test_insert_ex_string}}',
+            ['id' => 'varchar(10) primary key', 'name' => 'varchar(10)'],
+        )->execute();
+
+        $result = $command->insertEx('{{test_insert_ex_string}}', ['id' => '1', 'name' => 'test']);
+
+        $this->assertSame(['id' => '1'], $result);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function testInsertSelectAlias(): void
     {
         $db = $this->getConnection();
 
-        $db->createCommand('DELETE FROM {{customer}}')->execute();
-
         $command = $db->createCommand();
-
+        $command->delete('{{customer}}')->execute();
         $command->insert(
             '{{customer}}',
             [
@@ -536,21 +373,28 @@ SQL;
             ]
         )->execute();
 
-        $query = $db->createCommand(
-            "SELECT 't2@example.com' as [[email]], [[address]] as [[name]], [[name]] as [[address]] from {{customer}}"
+        $query = $command->setSql(
+            <<<SQL
+            SELECT 't2@example.com' AS [[email]], [[address]] AS [[name]], [[name]] AS [[address]] FROM [[customer]]
+            SQL,
         );
         $row = $query->queryOne();
 
         $this->assertIsArray($row);
 
-        $command->insert(
-            '{{customer}}',
-            $row
-        )->execute();
+        $command->insert('{{customer}}', $row)->execute();
 
-        $this->assertEquals(2, $db->createCommand('SELECT COUNT(*) FROM {{customer}}')->queryScalar());
+        $this->assertEquals(2, $command->setSql(
+            <<<SQL
+            SELECT COUNT(*) FROM [[customer]]
+            SQL,
+        )->queryScalar());
 
-        $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryAll();
+        $record = $command->setSql(
+            <<<SQL
+            SELECT [[email]], [[name]], [[address]] FROM {{customer}}
+            SQL,
+        )->queryAll();
 
         $this->assertEquals([
             [
@@ -566,316 +410,102 @@ SQL;
         ], $record);
     }
 
-    public function testCreateTable(): void
+    /**
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::insertVarbinary()
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testInsertVarbinary(mixed $expectedData, mixed $testData): void
     {
         $db = $this->getConnection(true);
 
-        if ($db->getSchema()->getTableSchema('testCreateTable') !== null) {
-            $db->createCommand('DROP SEQUENCE testCreateTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testCreateTable')->execute();
-        }
+        $command = $db->createCommand();
+        $command->delete('{{T_upsert_varbinary}}')->execute();
+        $command->insert('{{T_upsert_varbinary}}', ['id' => 1, 'blob_col' => $testData])->execute();
+        $query = (new Query($db))->select(['blob_col'])->from('{{T_upsert_varbinary}}')->where(['id' => 1]);
+        $resultData = $query->createCommand()->queryOne();
 
-        $db->createCommand()->createTable(
-            '{{testCreateTable}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
-        )->execute();
+        $this->assertIsArray($resultData);
 
-        $db->createCommand('CREATE SEQUENCE testCreateTable_SEQ START with 1 INCREMENT BY 1')->execute();
+        /** @var mixed $resultBlob */
+        $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
 
-        $db->createCommand(
-            'INSERT INTO {{testCreateTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
-        )->execute();
-
-        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testCreateTable}}')->queryAll();
-
-        $this->assertEquals([
-            ['id' => 1, 'bar' => 1],
-        ], $records);
+        $this->assertSame($expectedData, $resultBlob);
     }
 
-    public function testCreateView(): void
+    /**
+     * @throws Exception
+     * @throws InvalidCallException
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testNoTablenameReplacement(): void
     {
-        $db = $this->getConnection();
-
-        $subquery = (new Query($db))
-            ->select('bar')
-            ->from('testCreateViewTable')
-            ->where(['>', 'bar', '5']);
-
-        if ($db->getSchema()->getTableSchema('testCreateView') !== null) {
-            $db->createCommand()->dropView('testCreateView')->execute();
-        }
-
-        if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
-            $db->createCommand('DROP SEQUENCE testCreateViewTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testCreateViewTable')->execute();
-        }
-
-        $db->createCommand()->createTable('testCreateViewTable', [
-            'id' => Schema::TYPE_PK,
-            'bar' => Schema::TYPE_INTEGER,
-        ])->execute();
-
-        $db->createCommand('CREATE SEQUENCE testCreateViewTable_SEQ START with 1 INCREMENT BY 1')->execute();
-
-        $db->createCommand(
-            'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)'
-        )->execute();
-
-        $db->createCommand(
-            'INSERT INTO {{testCreateViewTable}} ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)'
-        )->execute();
-
-        $db->createCommand()->createView('testCreateView', $subquery)->execute();
-
-        $records = $db->createCommand('SELECT [[bar]] FROM {{testCreateView}}')->queryAll();
-
-        $this->assertEquals([['bar' => 6]], $records);
-    }
-
-    public function testColumnCase(): void
-    {
-        $this->markTestSkipped('Should be fixed.');
-    }
-
-    public function testInsertExpression(): void
-    {
-        $db = $this->getConnection();
-
-        $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
         $command->insert(
-            '{{order_with_null_fk}}',
+            '{{customer}}',
             [
-                'created_at' => new Expression('EXTRACT(YEAR FROM sysdate)'),
-                'total' => 1,
-            ]
+                'name' => 'Some {{weird}} name',
+                'email' => 'test@example.com',
+                'address' => 'Some {{%weird}} address',
+            ],
         )->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{order_with_null_fk}}')->queryScalar());
+        $customerId = $db->getLastInsertID('customer_SEQ');
 
-        $record = $db->createCommand('SELECT [[created_at]] FROM {{order_with_null_fk}}')->queryOne();
+        $customer = $command->setSql(
+            <<<SQL
+            SELECT * FROM {{customer}} WHERE
+            SQL . ' [[id]] = ' . $customerId,
+        )->queryOne();
 
-        $this->assertEquals([
-            'created_at' => date('Y'),
-        ], $record);
-    }
+        $this->assertIsArray($customer);
+        $this->assertSame('Some {{weird}} name', $customer['name']);
+        $this->assertSame('Some {{%weird}} address', $customer['address']);
 
-    public function testAlterTable(): void
-    {
-        $db = $this->getConnection();
-
-        if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
-            $db->createCommand('DROP SEQUENCE testAlterTable_SEQ')->execute();
-            $db->createCommand()->dropTable('testAlterTable')->execute();
-        }
-
-        $db->createCommand()->createTable(
-            'testAlterTable',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
+        $command->update(
+            '{{customer}}',
+            [
+                'name' => 'Some {{updated}} name',
+                'address' => 'Some {{%updated}} address',
+            ],
+            ['id' => $customerId]
         )->execute();
 
-        $db->createCommand('CREATE SEQUENCE testAlterTable_SEQ START with 1 INCREMENT BY 1')->execute();
+        $customer = $command->setSql(
+            <<<SQL
+            SELECT * FROM {{customer}} WHERE
+            SQL . ' [[id]] = ' . $customerId
+        )->queryOne();
 
-        $db->createCommand(
-            'INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 1)'
-        )->execute();
-
-        $db->createCommand('ALTER TABLE {{testAlterTable}} ADD ([[bar_tmp]] VARCHAR(20))')->execute();
-
-        $db->createCommand('UPDATE {{testAlterTable}} SET [[bar_tmp]] = [[bar]]')->execute();
-
-        $db->createCommand('ALTER TABLE {{testAlterTable}} DROP COLUMN [[bar]]')->execute();
-
-        $db->createCommand('ALTER TABLE {{testAlterTable}} RENAME COLUMN [[bar_tmp]] TO [[bar]]')->execute();
-
-        $db->createCommand(
-            "INSERT INTO {{testAlterTable}} ([[id]], [[bar]]) VALUES(testAlterTable_SEQ.NEXTVAL, 'hello')"
-        )->execute();
-
-        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')->queryAll();
-
-        $this->assertEquals([
-            ['id' => 1, 'bar' => 1],
-            ['id' => 2, 'bar' => 'hello'],
-        ], $records);
-    }
-
-    public function batchInsertSqlProvider(): array
-    {
-        $data = $this->batchInsertSqlProviderTrait();
-
-        $data['multirow']['expected'] = 'INSERT ALL  INTO "type" ("int_col", "float_col", "char_col", "bool_col") ' .
-            'VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL';
-        $data['multirow']['expectedParams'][':qp3'] = '1';
-        $data['multirow']['expectedParams'][':qp7'] = '0';
-
-        $this->changeSqlForOracleBatchInsert($data['issue11242']['expected']);
-        $data['issue11242']['expectedParams'][':qp3'] = '1';
-
-        $this->changeSqlForOracleBatchInsert($data['wrongBehavior']['expected']);
-        $data['wrongBehavior']['expectedParams'][':qp3'] = '0';
-
-        $this->changeSqlForOracleBatchInsert($data['batchInsert binds params from expression']['expected']);
-        $data['batchInsert binds params from expression']['expectedParams'][':qp3'] = '0';
-
-        return $data;
+        $this->assertIsArray($customer);
+        $this->assertSame('Some {{updated}} name', $customer['name']);
+        $this->assertSame('Some {{%updated}} address', $customer['address']);
     }
 
     /**
-     * Make sure that `{{something}}` in values will not be encoded.
-     *
-     * @dataProvider batchInsertSqlProvider
-     *
-     * @param string $table
-     * @param array $columns
-     * @param array $values
-     * @param string $expected
-     * @param array $expectedParams
-     * @param int $insertedRow
-     *
-     * @throws Exception|InvalidConfigException|NotSupportedException
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/11242}
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::update()
      */
-    public function testBatchInsertSQL(
+    public function testUpdate(
         string $table,
         array $columns,
-        array $values,
-        string $expected,
-        array $expectedParams = [],
-        int $insertedRow = 1
+        array|string $conditions,
+        array $params,
+        string $expected
     ): void {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-
-        $command->batchInsert($table, $columns, $values);
-
-        $command->prepare(false);
-
-        $this->assertSame($expected, $command->getSql());
-        $this->assertSame($expectedParams, $command->getParams());
-
-        $command->execute();
-        $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
-    }
-
-    public function testAddDropCheck(): void
-    {
-        $db = $this->getConnection();
-
-        $tableName = 'test_ck';
-        $name = 'test_ck_constraint';
-
-        $schema = $db->getSchema();
-
-        if ($schema->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
-        }
-
-        $db->createCommand()->createTable($tableName, [
-            'int1' => 'integer',
-        ])->execute();
-
-        $this->assertEmpty($schema->getTableChecks($tableName, true));
-
-        $db->createCommand()->addCheck($name, $tableName, '[[int1]] > 1')->execute();
-
-        $this->assertMatchesRegularExpression(
-            '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks($tableName, true)[0]->getExpression()
-        );
-
-        $db->createCommand()->dropCheck($name, $tableName)->execute();
-
-        $this->assertEmpty($schema->getTableChecks($tableName, true));
+        parent::testUpdate($table, $columns, $conditions, $params, $expected);
     }
 
     /**
-     * Test command getRawSql.
-     *
-     * @dataProvider getRawSqlProviderTrait
-     *
-     * @param string $sql
-     * @param array $params
-     * @param string $expectedRawSql
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/8592}
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::upsert()
      */
-    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
+    public function testUpsert(array $firstData, array $secondData): void
     {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand($sql, $params);
-
-        $this->assertEquals($expectedRawSql, $command->getRawSql());
-    }
-
-    public function testAutoRefreshTableSchema(): void
-    {
-        $db = $this->getConnection();
-
-        $tableName = 'test';
-        $fkName = 'test_fk';
-
-        if ($db->getSchema()->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
-        }
-
-        $this->assertNull($db->getSchema()->getTableSchema($tableName));
-
-        $db->createCommand()->createTable($tableName, [
-            'id' => 'pk',
-            'fk' => 'int',
-            'name' => 'string',
-        ])->execute();
-        $initialSchema = $db->getSchema()->getTableSchema($tableName);
-        $this->assertNotNull($initialSchema);
-
-        $db->createCommand()->addColumn($tableName, 'value', 'integer')->execute();
-        $newSchema = $db->getSchema()->getTableSchema($tableName);
-        $this->assertNotEquals($initialSchema, $newSchema);
-
-        $db->createCommand()->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')->execute();
-        $tableSchema = $db->getSchema()->getTableSchema($tableName);
-
-        $this->assertNotNull($tableSchema);
-        $this->assertNotEmpty($tableSchema->getForeignKeys());
-
-        $db->createCommand()->dropForeignKey($fkName, $tableName)->execute();
-        $tableSchema = $db->getSchema()->getTableSchema($tableName);
-
-        $this->assertNotNull($tableSchema);
-        $this->assertEmpty($tableSchema->getForeignKeys());
-
-        $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
-        $tableSchema = $db->getSchema()->getTableSchema($tableName);
-
-        $this->assertNotNull($tableSchema);
-
-        $column = $tableSchema->getColumn('id');
-
-        $this->assertNotNull($column);
-        $this->assertNotEmpty($column->getComment());
-
-        $db->createCommand()->dropCommentFromColumn($tableName, 'id')->execute();
-        $tableSchema = $db->getSchema()->getTableSchema($tableName);
-
-        $this->assertNotNull($tableSchema);
-
-        $column = $tableSchema->getColumn('id');
-
-        $this->assertNotNull($column);
-        $this->assertEmpty($column->getComment());
-
-        $db->createCommand()->dropTable($tableName)->execute();
-        $this->assertNull($db->getSchema()->getTableSchema($tableName));
+        parent::testUpsert($firstData, $secondData);
     }
 }
