@@ -37,8 +37,8 @@ build:
           ramdisks:
             - /var/lib/data
 
-      tests:
-        before:
+      dependencies:
+        override:
           - sudo mkdir -p /opt/oracle
           - sudo curl -k -L --output /opt/oracle/instantclient-basic-linux.x64-21.3.0.0.0.zip https://download.oracle.com/otn_software/linux/instantclient/213000/instantclient-basic-linux.x64-21.3.0.0.0.zip
           - sudo curl -k -L --output /opt/oracle/instantclient-sdk-linux.x64-21.3.0.0.0.zip https://download.oracle.com/otn_software/linux/instantclient/213000/instantclient-sdk-linux.x64-21.3.0.0.0.zip
@@ -68,9 +68,11 @@ build:
           - sudo ldconfig
           - cd /home/scrutinizer/build/
           - composer self-update
-          - composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+          - composer config preferred-install.yiisoft/db source
+          - composer update --no-interaction --no-progress --optimize-autoloader --ansi
           - echo 'extension=pdo_oci' >> /home/scrutinizer/.phpenv/versions/8.0.18/etc/php.ini
 
+      tests:
         override:
           - command: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
             idle_timeout: 360

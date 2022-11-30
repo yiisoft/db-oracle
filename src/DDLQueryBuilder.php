@@ -22,6 +22,14 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         parent::__construct($queryBuilder, $quoter, $schema);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
+    public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
+    }
+
     public function addForeignKey(
         string $name,
         string $table,
@@ -74,6 +82,14 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
     public function dropCommentFromTable(string $table): string
     {
         return 'COMMENT ON TABLE ' . $this->quoter->quoteTableName($table) . " IS ''";
+    }
+
+    /**
+     * @throws NotSupportedException
+     */
+    public function dropDefaultValue(string $name, string $table): string
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
 
     public function dropIndex(string $name, string $table): string
