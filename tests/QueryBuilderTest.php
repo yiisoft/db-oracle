@@ -36,7 +36,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.');
 
-        $qb->addDefaultValue('name', 'table', 'column', 'value');
+        $qb->addDefaultValue('CN_pk', 'T_constraints_1', 'C_default', 1);
     }
 
     /**
@@ -52,7 +52,20 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         string|null $update,
         string $expected
     ): void {
+        // Oracle does not support ON UPDATE CASCADE
         parent::testAddForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, null, $expected);
+    }
+
+    public function testAddForeignKeyUpdateException(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Oracle does not support ON UPDATE clause.');
+
+        $qb->addForeignKey('fk1', 'T_constraints_1', 'C_fk1', 'T_constraints_2', 'C_fk2', 'CASCADE', 'CASCADE');
     }
 
     /**
@@ -81,13 +94,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $qb = $db->getQueryBuilder();
         $schema = $db->getSchema();
-        $sql = $qb->alterColumn('table', 'column', (string) $schema::TYPE_STRING);
 
         $this->assertSame(
             <<<SQL
-            ALTER TABLE "table" MODIFY "column" VARCHAR2(255)
+            ALTER TABLE "customer" MODIFY "email" VARCHAR2(255)
             SQL,
-            $sql,
+            $qb->alterColumn('customer', 'email', (string) $schema::TYPE_STRING),
         );
     }
 
@@ -138,11 +150,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             ->offset(5);
 
         $this->assertSame(
-            <<<SQL_WRAP
-WITH USER_SQL AS (SELECT * FROM admin_user ORDER BY "id", "name" DESC), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-SELECT * FROM PAGINATION WHERE rowNumId > 5 AND rownum <= 10
-SQL_WRAP
-,
+            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
+            <<<SQL
+            WITH USER_SQL AS (SELECT * FROM admin_user ORDER BY "id", "name" DESC), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            SELECT * FROM PAGINATION WHERE rowNumId > 5 AND rownum <= 10
+            SQL,
             $qb->buildOrderByAndLimit(
                 <<<SQL
                 SELECT * FROM admin_user
@@ -178,11 +190,11 @@ SQL_WRAP
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            <<<SQL_WRAP
-WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-SELECT * FROM PAGINATION WHERE rownum <= 10
-SQL_WRAP
-,
+            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
+            <<<SQL
+            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            SELECT * FROM PAGINATION WHERE rownum <= 10
+            SQL,
             $sql,
         );
         $this->assertSame([], $params);
@@ -204,11 +216,11 @@ SQL_WRAP
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            <<<SQL_WRAP
-WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-SELECT * FROM PAGINATION WHERE rowNumId > 10
-SQL_WRAP
-,
+            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
+            <<<SQL
+            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            SELECT * FROM PAGINATION WHERE rowNumId > 10
+            SQL,
             $sql,
         );
         $this->assertSame([], $params);
@@ -220,6 +232,22 @@ SQL_WRAP
     public function testBuildWithWhereExists(string $cond, string $expectedQuerySql): void
     {
         parent::testBuildWithWhereExists($cond, $expectedQuerySql);
+    }
+
+    /**
+     * @throws Exception
+     * @throws NotSupportedException
+     */
+    public function testCheckIntegrity(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DDLQueryBuilder::checkIntegrity is not supported by Oracle.');
+
+        $qb->checkIntegrity('', 'customer');
     }
 
     /**
@@ -303,7 +331,7 @@ SQL_WRAP
      * @throws Exception
      * @throws InvalidConfigException
      */
-    public function testDropDefaulValue(): void
+    public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
 
@@ -370,13 +398,12 @@ SQL_WRAP
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->renameTable('alpha', 'alpha-test');
 
         $this->assertSame(
             <<<SQL
             ALTER TABLE "alpha" RENAME TO "alpha-test"
             SQL,
-            $sql,
+            $qb->renameTable('alpha', 'alpha-test'),
         );
     }
 
@@ -389,34 +416,105 @@ SQL_WRAP
     {
         $db = $this->getConnection(true);
 
+        $command = $db->createCommand();
         $qb = $db->getQueryBuilder();
+
+        $checkSql = <<<SQL
+        SELECT last_number FROM user_sequences WHERE sequence_name = 'item_SEQ'
+        SQL;
+        $sql = $qb->resetSequence('item');
 
         $this->assertSame(
             <<<SQL
             declare
                 lastSeq number;
             begin
-                SELECT MAX("C_id") + 1 INTO lastSeq FROM "T_constraints_1";
+                SELECT MAX("id") + 1 INTO lastSeq FROM "item";
                 if lastSeq IS NULL then lastSeq := 1; end if;
-                execute immediate 'DROP SEQUENCE ""';
-                execute immediate 'CREATE SEQUENCE "" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+                execute immediate 'DROP SEQUENCE "item_SEQ"';
+                execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
             end;
             SQL,
-            $qb->resetSequence('T_constraints_1'),
+            $sql,
         );
+
+        $command->setSql($sql)->execute();
+
+        $this->assertSame('6', $command->setSql($checkSql)->queryScalar());
+
+        $sql = $qb->resetSequence('item', 4);
 
         $this->assertSame(
             <<<SQL
             declare
-                lastSeq number := 3;
+                lastSeq number := 4;
             begin
                 if lastSeq IS NULL then lastSeq := 1; end if;
-                execute immediate 'DROP SEQUENCE ""';
-                execute immediate 'CREATE SEQUENCE "" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+                execute immediate 'DROP SEQUENCE "item_SEQ"';
+                execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
             end;
             SQL,
-            $qb->resetSequence('T_constraints_1', 3),
+            $sql,
         );
+
+        $command->setSql($sql)->execute();
+
+        $this->assertEquals(4, $command->setSql($checkSql)->queryScalar());
+
+        $sql = $qb->resetSequence('item', '1');
+
+        $this->assertSame(
+            <<<SQL
+            declare
+                lastSeq number := 1;
+            begin
+                if lastSeq IS NULL then lastSeq := 1; end if;
+                execute immediate 'DROP SEQUENCE "item_SEQ"';
+                execute immediate 'CREATE SEQUENCE "item_SEQ" START WITH ' || lastSeq || ' INCREMENT BY 1 NOMAXVALUE NOCACHE';
+            end;
+            SQL,
+            $sql,
+        );
+
+        $command->setSql($sql)->execute();
+
+        $this->assertSame('1', $db->createCommand($checkSql)->queryScalar());
+    }
+
+    public function testResetSequenceNoAssociatedException(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('There is no sequence associated with table: constraints');
+
+        $qb->resetSequence('constraints');
+    }
+
+    public function testResetSequenceCompositeException(): void
+    {
+        $db = $this->getConnection(true);
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: default_multiple_pk");
+
+        $qb->resetSequence('default_multiple_pk');
+    }
+
+    public function testResetSequenceTableNoExistException(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown table: noExist');
+
+        $qb->resetSequence('noExist', 1);
     }
 
     /**

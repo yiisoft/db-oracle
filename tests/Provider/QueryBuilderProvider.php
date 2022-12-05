@@ -108,6 +108,21 @@ final class QueryBuilderProvider
 
     public function buildLikeCondition(): array
     {
+        $db = $this->getConnection();
+
+        /*
+         * Different pdo_oci8 versions may or may not implement PDO::quote(), so \Yiisoft\Db\Oracle\Quoter::quoteValue()
+         * may or may not quote \.
+         */
+        try {
+            $encodedBackslash = substr($db->getQuoter()->quoteValue('\\\\'), 1, -1);
+
+            $this->likeParameterReplacements[$encodedBackslash] = '\\';
+        } catch (\Exception $e) {
+            // ignore
+        }
+
+
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
 
         return $baseQueryBuilderProvider->buildLikeCondition(
