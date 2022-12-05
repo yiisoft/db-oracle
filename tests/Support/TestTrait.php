@@ -36,6 +36,11 @@ trait TestTrait
         return $this->db;
     }
 
+    protected function getDriverName(): string
+    {
+        return 'oci';
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();
