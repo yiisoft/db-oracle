@@ -118,7 +118,7 @@ final class QueryBuilderProvider
             $encodedBackslash = substr($db->getQuoter()->quoteValue('\\\\'), 1, -1);
 
             $this->likeParameterReplacements[$encodedBackslash] = '\\';
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // ignore
         }
 
