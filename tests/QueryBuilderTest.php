@@ -481,18 +481,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $this->assertSame('1', $db->createCommand($checkSql)->queryScalar());
     }
 
-    public function testResetSequenceNoAssociatedException(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('There is no sequence associated with table: constraints');
-
-        $qb->resetSequence('constraints');
-    }
-
     public function testResetSequenceCompositeException(): void
     {
         $db = $this->getConnection(true);
@@ -503,18 +491,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: default_multiple_pk");
 
         $qb->resetSequence('default_multiple_pk');
-    }
-
-    public function testResetSequenceTableNoExistException(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unknown table: noExist');
-
-        $qb->resetSequence('noExist', 1);
     }
 
     /**
