@@ -67,7 +67,7 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
     {
-        throw new NotSupportedException('Oracle does not support enabling/disabling integrity check.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
 
     public function dropCommentFromColumn(string $table, string $column): string
