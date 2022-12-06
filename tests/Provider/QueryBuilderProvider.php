@@ -8,14 +8,14 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\Provider\BaseQueryBuilderProvider;
+use Yiisoft\Db\Tests\Provider\AbstractQueryBuilderProvider;
 
 use function array_replace;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QueryBuilderProvider
+final class QueryBuilderProvider extends AbstractQueryBuilderProvider
 {
     use TestTrait;
 
@@ -28,9 +28,7 @@ final class QueryBuilderProvider
 
     public function addForeignKey(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        $addForeingKey = $baseQueryBuilderProvider->addForeignKey($this->getDriverName());
+        $addForeingKey = parent::addForeignKey();
 
         $addForeingKey['add'][7] = <<<SQL
         ALTER TABLE "T_constraints_3" ADD CONSTRAINT "CN_constraints_3" FOREIGN KEY ("C_fk_id_1") REFERENCES "T_constraints_2" ("C_id_1") ON DELETE CASCADE
@@ -42,25 +40,9 @@ final class QueryBuilderProvider
         return $addForeingKey;
     }
 
-    public function addPrimaryKey(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->addPrimaryKey($this->getDriverName());
-    }
-
-    public function addUnique(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->addUnique($this->getDriverName());
-    }
-
     public function batchInsert(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        $batchInsert = $baseQueryBuilderProvider->batchInsert($this->getDriverName());
+        $batchInsert = parent::batchInsert();
 
         $this->changeSqlForOracleBatchInsert($batchInsert['simple']['expected']) ;
         $this->changeSqlForOracleBatchInsert($batchInsert['escape-danger-chars']['expected']) ;
@@ -76,15 +58,9 @@ final class QueryBuilderProvider
         return $batchInsert;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function buildCondition(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        $buildCondition = $baseQueryBuilderProvider->buildCondition($this->getConnection());
+        $buildCondition = parent::buildCondition();
 
         $buildCondition['like-custom-1'] = [['like', 'a', 'b'], '"a" LIKE :qp0 ESCAPE \'!\'', [':qp0' => '%b%']];
         $buildCondition['like-custom-2'] = [
@@ -99,13 +75,10 @@ final class QueryBuilderProvider
         return $buildCondition;
     }
 
-    public function buildFrom(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->buildFrom($this->getDriverName());
-    }
-
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function buildLikeCondition(): array
     {
         $db = $this->getConnection();
@@ -123,34 +96,12 @@ final class QueryBuilderProvider
         }
 
 
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->buildLikeCondition(
-            $this->getDriverName(),
-            $this->likeEscapeCharSql,
-            $this->likeParameterReplacements,
-        );
-    }
-
-    public function buildWhereExists(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->buildWhereExists($this->getDriverName());
-    }
-
-    public function delete(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->delete($this->getDriverName());
+        return parent::buildLikeCondition();
     }
 
     public function selectExist(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        $selectExist = $baseQueryBuilderProvider->selectExist($this->getDriverName());
+        $selectExist = parent::selectExist();
 
         $selectExist[0][1] = <<<SQL
         SELECT CASE WHEN EXISTS(SELECT 1 FROM `table` WHERE `id` = 1) THEN 1 ELSE 0 END FROM DUAL
@@ -159,39 +110,6 @@ final class QueryBuilderProvider
         return $selectExist;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
-    public function insert(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->insert($this->getConnection());
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
-    public function insertEx(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->insertEx($this->getConnection());
-    }
-
-    public function update(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->update($this->getDriverName());
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function upsert(): array
     {
         $concreteData = [
@@ -258,9 +176,7 @@ final class QueryBuilderProvider
             ],
         ];
 
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        $upsert = $baseQueryBuilderProvider->upsert($this->getConnection());
+        $upsert = parent::upsert();
 
         foreach ($concreteData as $testName => $data) {
             $upsert[$testName] = array_replace($upsert[$testName], $data);
