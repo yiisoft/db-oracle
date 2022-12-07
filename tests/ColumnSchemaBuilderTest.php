@@ -4,35 +4,22 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\TestSupport\TestColumnSchemaBuilderTrait;
-use Yiisoft\Db\Oracle\Schema;
+use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Common\CommonColumnSchemaBuilderTest;
 
 /**
  * @group oracle
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ColumnSchemaBuilderTest extends TestCase
+final class ColumnSchemaBuilderTest extends CommonColumnSchemaBuilderTest
 {
-    use TestColumnSchemaBuilderTrait;
+    use TestTrait;
 
     /**
-     * @return array
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaBuilderProvider::types();
      */
-    public function typesProvider()
-    {
-        return [
-            ['integer UNSIGNED', Schema::TYPE_INTEGER, null, [
-                ['unsigned'],
-            ]],
-            ['integer(10) UNSIGNED', Schema::TYPE_INTEGER, 10, [
-                ['unsigned'],
-            ]],
-        ];
-    }
-
-    /**
-     * @dataProvider typesProviderTrait
-     */
-    public function testCustomTypes(string $expected, string $type, ?int $length, mixed $calls): void
+    public function testCustomTypes(string $expected, string $type, int|null $length, array $calls): void
     {
         $this->checkBuildString($expected, $type, $length, $calls);
     }
