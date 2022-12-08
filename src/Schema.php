@@ -19,8 +19,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Schema as AbstractSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
-use function array_change_key_case;
-use function array_map;
 use function array_merge;
 use function is_array;
 use function md5;
