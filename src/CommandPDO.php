@@ -32,7 +32,7 @@ final class CommandPDO extends AbstractCommandPDO
     public function insertEx(string $table, array $columns): bool|array
     {
         $params = [];
-        $sql = $this->queryBuilder()->insertEx($table, $columns, $params);
+        $sql = $this->queryBuilder()->insert($table, $columns, $params);
 
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
 
