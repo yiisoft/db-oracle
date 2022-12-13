@@ -15,7 +15,7 @@ use function str_replace;
 
 trait TestTrait
 {
-    private ConnectionPDOInterface $db;
+    private ConnectionPDOInterface|null $db = null;
 
     /**
      * @throws InvalidConfigException
@@ -45,7 +45,7 @@ trait TestTrait
     {
         parent::tearDown();
 
-        $this->db->close();
+        $this->db?->close();
     }
 
     private function changeSqlForOracleBatchInsert(string &$str): void

@@ -340,16 +340,12 @@ final class Schema extends AbstractSchema
         ORDER BY A.COLUMN_ID
         SQL;
 
-        try {
-            $columns = $this->db->createCommand($sql, [
-                ':tableName' => $table->getName(),
-                ':schemaName' => $table->getSchemaName(),
-            ])->queryAll();
-        } catch (Exception) {
-            return false;
-        }
+        $columns = $this->db->createCommand($sql, [
+            ':tableName' => $table->getName(),
+            ':schemaName' => $table->getSchemaName(),
+        ])->queryAll();
 
-        if (empty($columns)) {
+        if ($columns === []) {
             return false;
         }
 
@@ -445,8 +441,10 @@ final class Schema extends AbstractSchema
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
                 } else {
                     if ($defaultValue !== null) {
-                        if (($len = strlen($defaultValue)) > 2 && $defaultValue[0] === "'"
-                            && $defaultValue[$len - 1] === "'"
+                        if (
+                            ($len = strlen($defaultValue)) > 2 &&
+                            $defaultValue[0] === "'" &&
+                            $defaultValue[$len - 1] === "'"
                         ) {
                             $defaultValue = substr((string) $column['data_default'], 1, -1);
                         } else {
@@ -627,8 +625,6 @@ final class Schema extends AbstractSchema
             } else {
                 $column->type(self::TYPE_INTEGER);
             }
-        } elseif (str_contains($dbType, 'INTEGER')) {
-            $column->type(self::TYPE_INTEGER);
         } elseif (str_contains($dbType, 'BLOB')) {
             $column->type(self::TYPE_BINARY);
         } elseif (str_contains($dbType, 'CLOB')) {
@@ -776,6 +772,22 @@ final class Schema extends AbstractSchema
     protected function createColumnSchema(): ColumnSchema
     {
         return new ColumnSchema();
+    }
+
+    protected function findViewNames(string $schema = ''): array
+    {
+        /** @psalm-var string[][] $views */
+        $views = $this->db->createCommand(
+            <<<SQL
+            select view_name from user_views
+            SQL,
+        )->queryAll();
+
+        foreach ($views as $key => $view) {
+            $views[$key] = $view['VIEW_NAME'];
+        }
+
+        return $views;
     }
 
     /**
