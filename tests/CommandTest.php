@@ -199,6 +199,8 @@ final class CommandTest extends CommonCommandTest
         )->queryAll();
 
         $this->assertSame([['bar' => '6']], $records);
+
+        $command->dropView('testCreateView')->execute();
     }
 
     /**

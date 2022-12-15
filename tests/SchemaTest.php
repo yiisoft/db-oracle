@@ -121,6 +121,16 @@ final class SchemaTest extends CommonSchemaTest
         $this->assertContains('animal_view', $views);
     }
 
+    public function testGetViewNamesWithSchema(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+        $views = $schema->getViewNames('SYSTEM');
+
+        $this->assertContains('animal_view', $views);
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints()
      */

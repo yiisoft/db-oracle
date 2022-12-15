@@ -776,12 +776,17 @@ final class Schema extends AbstractSchema
 
     protected function findViewNames(string $schema = ''): array
     {
-        /** @psalm-var string[][] $views */
-        $views = $this->db->createCommand(
-            <<<SQL
-            select view_name from user_views
+        $sql = match ($schema) {
+            '' => <<<SQL
+            SELECT VIEW_NAME FROM USER_VIEWS
             SQL,
-        )->queryAll();
+            default => <<<SQL
+            SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = '$schema'
+            SQL,
+        };
+
+        /** @psalm-var string[][] $views */
+        $views = $this->db->createCommand($sql)->queryAll();
 
         foreach ($views as $key => $view) {
             $views[$key] = $view['VIEW_NAME'];
