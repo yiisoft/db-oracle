@@ -79,6 +79,11 @@ final class Schema extends AbstractSchema
 
     /**
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28337/tdpsg_user_accounts.htm
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     protected function findSchemaNames(): array
     {
@@ -92,6 +97,11 @@ final class Schema extends AbstractSchema
         return $this->db->createCommand($sql)->queryColumn();
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     protected function findTableComment(TableSchemaInterface $tableSchema): void
     {
         $sql = <<<SQL
@@ -180,7 +190,7 @@ final class Schema extends AbstractSchema
      */
     protected function loadTablePrimaryKey(string $tableName): Constraint|null
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tablePrimaryKey */
         $tablePrimaryKey = $this->loadTableConstraints($tableName, self::PRIMARY_KEY);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
@@ -193,7 +203,7 @@ final class Schema extends AbstractSchema
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableForeingKeys */
         $tableForeingKeys = $this->loadTableConstraints($tableName, self::FOREIGN_KEYS);
         return is_array($tableForeingKeys) ? $tableForeingKeys : [];
     }
@@ -261,7 +271,7 @@ final class Schema extends AbstractSchema
      */
     protected function loadTableUniques(string $tableName): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableUniques */
         $tableUniques = $this->loadTableConstraints($tableName, self::UNIQUES);
         return is_array($tableUniques) ? $tableUniques : [];
     }
@@ -274,7 +284,7 @@ final class Schema extends AbstractSchema
      */
     protected function loadTableChecks(string $tableName): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableCheck */
         $tableCheck = $this->loadTableConstraints($tableName, self::CHECKS);
         return is_array($tableCheck) ? $tableCheck : [];
     }
@@ -774,6 +784,11 @@ final class Schema extends AbstractSchema
         return new ColumnSchema();
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     protected function findViewNames(string $schema = ''): array
     {
         $sql = match ($schema) {

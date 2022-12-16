@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
@@ -29,6 +31,10 @@ final class SchemaTest extends CommonSchemaTest
         parent::testColumnSchema($columns);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testCompositeFk(): void
     {
         $db = $this->getConnection(true);
@@ -46,6 +52,10 @@ final class SchemaTest extends CommonSchemaTest
         $this->assertSame('item_id', $fk[0]['item_id']);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testGetDefaultSchema(): void
     {
         $db = $this->getConnection();
@@ -75,6 +85,11 @@ final class SchemaTest extends CommonSchemaTest
         parent::testGetStringFieldsSize($columnName, $columnType, $columnSize, $columnDbType);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
     public function testGetSchemaNames(): void
     {
         $db = $this->getConnection(true);
@@ -90,6 +105,11 @@ final class SchemaTest extends CommonSchemaTest
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
     public function testGetTableNamesWithSchema(): void
     {
         $db = $this->getConnection(true);
@@ -111,6 +131,10 @@ final class SchemaTest extends CommonSchemaTest
         $this->assertSame($expectedTableNames, $tablesNames);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testGetViewNames(): void
     {
         $db = $this->getConnection(true);
@@ -121,6 +145,10 @@ final class SchemaTest extends CommonSchemaTest
         $this->assertContains('animal_view', $views);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testGetViewNamesWithSchema(): void
     {
         $db = $this->getConnection(true);
@@ -133,6 +161,8 @@ final class SchemaTest extends CommonSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
      */
     public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
     {
@@ -141,6 +171,8 @@ final class SchemaTest extends CommonSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
      */
     public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
     {
@@ -149,6 +181,8 @@ final class SchemaTest extends CommonSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
      */
     public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
     {
@@ -157,6 +191,8 @@ final class SchemaTest extends CommonSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::tableSchemaWithDbSchemes()
+     *
+     * @throws Exception
      */
     public function testTableSchemaWithDbSchemes(
         string $tableName,
@@ -172,7 +208,7 @@ final class SchemaTest extends CommonSchemaTest
         $mockDb
             ->method('createCommand')
             ->with(
-                self::callback(fn ($sql) => true),
+                self::callback(static fn ($sql) => true),
                 self::callback(
                     function ($params) use ($expectedTableName, $expectedSchemaName) {
                         $this->assertEquals($expectedTableName, $params[':tableName']);
@@ -183,7 +219,6 @@ final class SchemaTest extends CommonSchemaTest
                 )
             )
             ->willReturn($commandMock);
-
         $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
         $schema->getTablePrimaryKey($tableName);
     }
