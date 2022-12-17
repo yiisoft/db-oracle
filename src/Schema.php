@@ -442,7 +442,7 @@ final class Schema extends AbstractSchema
         $c->phpType($this->getColumnPhpType($c));
 
         if (!$c->isPrimaryKey()) {
-            if ($column['data_default'] !== null && stripos($column['data_default'], 'timestamp') !== false) {
+            if ($column['data_default'] === null) {
                 $c->defaultValue(null);
             } else {
                 $defaultValue = $column['data_default'];

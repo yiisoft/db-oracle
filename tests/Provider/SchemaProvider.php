@@ -157,7 +157,7 @@ final class SchemaProvider extends AbstractSchemaProvider
                         'size' => 11,
                         'precision' => null,
                         'scale' => 6,
-                        'defaultValue' => null,
+                        'defaultValue' => "to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')",
                     ],
                     'bool_col' => [
                         'type' => 'string',
@@ -193,7 +193,7 @@ final class SchemaProvider extends AbstractSchemaProvider
                         'size' => 11,
                         'precision' => null,
                         'scale' => 6,
-                        'defaultValue' => null,
+                        'defaultValue' => 'CURRENT_TIMESTAMP',
                     ],
                     'bit_col' => [
                         'type' => 'string',
