@@ -24,7 +24,6 @@ use function is_array;
 use function md5;
 use function serialize;
 use function str_contains;
-use function stripos;
 use function strlen;
 use function substr;
 use function trim;
