@@ -449,17 +449,16 @@ final class Schema extends AbstractSchema
                 if ($c->getType() === 'timestamp' && $defaultValue === 'CURRENT_TIMESTAMP') {
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
                 } else {
-                    if ($defaultValue !== null) {
-                        if (
-                            ($len = strlen($defaultValue)) > 2 &&
-                            $defaultValue[0] === "'" &&
-                            $defaultValue[$len - 1] === "'"
-                        ) {
-                            $defaultValue = substr((string) $column['data_default'], 1, -1);
-                        } else {
-                            $defaultValue = trim($defaultValue);
-                        }
+                    if (
+                        ($len = strlen($defaultValue)) > 2 &&
+                        $defaultValue[0] === "'" &&
+                        $defaultValue[$len - 1] === "'"
+                    ) {
+                        $defaultValue = substr($defaultValue, 1, -1);
+                    } else {
+                        $defaultValue = trim($defaultValue);
                     }
+
                     $c->defaultValue($c->phpTypecast($defaultValue));
                 }
             }
