@@ -24,7 +24,6 @@ use function is_array;
 use function md5;
 use function serialize;
 use function str_contains;
-use function stripos;
 use function strlen;
 use function substr;
 use function trim;
@@ -442,7 +441,7 @@ final class Schema extends AbstractSchema
         $c->phpType($this->getColumnPhpType($c));
 
         if (!$c->isPrimaryKey()) {
-            if ($column['data_default'] !== null && stripos($column['data_default'], 'timestamp') !== false) {
+            if ($column['data_default'] === null) {
                 $c->defaultValue(null);
             } else {
                 $defaultValue = $column['data_default'];
@@ -450,17 +449,16 @@ final class Schema extends AbstractSchema
                 if ($c->getType() === 'timestamp' && $defaultValue === 'CURRENT_TIMESTAMP') {
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
                 } else {
-                    if ($defaultValue !== null) {
-                        if (
-                            ($len = strlen($defaultValue)) > 2 &&
-                            $defaultValue[0] === "'" &&
-                            $defaultValue[$len - 1] === "'"
-                        ) {
-                            $defaultValue = substr((string) $column['data_default'], 1, -1);
-                        } else {
-                            $defaultValue = trim($defaultValue);
-                        }
+                    if (
+                        ($len = strlen($defaultValue)) > 2 &&
+                        $defaultValue[0] === "'" &&
+                        $defaultValue[$len - 1] === "'"
+                    ) {
+                        $defaultValue = substr($defaultValue, 1, -1);
+                    } else {
+                        $defaultValue = trim($defaultValue);
                     }
+
                     $c->defaultValue($c->phpTypecast($defaultValue));
                 }
             }
