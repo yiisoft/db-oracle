@@ -4,54 +4,50 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\TestSupport\TestQuoterTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\AbstractQuoterTest;
 
 /**
  * @group oracle
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QuoterTest extends TestCase
+final class QuoterTest extends AbstractQuoterTest
 {
-    use TestQuoterTrait;
+    use TestTrait;
 
     /**
-     * @return string[][]
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QuoterProvider::tableNameParts()
      */
-    public function simpleTableNamesProvider(): array
+    public function testGetTableNameParts(string $tableName, string ...$expected): void
     {
-        return [
-            ['test', 'test', ],
-            ['te`st', 'te`st', ],
-            ['te\'st', 'te\'st', ],
-            ['current-table-name', 'current-table-name', ],
-            ['"current-table-name"', 'current-table-name', ],
-        ];
+        parent::testGetTableNameParts($tableName, ...$expected);
     }
 
     /**
-     * @return string[][]
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QuoterProvider::columnNames()
      */
-    public function simpleColumnNamesProvider(): array
+    public function testQuoteColumnName(string $columnName, string $expected): void
     {
-        return [
-            ['test', '"test"', 'test'],
-            ['"test"', '"test"', 'test'],
-            ['*', '*', '*'],
-        ];
+        parent::testQuoteColumnName($columnName, $expected);
     }
 
     /**
-     * @return string[][]
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QuoterProvider::simpleColumnNames()
      */
-    public function columnNamesProvider(): array
+    public function testQuoteSimpleColumnName(
+        string $columnName,
+        string $expectedQuotedColumnName,
+        string $expectedUnQuotedColumnName = null
+    ): void {
+        parent::testQuoteSimpleColumnName($columnName, $expectedQuotedColumnName, $expectedUnQuotedColumnName);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QuoterProvider::simpleTableNames()
+     */
+    public function testQuoteTableName(string $tableName, string $expected): void
     {
-        return [
-            ['*', '*'],
-            ['table.*', '"table".*'],
-            ['"table".*', '"table".*'],
-            ['table.column', '"table"."column"'],
-            ['"table".column', '"table"."column"'],
-            ['table."column"', '"table"."column"'],
-            ['"table"."column"', '"table"."column"'],
-        ];
+        parent::testQuoteTableName($tableName, $expected);
     }
 }
