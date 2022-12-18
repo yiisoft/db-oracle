@@ -222,4 +222,29 @@ final class SchemaTest extends CommonSchemaTest
         $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
         $schema->getTablePrimaryKey($tableName);
     }
+
+    public function testWorkWithDefaultValueConstraint(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.'
+        );
+
+        parent::testWorkWithDefaultValueConstraint();
+    }
+
+    public function withIndexDataProvider(): array
+    {
+        /*
+         * Bitmap indexes are not available for standard edition.
+        return array_merge(parent::withIndexDataProvider(), [
+            [
+                'indexType' => QueryBuilder::INDEX_BITMAP,
+                'indexMethod' => null,
+                'columnType' => 'varchar(16)',
+            ],
+        ]);
+        */
+        return parent::withIndexDataProvider();
+    }
 }
