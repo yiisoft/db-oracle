@@ -36,6 +36,8 @@ final class ConnectionPDOTest extends CommonConnectionPDOTest
         $command->insert('item', ['name' => 'Yii3 starter', 'category_id' => 1])->execute();
 
         $this->assertSame('7', $db->getLastInsertID('item_SEQ'));
+
+        $db->close();
     }
 
     /**
@@ -54,7 +56,8 @@ final class ConnectionPDOTest extends CommonConnectionPDOTest
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Oracle not support lastInsertId without sequence name.');
-        $this->assertSame('7', $db->getLastInsertID());
+
+        $db->getLastInsertID();
     }
 
     /**
@@ -76,5 +79,8 @@ final class ConnectionPDOTest extends CommonConnectionPDOTest
 
         $this->assertNotEquals($db1->getLastInsertID('profile_SEQ'), $db2->getLastInsertID('profile_SEQ'));
         $this->assertNotEquals($db2->getLastInsertID('profile_SEQ'), $db1->getLastInsertID('profile_SEQ'));
+
+        $db1->close();
+        $db2->close();
     }
 }

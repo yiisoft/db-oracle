@@ -101,6 +101,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             SQL,
             $qb->alterColumn('customer', 'email', (string) $schema::TYPE_STRING),
         );
+
+        $db->close();
     }
 
     /**
@@ -164,6 +166,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
                 $query->getOffset(),
             ),
         );
+
+        $db->close();
     }
 
     /**
@@ -198,6 +202,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     /**
@@ -224,6 +230,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     /**
@@ -281,6 +289,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
                 ],
             ),
         );
+
+        $db->close();
     }
 
     /**
@@ -307,6 +317,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             SQL,
             $qb->dropCommentFromColumn('customer', 'id'),
         );
+
+        $db->close();
     }
 
     /**
@@ -325,6 +337,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             SQL,
             $qb->dropCommentFromTable('customer'),
         );
+
+        $db->close();
     }
 
     /**
@@ -361,6 +375,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             SQL,
             $qb->dropIndex('CN_constraints_2_single', 'T_constraints_2'),
         );
+
+        $db->close();
     }
 
     /**
@@ -387,7 +403,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array $expectedParams
     ): void {
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\QueryBuilder\DMLQueryBuilder::insertEx() is not supported by this DBMS.');
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::insertEx() is not supported by this DBMS.',
+        );
 
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
@@ -410,6 +428,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             SQL,
             $qb->renameTable('alpha', 'alpha-test'),
         );
+
+        $db->close();
     }
 
     /**
@@ -484,6 +504,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $command->setSql($sql)->execute();
 
         $this->assertSame('1', $db->createCommand($checkSql)->queryScalar());
+
+        $db->close();
     }
 
     public function testResetSequenceCompositeException(): void

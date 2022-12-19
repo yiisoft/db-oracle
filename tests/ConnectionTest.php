@@ -38,6 +38,8 @@ final class ConnectionTest extends CommonConnectionTest
 
         $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
         $this->assertSame('123', $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
+
+        $db->close();
     }
 
     /**
@@ -74,6 +76,8 @@ final class ConnectionTest extends CommonConnectionTest
 
         /* should not be any exception so far */
         $this->assertTrue(true);
+
+        $db->close();
     }
 
     /**
@@ -108,5 +112,7 @@ final class ConnectionTest extends CommonConnectionTest
             )->queryScalar(),
             'profile should be inserted in transaction shortcut',
         );
+
+        $db->close();
     }
 }

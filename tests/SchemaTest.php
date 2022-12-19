@@ -50,6 +50,8 @@ final class SchemaTest extends CommonSchemaTest
         $this->assertSame('order_item', $fk[0][0]);
         $this->assertSame('order_id', $fk[0]['order_id']);
         $this->assertSame('item_id', $fk[0]['item_id']);
+
+        $db->close();
     }
 
     /**
@@ -63,6 +65,8 @@ final class SchemaTest extends CommonSchemaTest
         $schema = $db->getSchema();
 
         $this->assertSame('SYSTEM', $schema->getDefaultSchema());
+
+        $db->close();
     }
 
     public function testGetSchemaDefaultValues(): void
@@ -103,6 +107,8 @@ final class SchemaTest extends CommonSchemaTest
         foreach ($expectedSchemas as $schema) {
             $this->assertContains($schema, $schemas);
         }
+
+        $db->close();
     }
 
     /**
@@ -129,6 +135,8 @@ final class SchemaTest extends CommonSchemaTest
         ];
 
         $this->assertSame($expectedTableNames, $tablesNames);
+
+        $db->close();
     }
 
     /**
@@ -143,6 +151,8 @@ final class SchemaTest extends CommonSchemaTest
         $views = $schema->getViewNames();
 
         $this->assertContains('animal_view', $views);
+
+        $db->close();
     }
 
     /**
@@ -157,6 +167,8 @@ final class SchemaTest extends CommonSchemaTest
         $views = $schema->getViewNames('SYSTEM');
 
         $this->assertContains('animal_view', $views);
+
+        $db->close();
     }
 
     /**
@@ -221,6 +233,8 @@ final class SchemaTest extends CommonSchemaTest
             ->willReturn($commandMock);
         $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
         $schema->getTablePrimaryKey($tableName);
+
+        $db->close();
     }
 
     public function testWorkWithDefaultValueConstraint(): void
