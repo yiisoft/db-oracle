@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\TestSupport\TestQueryTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\AbstractQueryTest;
 
 /**
  * @group oracle
  */
-final class QueryTest extends TestCase
+final class QueryTest extends AbstractQueryTest
 {
-    use TestQueryTrait;
-
-    public function testUnion(): void
-    {
-        $this->markTestSkipped('Unsupported use of WITH clause in Oracle.');
-    }
+    use TestTrait;
 }

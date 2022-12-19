@@ -16,6 +16,7 @@ use function str_replace;
 trait TestTrait
 {
     private ConnectionPDOInterface|null $db = null;
+    private string $dsn = 'oci:dbname=localhost/XE;';
 
     /**
      * @throws InvalidConfigException
@@ -23,11 +24,10 @@ trait TestTrait
      */
     protected function getConnection(bool $fixture = false): ConnectionPDOInterface
     {
-        $this->db = new ConnectionPDO(
-            new PDODriver('oci:dbname=localhost/XE;', 'system', 'oracle', ['charset' => 'AL32UTF8']),
-            DbHelper::getQueryCache(),
-            DbHelper::getSchemaCache(),
-        );
+        $pdoDriver = new PDODriver($this->dsn, 'system', 'oracle');
+        $pdoDriver->setCharset('AL32UTF8');
+
+        $this->db = new ConnectionPDO($pdoDriver, DbHelper::getQueryCache(), DbHelper::getSchemaCache());
 
         if ($fixture) {
             DbHelper::loadFixture($this->db, __DIR__ . '/Fixture/oci.sql');
@@ -39,6 +39,11 @@ trait TestTrait
     protected function getDriverName(): string
     {
         return 'oci';
+    }
+
+    protected function setDsn(string $dsn): void
+    {
+        $this->dsn = $dsn;
     }
 
     protected function tearDown(): void
