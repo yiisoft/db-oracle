@@ -9,6 +9,8 @@ use Yiisoft\Db\Tests\AbstractQueryTest;
 
 /**
  * @group oracle
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryTest extends AbstractQueryTest
 {

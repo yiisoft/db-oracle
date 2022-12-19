@@ -5,19 +5,30 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
+use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonConnectionTest;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
  * @group oracle
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ConnectionTest extends CommonConnectionTest
 {
     use TestTrait;
 
-    public function testSerialize()
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testSerialize(): void
     {
         $db = $this->getConnection();
 
@@ -29,16 +40,26 @@ final class ConnectionTest extends CommonConnectionTest
         $this->assertSame('123', $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testSettingDefaultAttributes(): void
     {
         $db = $this->getConnection();
 
-        $this->assertSame(PDO::ERRMODE_EXCEPTION, $db->getActivePDO()->getAttribute(PDO::ATTR_ERRMODE));
+        $this->assertSame(PDO::ERRMODE_EXCEPTION, $db->getActivePDO()?->getAttribute(PDO::ATTR_ERRMODE));
 
         $db->close();
     }
 
-    public function testTransactionIsolation()
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
+     */
+    public function testTransactionIsolation(): void
     {
         $db = $this->getConnection();
 
@@ -55,7 +76,12 @@ final class ConnectionTest extends CommonConnectionTest
         $this->assertTrue(true);
     }
 
-    public function testTransactionShortcutCustom()
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testTransactionShortcutCustom(): void
     {
         $db = $this->getConnection(true);
 
