@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonConnectionTest;
 use Yiisoft\Db\Transaction\TransactionInterface;
