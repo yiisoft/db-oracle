@@ -224,7 +224,7 @@ final class SchemaProvider extends AbstractSchemaProvider
                         'defaultValue' => '130', // b'10000010'
                     ],
                 ],
-                'type'
+                'type',
             ],
             [
                 [
