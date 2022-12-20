@@ -20,7 +20,7 @@
         "ext-pdo": "*",
         "php": "^8.0",
         "yiisoft/arrays": "^2.0",
-        "yiisoft/db": "dev-remove-test-support as 3.0@dev",
+        "yiisoft/db": "^3.0@dev",
         "yiisoft/strings": "^2.0"
     },
     "require-dev": {
