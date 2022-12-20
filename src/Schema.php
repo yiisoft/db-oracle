@@ -338,6 +338,16 @@ final class Schema extends AbstractSchema
             ) AS DATA_LENGTH,
             A.NULLABLE,
             A.DATA_DEFAULT,
+            (
+                SELECT COUNT(*)
+                FROM ALL_CONSTRAINTS AC
+                INNER JOIN ALL_CONS_COLUMNS ACC ON ACC.CONSTRAINT_NAME=AC.CONSTRAINT_NAME
+                WHERE
+                     AC.OWNER = A.OWNER
+                   AND AC.TABLE_NAME = B.OBJECT_NAME
+                   AND ACC.COLUMN_NAME = A.COLUMN_NAME
+                   AND AC.CONSTRAINT_TYPE = 'P'
+            ) AS IS_PK,
             COM.COMMENTS AS COLUMN_COMMENT
         FROM ALL_TAB_COLUMNS A
             INNER JOIN ALL_OBJECTS B ON B.OWNER = A.OWNER AND LTRIM(B.OBJECT_NAME) = LTRIM(A.TABLE_NAME)
@@ -414,13 +424,14 @@ final class Schema extends AbstractSchema
          *   data_length: string,
          *   nullable: string,
          *   data_default: string|null,
+         *   is_pk: string|null,
          *   column_comment: string|null
          * } $column
          */
         $c->name($column['column_name']);
         $c->allowNull($column['nullable'] === 'Y');
         $c->comment($column['column_comment'] ?? '');
-        $c->primaryKey(false);
+        $c->primaryKey((int) ($column['is_pk'] ?? 0) > 0);
 
         $this->extractColumnType(
             $c,
