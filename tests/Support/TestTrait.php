@@ -15,7 +15,7 @@ use function str_replace;
 
 trait TestTrait
 {
-    private ConnectionPDOInterface|null $db = null;
+    private string $dsn = 'oci:dbname=localhost/XE;';
 
     /**
      * @throws InvalidConfigException
@@ -23,17 +23,16 @@ trait TestTrait
      */
     protected function getConnection(bool $fixture = false): ConnectionPDOInterface
     {
-        $this->db = new ConnectionPDO(
-            new PDODriver('oci:dbname=localhost/XE;', 'system', 'oracle', ['charset' => 'AL32UTF8']),
-            DbHelper::getQueryCache(),
-            DbHelper::getSchemaCache(),
-        );
+        $pdoDriver = new PDODriver($this->dsn, 'system', 'oracle');
+        $pdoDriver->setCharset('AL32UTF8');
+
+        $db = new ConnectionPDO($pdoDriver, DbHelper::getQueryCache(), DbHelper::getSchemaCache());
 
         if ($fixture) {
-            DbHelper::loadFixture($this->db, __DIR__ . '/Fixture/oci.sql');
+            DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
         }
 
-        return $this->db;
+        return $db;
     }
 
     protected function getDriverName(): string
@@ -41,11 +40,9 @@ trait TestTrait
         return 'oci';
     }
 
-    protected function tearDown(): void
+    protected function setDsn(string $dsn): void
     {
-        parent::tearDown();
-
-        $this->db?->close();
+        $this->dsn = $dsn;
     }
 
     private function changeSqlForOracleBatchInsert(string &$str): void

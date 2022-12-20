@@ -48,6 +48,8 @@ final class CommandTest extends CommonCommandTest
         );
 
         $command->addDefaultValue('{{name}}', '{{table}}', 'column', 'value');
+
+        $db->close();
     }
 
     /**
@@ -96,6 +98,8 @@ final class CommandTest extends CommonCommandTest
         );
 
         $command->dropTable('longstring')->execute();
+
+        $db->close();
     }
 
     /**
@@ -140,6 +144,8 @@ final class CommandTest extends CommonCommandTest
         )->queryAll();
 
         $this->assertSame([['id' => '1', 'bar' => '1']], $records);
+
+        $db->close();
     }
 
     /**
@@ -201,6 +207,8 @@ final class CommandTest extends CommonCommandTest
         $this->assertSame([['bar' => '6']], $records);
 
         $command->dropView('testCreateView')->execute();
+
+        $db->close();
     }
 
     /**
@@ -274,6 +282,8 @@ final class CommandTest extends CommonCommandTest
                 SQL,
             )->queryScalar(),
         );
+
+        $db->close();
     }
 
     /**
@@ -326,6 +336,8 @@ final class CommandTest extends CommonCommandTest
 
         $command->delete('{{order_with_null_fk}}')->execute();
         $command->delete('{{order}}', ['id' => $orderId])->execute();
+
+        $db->close();
     }
 
     /**
@@ -353,6 +365,8 @@ final class CommandTest extends CommonCommandTest
         $result = $command->insertEx('{{test_insert_ex_string}}', ['id' => '1', 'name' => 'test']);
 
         $this->assertSame(['id' => '1'], $result);
+
+        $db->close();
     }
 
     /**
@@ -410,6 +424,8 @@ final class CommandTest extends CommonCommandTest
                 'address' => 'test',
             ],
         ], $record);
+
+        $db->close();
     }
 
     /**
@@ -435,6 +451,8 @@ final class CommandTest extends CommonCommandTest
         $resultBlob = is_resource($resultData['blob_col']) ? stream_get_contents($resultData['blob_col']) : $resultData['blob_col'];
 
         $this->assertSame($expectedData, $resultBlob);
+
+        $db->close();
     }
 
     /**
@@ -488,6 +506,8 @@ final class CommandTest extends CommonCommandTest
         $this->assertIsArray($customer);
         $this->assertSame('Some {{updated}} name', $customer['name']);
         $this->assertSame('Some {{%updated}} address', $customer['address']);
+
+        $db->close();
     }
 
     /**

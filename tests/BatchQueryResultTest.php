@@ -9,6 +9,8 @@ use Yiisoft\Db\Tests\Common\CommonBatchQueryResultTest;
 
 /**
  * @group oracle
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class BatchQueryResultTest extends CommonBatchQueryResultTest
 {
