@@ -174,6 +174,12 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
                 MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", now() AS [[time]]) "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"=:qp1, [[orders]]=T_upsert.orders + 1 WHEN NOT MATCHED THEN INSERT ("email", [[time]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[time]])
                 SQL,
             ],
+            // @todo - SQL code have a bug. Need fix in next PR
+            'no columns to update with unique' => [
+                3 => <<<SQL
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email") VALUES ("EXCLUDED"."email")
+                SQL,
+            ],
         ];
 
         $upsert = parent::upsert();
@@ -183,6 +189,7 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
         }
 
         // skip test
+        // @todo check this case
         unset($upsert['no columns to update']);
 
         return $upsert;
