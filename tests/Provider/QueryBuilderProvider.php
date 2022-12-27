@@ -209,7 +209,7 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
                 SQL,
             ],
             'no unique columns in table - simple insert' => [
-                3 => 'INSERT INTO {{%animal}} ("type") VALUES (:qp0)'
+                3 => 'INSERT INTO {{%animal}} ("type") VALUES (:qp0)',
             ],
         ];
 
