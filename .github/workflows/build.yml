@@ -23,7 +23,7 @@ name: build
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-${{ matrix.os }}
+    name: PHP ${{ matrix.php }}-oracle-${{ matrix.oracle }}
 
     env:
       extensions: pdo, pdo_oci
@@ -42,6 +42,8 @@ jobs:
 
         oracle:
           - 11
+          - 18
+          - 21
 
     services:
       oci:
