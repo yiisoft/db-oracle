@@ -75,7 +75,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         foreach ($columns as $i => $name) {
-            $columns[$i] = $this->quoter->quoteColumnName($name);
+            $columns[$i] = $this->quoter->quoteColumnName($mappedNames[$name]);
         }
 
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)

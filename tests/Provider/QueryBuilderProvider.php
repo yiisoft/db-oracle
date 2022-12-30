@@ -51,7 +51,7 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
         $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
 
         $batchInsert['wrong']['expected'] = <<<SQL
-        INSERT ALL  INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp0, now()) INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
+        INSERT ALL  INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
         SQL;
 
         $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
