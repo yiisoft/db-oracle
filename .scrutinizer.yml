@@ -23,7 +23,7 @@ build:
     phpunit:
       services:
         db-oracle:
-          image: gvenzl/oracle-xe:11
+          image: gvenzl/oracle-xe:18
 
           env:
             ORACLE_PASSWORD : root
