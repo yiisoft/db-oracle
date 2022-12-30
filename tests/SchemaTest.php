@@ -14,6 +14,8 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonSchemaTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
+use function version_compare;
+
 /**
  * @group oracle
  *
@@ -100,7 +102,11 @@ final class SchemaTest extends CommonSchemaTest
 
         $schema = $db->getSchema();
 
-        $this->assertEmpty($schema->getSchemaNames());
+        if (version_compare($db->getServerVersion(), '11', '>')) {
+            $this->assertContains('SYSBACKUP', $schema->getSchemaNames());
+        } else {
+            $this->assertEmpty($schema->getSchemaNames());
+        }
 
         $db->close();
     }
