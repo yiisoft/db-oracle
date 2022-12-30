@@ -16,6 +16,9 @@ use Yiisoft\Db\Connection\AbstractDsn;
  */
 final class Dsn extends AbstractDsn
 {
+    /**
+     * @psalm-param string[] $options
+     */
     public function __construct(
         private string $driver,
         private string $host,
