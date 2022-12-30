@@ -40,12 +40,22 @@ jobs:
           - 8.1
           - 8.2
 
+        oracle:
+          - 11
+
     services:
       oci:
-          image: wnameless/oracle-xe-11g-r2:latest
-          ports:
-              - 1521:1521
-          options: --name=oci
+        image: gvenzl/oracle-xe:${{ matrix.oracle }}
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_PASSWORD : root
+        options: >-
+          --name=oci
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - name: Checkout.
