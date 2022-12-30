@@ -34,12 +34,12 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 8.0
           - 8.1
+          - 8.2
 
     services:
       oci:
-        image: gvenzl/oracle-xe:11
+        image: gvenzl/oracle-xe:21
         ports:
           - 1521:1521
         env:
