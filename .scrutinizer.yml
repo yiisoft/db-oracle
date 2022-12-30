@@ -78,7 +78,7 @@ build:
       tests:
         override:
           - command: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
-            idle_timeout: 1000
+            idle_timeout: 300
             on_node: 1
             coverage:
               file: coverage.xml
