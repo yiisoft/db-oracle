@@ -23,7 +23,10 @@ build:
     phpunit:
       services:
         db-oracle:
-          image: wnameless/oracle-xe-11g-r2:latest
+          image: gvenzl/oracle-xe:18
+
+          env:
+            ORACLE_PASSWORD : root
 
           # We automatically forward these ports from your localhost to the service's port.
           # Alternatively, you can also access the service on the "$SERVICE_SOME_NAME_IP"
@@ -75,7 +78,7 @@ build:
       tests:
         override:
           - command: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
-            idle_timeout: 1000
+            idle_timeout: 300
             on_node: 1
             coverage:
               file: coverage.xml

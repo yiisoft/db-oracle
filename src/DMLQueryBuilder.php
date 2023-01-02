@@ -49,15 +49,16 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             $columnSchemas = [];
         }
 
+        $mappedNames = $this->getNormalizeColumnNames($table, $columns);
         $values = [];
 
         /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
             $placeholders = [];
             foreach ($row as $index => $value) {
-                if (isset($columns[$index], $columnSchemas[$columns[$index]])) {
+                if (isset($columns[$index], $mappedNames[$columns[$index]], $columnSchemas[$mappedNames[$columns[$index]]])) {
                     /** @var mixed $value */
-                    $value = $this->getTypecastValue($value, $columnSchemas[$columns[$index]]);
+                    $value = $this->getTypecastValue($value, $columnSchemas[$mappedNames[$columns[$index]]]);
                 }
 
                 if ($value instanceof ExpressionInterface) {
@@ -73,9 +74,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $name) {
-            $columns[$i] = $this->quoter->quoteColumnName($name);
+            $columns[$i] = $this->quoter->quoteColumnName($mappedNames[$name]);
         }
 
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)
@@ -95,6 +95,14 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         array|bool $updateColumns,
         array &$params = []
     ): string {
+        if (!$insertColumns instanceof QueryInterface) {
+            $insertColumns = $this->normalizeColumnNames($table, $insertColumns);
+        }
+
+        if (!is_bool($updateColumns)) {
+            $updateColumns = $this->normalizeColumnNames($table, $updateColumns);
+        }
+
         $usingValues = null;
         $constraints = [];
 

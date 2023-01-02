@@ -51,7 +51,7 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
         $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
 
         $batchInsert['wrong']['expected'] = <<<SQL
-        INSERT ALL  INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp0, now()) INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
+        INSERT ALL  INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
         SQL;
 
         $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
@@ -157,20 +157,20 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
             'values and expressions' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET [[ts]]="EXCLUDED".[[ts]] WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"="EXCLUDED"."ts" WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
                 SQL,
             ],
             'values and expressions with update part' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 2 => ['[[orders]]' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET [[orders]]="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
                 SQL,
             ],
             'values and expressions without update part' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
                 SQL,
             ],
             'query, values and expressions with update part' => [
@@ -183,7 +183,7 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
                     )->from('DUAL'),
                 2 => ['ts' => 0, '[[orders]]' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"=:qp1, [[orders]]="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"=:qp1, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
                 SQL,
             ],
             'query, values and expressions without update part' => [

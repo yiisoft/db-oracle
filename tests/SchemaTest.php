@@ -14,6 +14,8 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonSchemaTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
+use function version_compare;
+
 /**
  * @group oracle
  *
@@ -98,14 +100,12 @@ final class SchemaTest extends CommonSchemaTest
     {
         $db = $this->getConnection(true);
 
-        $expectedSchemas = ['HR'];
         $schema = $db->getSchema();
-        $schemas = $schema->getSchemaNames();
 
-        $this->assertNotEmpty($schemas);
-
-        foreach ($expectedSchemas as $schema) {
-            $this->assertContains($schema, $schemas);
+        if (version_compare($db->getServerVersion(), '12', '>')) {
+            $this->assertContains('SYSBACKUP', $schema->getSchemaNames());
+        } else {
+            $this->assertEmpty($schema->getSchemaNames());
         }
 
         $db->close();
@@ -121,20 +121,42 @@ final class SchemaTest extends CommonSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $tablesNames = $schema->getTableNames('HR');
+        $tablesNames = $schema->getTableNames('SYSTEM');
 
         $expectedTableNames = [
-            'COUNTRIES',
-            'DEPARTMENTS',
-            'EMPLOYEES',
-            'EMP_DETAILS_VIEW',
-            'JOBS',
-            'JOB_HISTORY',
-            'LOCATIONS',
-            'REGIONS',
+            'animal',
+            'animal_view',
+            'bit_values',
+            'category',
+            'composite_fk',
+            'constraints',
+            'customer',
+            'default_pk',
+            'department',
+            'document',
+            'dossier',
+            'employee',
+            'item',
+            'negative_default_values',
+            'null_values',
+            'order',
+            'order_item',
+            'order_item_with_null_fk',
+            'order_with_null_fk',
+            'profile',
+            'quoter',
+            'T_constraints_1',
+            'T_constraints_2',
+            'T_constraints_3',
+            'T_constraints_4',
+            'T_upsert',
+            'T_upsert_1',
+            'type',
         ];
 
-        $this->assertSame($expectedTableNames, $tablesNames);
+        foreach ($expectedTableNames as $tableName) {
+            $this->assertContains($tableName, $tablesNames);
+        }
 
         $db->close();
     }
