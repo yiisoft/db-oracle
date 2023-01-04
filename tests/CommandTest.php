@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -529,5 +530,23 @@ final class CommandTest extends CommonCommandTest
     public function testUpsert(array $firstData, array $secondData): void
     {
         parent::testUpsert($firstData, $secondData);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function testQueryScalarWithBlob(): void
+    {
+        $db = $this->getConnection(true);
+
+        $value = json_encode(['test']);
+        $db->createCommand()->insert('{{%T_upsert_varbinary}}', ['id' => 1, 'blob_col' => $value])->execute();
+
+        $scalarValue = $db->createCommand('SELECT [[blob_col]] FROM {{%T_upsert_varbinary}}')->queryScalar();
+        $this->assertEquals($value, $scalarValue);
     }
 }
