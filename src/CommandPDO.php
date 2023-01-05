@@ -29,7 +29,7 @@ final class CommandPDO extends AbstractCommandPDO
         return $this->db->getQueryBuilder();
     }
 
-    public function insertEx(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         $params = [];
         $sql = $this->queryBuilder()->insert($table, $columns, $params);
@@ -71,6 +71,7 @@ final class CommandPDO extends AbstractCommandPDO
         foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
+        unset($value);
 
         if (!$this->execute()) {
             return false;
