@@ -71,6 +71,7 @@ final class CommandPDO extends AbstractCommandPDO
         foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
+        unset($value);
 
         if (!$this->execute()) {
             return false;
