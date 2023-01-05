@@ -363,7 +363,7 @@ final class CommandTest extends CommonCommandTest
             ['id' => 'varchar(10) primary key', 'name' => 'varchar(10)'],
         )->execute();
 
-        $result = $command->insertEx('{{test_insert_ex_string}}', ['id' => '1', 'name' => 'test']);
+        $result = $command->insertWithReturningPks('{{test_insert_ex_string}}', ['id' => '1', 'name' => 'test']);
 
         $this->assertSame(['id' => '1'], $result);
 
