@@ -347,7 +347,7 @@ final class CommandTest extends CommonCommandTest
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    public function testInsertExWithPrimaryKeyString(): void
+    public function testInsertWithReturningPksWithPrimaryKeyString(): void
     {
         $db = $this->getConnection();
 
