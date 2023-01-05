@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use PDO;
 use PDOException;
 use Throwable;
-use Yiisoft\Db\Driver\PDO\CommandPDO as AbstractCommandPDO;
+use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
