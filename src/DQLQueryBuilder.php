@@ -6,9 +6,9 @@ namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
+use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
-use Yiisoft\Db\QueryBuilder\DQLQueryBuilder as AbstractDQLQueryBuilder;
 
 use function array_merge;
 use function implode;
@@ -51,9 +51,12 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 
     protected function defaultExpressionBuilders(): array
     {
-        return array_merge(parent::defaultExpressionBuilders(), [
-            InCondition::class => InConditionBuilder::class,
-            LikeCondition::class => LikeConditionBuilder::class,
-        ]);
+        return array_merge(
+            parent::defaultExpressionBuilders(),
+            [
+                InCondition::class => InConditionBuilder::class,
+                LikeCondition::class => LikeConditionBuilder::class,
+            ],
+        );
     }
 }
