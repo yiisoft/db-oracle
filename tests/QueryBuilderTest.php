@@ -405,7 +405,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     ): void {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DMLQueryBuilder::insertWithReturningPks() is not supported by Oracle.',
+            'Yiisoft\Db\Oracle\DMLQueryBuilder::insertWithReturningPks is not supported by Oracle.',
         );
 
         $db = $this->getConnection(true);
