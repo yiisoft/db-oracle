@@ -24,11 +24,6 @@ use function strlen;
  */
 final class CommandPDO extends AbstractCommandPDO
 {
-    public function queryBuilder(): QueryBuilderInterface
-    {
-        return $this->db->getQueryBuilder();
-    }
-
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         $params = [];
@@ -85,6 +80,11 @@ final class CommandPDO extends AbstractCommandPDO
         }
 
         return $result;
+    }
+
+    public function queryBuilder(): QueryBuilderInterface
+    {
+        return $this->db->getQueryBuilder();
     }
 
     protected function bindPendingParams(): void
