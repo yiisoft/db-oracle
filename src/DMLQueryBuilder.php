@@ -85,6 +85,17 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
     }
 
     /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
+    }
+
+    /**
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      *
      * @throws Exception
