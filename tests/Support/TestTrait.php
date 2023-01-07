@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Support;
 
+use Stringable;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -26,8 +27,7 @@ trait TestTrait
     {
         $db = new ConnectionPDO(
             new PDODriver($this->getDsn(), 'system', 'root'),
-            DbHelper::getQueryCache(),
-            DbHelper::getSchemaCache(),
+            DbHelper::getSchemaCache()
         );
 
         if ($fixture) {
@@ -40,7 +40,7 @@ trait TestTrait
     protected function getDsn(): string
     {
         if ($this->dsn === '') {
-            $this->dsn = new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']);
+            $this->dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
         }
 
         return $this->dsn;
