@@ -11,7 +11,7 @@
 
 Yii Database Oracle Extension is a database driver for [Oracle] databases that is part of the [Yii Framework]. The Yii framework is an open-source PHP framework for web application development.
 
-Yii Database Oracle Extension allows you to connect to [Oracle] databases from your Yii application and perform various database operations such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of [Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases in your Yii application.
+The package allows you to connect to [Oracle] databases from your Yii application and perform various database operations such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of [Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases in your Yii application.
 
 To use Yii Database Oracle Extension in your Yii application, you need to have the [Oracle] client library installed and configured on your server, and you need to specify the correct database connection parameters in your Yii application's configuration file. Once you have done this, you can use the Yii Database Oracle Extension driver to connect to your Oracle database and perform various database operations as needed.
 
@@ -42,9 +42,9 @@ composer require yiisoft/db-oracle
 
 ### Config with [Yii Framework]
 
-The configuration with [container di](https://github.com/yiisoft/di) of [YiiFramework].
+The configuration with [DI container](https://github.com/yiisoft/di) of [YiiFramework].
 
-Also you can use any container di which implements [PSR-11](https://www.php-fig.org/psr/psr-11/).
+Also you can use any DI container which implements [PSR-11](https://www.php-fig.org/psr/psr-11/).
 
 db.php
 
