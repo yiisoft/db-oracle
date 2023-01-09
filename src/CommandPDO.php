@@ -11,7 +11,6 @@ use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Schema;
 
 use function array_keys;
 use function count;

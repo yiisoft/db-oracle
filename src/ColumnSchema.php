@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\AbstractColumnSchema;
-use Yiisoft\Db\Schema\Schema;
 
 use function is_string;
 use function preg_replace;
