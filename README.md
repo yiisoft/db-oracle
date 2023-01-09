@@ -9,16 +9,16 @@
     <br>
 </p>
 
-Yii Database Oracle Extension is a database driver for [Oracle] databases that is part of the [YiiFramework]. The Yii framework is an open-source PHP framework for web application development.
+Yii Database Oracle Extension is a database driver for [Oracle] databases that is part of the [Yii Framework]. The Yii framework is an open-source PHP framework for web application development.
 
 Yii Database Oracle Extension allows you to connect to [Oracle] databases from your Yii application and perform various database operations such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of [Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases in your Yii application.
 
 To use Yii Database Oracle Extension in your Yii application, you need to have the [Oracle] client library installed and configured on your server, and you need to specify the correct database connection parameters in your Yii application's configuration file. Once you have done this, you can use the Yii Database Oracle Extension driver to connect to your Oracle database and perform various database operations as needed.
 
-It is used in [YiiFramework] but can be used separately.
+It is used in [Yii Framework] but can be used separately.
 
 [Oracle]: https://www.oracle.com/database/technologies/
-[YiiFramework]: https://www.yiiframework.com/
+[Yii Framework]: https://www.yiiframework.com/
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
@@ -40,7 +40,7 @@ The package could be installed via composer:
 composer require yiisoft/db-oracle
 ```
 
-### Config with [YiiFramework]
+### Config with [Yii Framework]
 
 The configuration with [container di](https://github.com/yiisoft/di) of [YiiFramework].
 
@@ -85,7 +85,7 @@ return [
 ];
 ```
 
-### Config without [YiiFramework]
+### Config without [Yii Framework]
 
 ```php
 <?php
