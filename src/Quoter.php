@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Schema\Quoter as BaseQuoter;
+use Yiisoft\Db\Schema\AbstractQuoter;
 
 use function str_contains;
 
-final class Quoter extends BaseQuoter
+final class Quoter extends AbstractQuoter
 {
     public function quoteSimpleTableName(string $name): string
     {
