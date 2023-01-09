@@ -63,7 +63,7 @@ return [
     ConnectionInterface::class => [
         'class' => ConnectionPDO::class,
         '__construct()' => [
-            'driver' => new PDODriver($params['yiisoft/db-pgsql']['dsn']),
+            'driver' => new PDODriver($params['yiisoft/db-oracle']['dsn']),
         ]
     ]
 ];
@@ -79,7 +79,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Oracle\Dsn;
 
 return [
-    'yiisoft/db-pgsql' => [
+    'yiisoft/db-oracle' => [
         'dsn' => (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString(),
     ]
 ];
