@@ -63,7 +63,11 @@ return [
     ConnectionInterface::class => [
         'class' => ConnectionPDO::class,
         '__construct()' => [
-            'driver' => new PDODriver($params['yiisoft/db-oracle']['dsn']),
+            'driver' => new PDODriver(
+                $params['yiisoft/db-oracle']['dsn'],
+                $params['yiisoft/db-oracle']['username'],
+                $params['yiisoft/db-oracle']['password'],
+            ),
         ]
     ]
 ];
@@ -81,6 +85,8 @@ use Yiisoft\Db\Oracle\Dsn;
 return [
     'yiisoft/db-oracle' => [
         'dsn' => (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString(),
+        'username' => 'user',
+        'password' => 'password',
     ]
 ];
 ```
@@ -107,7 +113,7 @@ $cache = new Cache($arrayCache);
 $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
 
 // Or any other PDO driver.
-$pdoDriver = new PDODriver($dsn); 
+$pdoDriver = new PDODriver($dsn, 'user', 'password'); 
 $schemaCache = new SchemaCache($cache);
 $db = new ConnectionPDO($pdoDriver, $schemaCache);
 ```
