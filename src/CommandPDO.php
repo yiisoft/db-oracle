@@ -11,7 +11,7 @@ use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
 use function count;
@@ -45,7 +45,7 @@ final class CommandPDO extends AbstractCommandPDO
                 'value' => '',
             ];
 
-            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== Schema::PHP_TYPE_INTEGER) {
+            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== SchemaInterface::PHP_TYPE_INTEGER) {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
             } else {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
@@ -65,6 +65,7 @@ final class CommandPDO extends AbstractCommandPDO
         foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
+
         unset($value);
 
         if (!$this->execute()) {

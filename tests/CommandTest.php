@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -85,7 +85,7 @@ final class CommandTest extends CommonCommandTest
             $command->dropTable('longstring')->execute();
         }
 
-        $command->createTable('longstring', ['message' => Schema::TYPE_TEXT])->execute();
+        $command->createTable('longstring', ['message' => SchemaInterface::TYPE_TEXT])->execute();
         $longData = str_pad('-', 4001, '-=', STR_PAD_LEFT);
         $command->insert('longstring', ['message' => $longData])->execute();
 
@@ -126,7 +126,7 @@ final class CommandTest extends CommonCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]
+            ['id' => SchemaInterface::TYPE_PK, 'bar' => SchemaInterface::TYPE_INTEGER]
         )->execute();
         $command->setSql(
             <<<SQL
@@ -178,8 +178,8 @@ final class CommandTest extends CommonCommandTest
         $command->createTable(
             '{{testCreateViewTable}}',
             [
-                '[[id]]' => Schema::TYPE_PK,
-                '[[bar]]' => Schema::TYPE_INTEGER,
+                '[[id]]' => SchemaInterface::TYPE_PK,
+                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
             ],
         )->execute();
         $command->setSql(
