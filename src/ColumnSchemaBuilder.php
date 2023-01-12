@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Schema\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
+use Yiisoft\Db\Schema\AbstractColumnSchemaBuilder;
 
 /**
  * ColumnSchemaBuilder is the schema builder for Oracle databases.
  */
-final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder implements \Stringable
+final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
 {
     /**
      * Builds the unsigned string for column. Defaults to unsupported.
