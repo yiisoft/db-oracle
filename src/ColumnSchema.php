@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\AbstractColumnSchema;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function is_string;
 use function preg_replace;
@@ -20,7 +20,7 @@ final class ColumnSchema extends AbstractColumnSchema
 {
     public function dbTypecast(mixed $value): mixed
     {
-        if ($this->getType() === Schema::TYPE_BINARY && $this->getDbType() === 'BLOB') {
+        if ($this->getType() === SchemaInterface::TYPE_BINARY && $this->getDbType() === 'BLOB') {
             if ($value instanceof ParamInterface && is_string($value->getValue())) {
                 $value = (string) $value->getValue();
             }
