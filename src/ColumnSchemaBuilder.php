@@ -26,7 +26,7 @@ final class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
      *
      * @return string
      */
-    public function __toString(): string
+    public function asString(): string
     {
         $format = match ($this->getTypeCategory()) {
             self::CATEGORY_PK => '{type}{length}{check}{append}',
