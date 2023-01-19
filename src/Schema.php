@@ -713,7 +713,7 @@ final class Schema extends AbstractSchema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @var Constraint[] $constraints */
+        /** @var array[] $constraints */
         $constraints = $this->normalizeRowKeyCase($constraints, true);
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
 
