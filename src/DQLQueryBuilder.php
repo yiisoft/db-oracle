@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
@@ -15,8 +16,13 @@ use function implode;
 
 final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 {
-    public function buildOrderByAndLimit(string $sql, array $orderBy, $limit, $offset, array &$params = []): string
-    {
+    public function buildOrderByAndLimit(
+        string $sql,
+        array $orderBy,
+        ExpressionInterface|int|null $limit,
+        ExpressionInterface|int|null $offset,
+        array &$params = []
+    ): string {
         $orderByString = $this->buildOrderBy($orderBy, $params);
 
         if ($orderByString !== '') {
@@ -26,11 +32,13 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         $filters = [];
 
         if ($this->hasOffset($offset)) {
-            $filters[] = 'rowNumId > ' . (string) $offset;
+            $filters[] = 'rowNumId > ' .
+                ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string)$offset);
         }
 
         if ($this->hasLimit($limit)) {
-            $filters[] = 'rownum <= ' . (string) $limit;
+            $filters[] = 'rownum <= ' .
+                ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string)$limit);
         }
 
         if (empty($filters)) {
