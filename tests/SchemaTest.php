@@ -275,7 +275,7 @@ final class SchemaTest extends CommonSchemaTest
          * Bitmap indexes are not available for standard edition.
         return array_merge(parent::withIndexDataProvider(), [
             [
-                'indexType' => QueryBuilder::INDEX_BITMAP,
+                'indexType' => SchemaInterface::BITMAP,
                 'indexMethod' => null,
                 'columnType' => 'varchar(16)',
             ],

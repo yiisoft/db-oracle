@@ -14,11 +14,6 @@ use Yiisoft\Db\Schema\SchemaInterface;
 final class QueryBuilder extends AbstractQueryBuilder
 {
     /**
-     * Defines a BITMAP index type for {@see createIndex()}.
-     */
-    public const INDEX_BITMAP = 'BITMAP';
-
-    /**
      * @psalm-var string[] $typeMap Mapping from abstract column types (keys) to physical column types (values).
      */
     protected array $typeMap = [
