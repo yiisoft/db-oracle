@@ -24,6 +24,8 @@ final class QueryBuilder extends AbstractQueryBuilder
         SchemaInterface::TYPE_CHAR => 'CHAR(1)',
         SchemaInterface::TYPE_STRING => 'VARCHAR2(255)',
         SchemaInterface::TYPE_TEXT => 'CLOB',
+        SchemaInterface::TYPE_MEDIUMTEXT => 'CLOB',
+        SchemaInterface::TYPE_LONGTEXT => 'CLOB',
         SchemaInterface::TYPE_TINYINT => 'NUMBER(3)',
         SchemaInterface::TYPE_SMALLINT => 'NUMBER(5)',
         SchemaInterface::TYPE_INTEGER => 'NUMBER(10)',
