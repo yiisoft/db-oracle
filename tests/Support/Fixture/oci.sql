@@ -104,7 +104,7 @@ CREATE TABLE "order" (
   "id" integer not null,
   "customer_id" integer NOT NULL references "customer"("id") on DELETE CASCADE,
   "created_at" integer NOT NULL,
-  "total" decimal(10,0) NOT NULL,
+  "total" decimal(10,2) NOT NULL,
   CONSTRAINT "order_PK" PRIMARY KEY ("id") ENABLE
 );
 CREATE SEQUENCE "order_SEQ";
