@@ -104,7 +104,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $insert = parent::insert();
 
         $insert['empty columns'][3] = <<<SQL
-        INSERT INTO [[customer]] ([[id]]) VALUES (DEFAULT)
+        INSERT INTO "customer" ("id") VALUES (DEFAULT)
         SQL;
 
         return $insert;
