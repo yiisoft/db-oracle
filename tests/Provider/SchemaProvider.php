@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Tests\Provider\AbstractSchemaProvider;
 use Yiisoft\Db\Tests\Support\AnyValue;
 
-final class SchemaProvider extends AbstractSchemaProvider
+final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
 {
     public function columns(): array
     {

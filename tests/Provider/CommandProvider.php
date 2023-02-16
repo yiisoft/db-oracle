@@ -7,12 +7,11 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\Provider\AbstractCommandProvider;
 
 use function json_encode;
 use function serialize;
 
-final class CommandProvider extends AbstractCommandProvider
+final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
 {
     use TestTrait;
 

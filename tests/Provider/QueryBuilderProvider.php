@@ -9,14 +9,13 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\Provider\AbstractQueryBuilderProvider;
 
 use function array_replace;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QueryBuilderProvider extends AbstractQueryBuilderProvider
+final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilderProvider
 {
     use TestTrait;
 
