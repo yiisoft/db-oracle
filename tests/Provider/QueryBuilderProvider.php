@@ -9,14 +9,13 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\Provider\AbstractQueryBuilderProvider;
 
 use function array_replace;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QueryBuilderProvider extends AbstractQueryBuilderProvider
+final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilderProvider
 {
     use TestTrait;
 
@@ -98,6 +97,17 @@ final class QueryBuilderProvider extends AbstractQueryBuilderProvider
 
 
         return parent::buildLikeCondition();
+    }
+
+    public function insert(): array
+    {
+        $insert = parent::insert();
+
+        $insert['empty columns'][3] = <<<SQL
+        INSERT INTO "customer" ("id") VALUES (DEFAULT)
+        SQL;
+
+        return $insert;
     }
 
     public function selectExist(): array
