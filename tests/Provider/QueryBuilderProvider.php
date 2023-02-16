@@ -99,6 +99,17 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return parent::buildLikeCondition();
     }
 
+    public function insert(): array
+    {
+        $insert = parent::insert();
+
+        $insert['empty columns'][3] = <<<SQL
+        INSERT INTO [[customer]] ([[id]]) VALUES (DEFAULT)
+        SQL;
+
+        return $insert;
+    }
+
     public function selectExist(): array
     {
         $selectExist = parent::selectExist();
