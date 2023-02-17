@@ -49,7 +49,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
      * @throws InvalidConfigException
      * @throws NotSupportedException
      * @throws InvalidArgumentException
-     *
      */
     public function testAddForeignKey(
         string $name,
