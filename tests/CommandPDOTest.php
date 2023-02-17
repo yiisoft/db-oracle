@@ -17,7 +17,7 @@ final class CommandPDOTest extends CommonCommandPDOTest
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParam()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParam
      */
     public function testBindParam(
         string $field,
@@ -32,7 +32,7 @@ final class CommandPDOTest extends CommonCommandPDOTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParamsNonWhere()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
      */
     public function testBindParamsNonWhere(string $sql): void
     {
