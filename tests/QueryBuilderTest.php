@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use Generator;
+use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -42,7 +43,13 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addForeignKey()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addForeignKey
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws InvalidArgumentException
+     *
      */
     public function testAddForeignKey(
         string $name,
@@ -58,6 +65,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testAddForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, null, $expected);
     }
 
+    /**
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public function testAddForeignKeyUpdateException(): void
     {
         $db = $this->getConnection();
@@ -71,7 +83,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addPrimaryKey()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addPrimaryKey
      */
     public function testAddPrimaryKey(string $name, string $table, array|string $columns, string $expected): void
     {
@@ -79,7 +91,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addUnique()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::addUnique
      */
     public function testAddUnique(string $name, string $table, array|string $columns, string $expected): void
     {
@@ -95,20 +107,24 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $schema = $db->getSchema();
 
         $this->assertSame(
             <<<SQL
             ALTER TABLE "customer" MODIFY "email" VARCHAR2(255)
             SQL,
-            $qb->alterColumn('customer', 'email', (string) SchemaInterface::TYPE_STRING),
+            $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING),
         );
 
         $db->close();
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::batchInsert()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::batchInsert
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
     {
@@ -116,7 +132,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildCondition()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildCondition
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
@@ -127,7 +148,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildLikeCondition()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildLikeCondition
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
@@ -173,7 +199,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildFrom()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildFrom
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testBuildWithFrom(mixed $table, string $expectedSql, array $expectedParams = []): void
     {
@@ -237,7 +268,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildWhereExists()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildWhereExists
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testBuildWithWhereExists(string $cond, string $expectedQuerySql): void
     {
@@ -296,7 +332,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::delete()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::delete
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
     {
@@ -382,7 +423,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::insert()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::insert
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     public function testInsert(
         string $table,
@@ -395,7 +441,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::insertWithReturningPks()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function testInsertWithReturningPks(
         string $table,
@@ -438,6 +488,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
      * @throws Exception
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     * @throws Throwable
      */
     public function testResetSequence(): void
     {
@@ -510,6 +561,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $db->close();
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
     public function testResetSequenceCompositeException(): void
     {
         $db = $this->getConnection(true);
@@ -523,7 +579,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::selectExist()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::selectExist
      */
     public function testSelectExists(string $sql, string $expected): void
     {
@@ -531,7 +587,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::update()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::update
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     public function testUpdate(
         string $table,
@@ -544,7 +605,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::upsert
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     public function testUpsert(
         string $table,
@@ -557,7 +623,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::upsert
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     public function testUpsertExecute(
         string $table,
