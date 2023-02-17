@@ -9,6 +9,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function array_replace;
 
@@ -44,16 +45,16 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $batchInsert = parent::batchInsert();
 
-        $this->changeSqlForOracleBatchInsert($batchInsert['simple']['expected']) ;
-        $this->changeSqlForOracleBatchInsert($batchInsert['escape-danger-chars']['expected']) ;
-        $this->changeSqlForOracleBatchInsert($batchInsert['customer3']['expected']) ;
-        $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['simple']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['escape-danger-chars']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['customer3']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
 
         $batchInsert['wrong']['expected'] = <<<SQL
         INSERT ALL  INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
         SQL;
 
-        $this->changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
 
         return $batchInsert;
     }
