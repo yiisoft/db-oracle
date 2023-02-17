@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Closure;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -64,7 +63,7 @@ final class CommandTest extends CommonCommandTest
         string $table,
         array $columns,
         array $values,
-        Closure $expected,
+        string $expected,
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
@@ -296,7 +295,7 @@ final class CommandTest extends CommonCommandTest
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function testGetRawSql(string $sql, array $params, Closure $expectedRawSql): void
+    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
         parent::testGetRawSql($sql, $params, $expectedRawSql);
     }
@@ -515,19 +514,27 @@ final class CommandTest extends CommonCommandTest
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::update
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function testUpdate(
         string $table,
         array $columns,
         array|string $conditions,
         array $params,
-        Closure $expected
+        string $expected
     ): void {
         parent::testUpdate($table, $columns, $conditions, $params, $expected);
     }
 
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::upsert
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function testUpsert(array $firstData, array $secondData): void
     {
@@ -545,7 +552,7 @@ final class CommandTest extends CommonCommandTest
     {
         $db = $this->getConnection(true);
 
-        $value = json_encode(['test']);
+        $value = json_encode(['test'], JSON_THROW_ON_ERROR);
         $db->createCommand()->insert('{{%T_upsert_varbinary}}', ['id' => 1, 'blob_col' => $value])->execute();
 
         $scalarValue = $db->createCommand('SELECT [[blob_col]] FROM {{%T_upsert_varbinary}}')->queryScalar();

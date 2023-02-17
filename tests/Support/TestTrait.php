@@ -24,7 +24,7 @@ trait TestTrait
     {
         $db = new ConnectionPDO(
             new PDODriver($this->getDsn(), 'system', 'root'),
-            DbHelper::getSchemaCache()
+            DbHelper::getSchemaCache(),
         );
 
         if ($fixture) {
@@ -32,6 +32,16 @@ trait TestTrait
         }
 
         return $db;
+    }
+
+    protected static function getDb(): ConnectionPDOInterface
+    {
+        $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
+
+        return new ConnectionPDO(
+            new PDODriver($dsn, 'system', 'root'),
+            DbHelper::getSchemaCache(),
+        );
     }
 
     protected function getDsn(): string

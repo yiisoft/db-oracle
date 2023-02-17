@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
@@ -20,14 +19,15 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 {
     use TestTrait;
 
-    protected string $likeEscapeCharSql = " ESCAPE '!'";
-    protected array $likeParameterReplacements = [
+    protected static string $driverName = 'oci';
+    protected static string $likeEscapeCharSql = " ESCAPE '!'";
+    protected static array $likeParameterReplacements = [
         '\%' => '!%',
         '\_' => '!_',
         '!' => '!!',
     ];
 
-    public function addForeignKey(): array
+    public static function addForeignKey(): array
     {
         $addForeingKey = parent::addForeignKey();
 
@@ -41,7 +41,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $addForeingKey;
     }
 
-    public function batchInsert(): array
+    public static function batchInsert(): array
     {
         $batchInsert = parent::batchInsert();
 
@@ -59,7 +59,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $batchInsert;
     }
 
-    public function buildCondition(): array
+    public static function buildCondition(): array
     {
         $buildCondition = parent::buildCondition();
 
@@ -76,23 +76,17 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $buildCondition;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
-    public function buildLikeCondition(): array
+    public static function buildLikeCondition(): array
     {
-        $db = $this->getConnection();
-
         /*
          * Different pdo_oci8 versions may or may not implement PDO::quote(), so \Yiisoft\Db\Oracle\Quoter::quoteValue()
          * may or may not quote \.
          */
         try {
-            $encodedBackslash = substr($db->getQuoter()->quoteValue('\\\\'), 1, -1);
+            $encodedBackslash = substr(self::getDb()->quoteValue('\\\\'), 1, -1);
 
-            $this->likeParameterReplacements[$encodedBackslash] = '\\';
-        } catch (\Exception) {
+            self::$likeParameterReplacements[$encodedBackslash] = '\\';
+        } catch (Exception) {
             // ignore
         }
 
@@ -100,7 +94,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return parent::buildLikeCondition();
     }
 
-    public function insert(): array
+    public static function insert(): array
     {
         $insert = parent::insert();
 
@@ -111,7 +105,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $insert;
     }
 
-    public function selectExist(): array
+    public static function selectExist(): array
     {
         $selectExist = parent::selectExist();
 
@@ -122,10 +116,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $selectExist;
     }
 
-    public function upsert(): array
+    public static function upsert(): array
     {
-        $db = $this->getConnection();
-
         $concreteData = [
             'regular values' => [
                 3 => <<<SQL
@@ -185,7 +177,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 SQL,
             ],
             'query, values and expressions with update part' => [
-                1 => (new Query($db))
+                1 => (new Query(self::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -198,7 +190,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 SQL,
             ],
             'query, values and expressions without update part' => [
-                1 => (new Query($db))
+                1 => (new Query(self::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
