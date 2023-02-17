@@ -12,8 +12,6 @@ use Yiisoft\Db\Oracle\Dsn;
 use Yiisoft\Db\Oracle\PDODriver;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
-use function str_replace;
-
 trait TestTrait
 {
     private string $dsn = 'oci:dbname=localhost/XE;';
@@ -53,10 +51,5 @@ trait TestTrait
     protected function setDsn(string $dsn): void
     {
         $this->dsn = $dsn;
-    }
-
-    private function changeSqlForOracleBatchInsert(string &$str): void
-    {
-        $str = str_replace('INSERT INTO', 'INSERT ALL  INTO', $str) . ' SELECT 1 FROM SYS.DUAL';
     }
 }
