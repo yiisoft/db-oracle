@@ -17,7 +17,7 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
     {
         $batchInsert = parent::batchInsert();
 
-        $batchInsert['multirow']['expected'] = static fn(string $driverName): string => <<<SQL
+        $batchInsert['multirow']['expected'] = static fn (string $driverName): string => <<<SQL
         INSERT ALL  INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
         SQL;
         $batchInsert['multirow']['expectedParams'][':qp3'] = '1';
@@ -25,18 +25,18 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
 
         $issue11242 = $batchInsert['issue11242']['expected']('oci');
         DbHelper::changeSqlForOracleBatchInsert($issue11242);
-        $batchInsert['issue11242']['expected'] = static fn(string $driverName): string => $issue11242;
+        $batchInsert['issue11242']['expected'] = static fn (string $driverName): string => $issue11242;
         $batchInsert['issue11242']['expectedParams'][':qp3'] = '1';
 
         $wrongBehavior = $batchInsert['wrongBehavior']['expected']('oci');
         DbHelper::changeSqlForOracleBatchInsert($wrongBehavior);
-        $batchInsert['wrongBehavior']['expected'] = static fn(string $driverName): string => $wrongBehavior;
+        $batchInsert['wrongBehavior']['expected'] = static fn (string $driverName): string => $wrongBehavior;
 
         $batchInsert['wrongBehavior']['expectedParams'][':qp3'] = '0';
 
         $batchInsertBinds = $batchInsert['batchInsert binds params from expression']['expected']('oci');
         DbHelper::changeSqlForOracleBatchInsert($batchInsertBinds);
-        $batchInsert['batchInsert binds params from expression']['expected'] = static fn(string $driverName): string => $batchInsertBinds;
+        $batchInsert['batchInsert binds params from expression']['expected'] = static fn (string $driverName): string => $batchInsertBinds;
         $batchInsert['batchInsert binds params from expression']['expectedParams'][':qp3'] = '0';
 
         return $batchInsert;
