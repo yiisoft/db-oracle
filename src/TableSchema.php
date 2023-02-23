@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Schema\TableSchema as AbstractTableSchema;
+use Yiisoft\Db\Schema\AbstractTableSchema;
 
 /**
  * TableSchema represents the metadata of a database table.
