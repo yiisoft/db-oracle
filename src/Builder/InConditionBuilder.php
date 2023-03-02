@@ -11,20 +11,18 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder as AbstractInConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_slice;
 use function array_unshift;
 use function count;
 use function is_array;
 
+/**
+ * InConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for
+ * Oracle.
+ */
 final class InConditionBuilder extends AbstractInConditionBuilder
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        parent::__construct($queryBuilder);
-    }
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
