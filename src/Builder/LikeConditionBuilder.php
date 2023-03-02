@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Builder;
 use Exception;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 use Yiisoft\Db\Schema\Quoter;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function substr;
 
@@ -27,6 +28,11 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
         '_' => '!_',
         '!' => '!!',
     ];
+
+    public function __construct(QueryBuilderInterface $queryBuilder)
+    {
+        parent::__construct($queryBuilder, $this->getEscapeSql());
+    }
 
     /**
      * @throws Exception
@@ -50,6 +56,6 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
      */
     private function getEscapeSql(): string
     {
-        return $this->escapeCharacter !== '' ? " ESCAPE '{$this->escapeCharacter}'" : '';
+        return $this->escapeCharacter !== '' ? " ESCAPE '$this->escapeCharacter'" : '';
     }
 }

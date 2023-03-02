@@ -38,11 +38,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
         /** @var Incondition $expression */
         $splitCondition = $this->splitCondition($expression, $params);
 
-        if ($splitCondition !== null) {
-            return $splitCondition;
-        }
-
-        return parent::build($expression, $params);
+        return $splitCondition ?? parent::build($expression, $params);
     }
 
     /**
