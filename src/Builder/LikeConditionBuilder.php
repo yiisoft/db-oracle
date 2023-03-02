@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Exception;
-use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder as AbstractLikeConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
 use function substr;
 
-final class LikeConditionBuilder extends AbstractLikeConditionBuilder
+/**
+ * LikeConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\LikeCondition`} LIKE operator
+ * for Oracle Server.
+ */
+final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
 {
     private string $escapeCharacter = '!';
 
@@ -25,11 +27,6 @@ final class LikeConditionBuilder extends AbstractLikeConditionBuilder
         '_' => '!_',
         '!' => '!!',
     ];
-
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        parent::__construct($queryBuilder, $this->getEscapeSql());
-    }
 
     /**
      * @throws Exception

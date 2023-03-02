@@ -9,7 +9,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder as AbstractInConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 
 use function array_slice;
@@ -19,9 +18,9 @@ use function is_array;
 
 /**
  * InConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for
- * Oracle.
+ * Oracle Server.
  */
-final class InConditionBuilder extends AbstractInConditionBuilder
+final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
