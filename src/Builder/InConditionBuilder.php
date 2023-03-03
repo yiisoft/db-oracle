@@ -18,6 +18,10 @@ use function array_unshift;
 use function count;
 use function is_array;
 
+/**
+ * InConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for
+ * Oracle Server.
+ */
 final class InConditionBuilder extends AbstractInConditionBuilder
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
@@ -26,37 +30,39 @@ final class InConditionBuilder extends AbstractInConditionBuilder
     }
 
     /**
-     * Method builds the raw SQL from the $expression that will not be additionally
-     * escaped or quoted.
+     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
-     * @param ExpressionInterface $expression the expression to be built.
-     * @param array $params the binding parameters.
+     * @param ExpressionInterface $expression The expression to be built.
+     * @param array $params The binding parameters.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
+     * @return string The raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         /** @var Incondition $expression */
         $splitCondition = $this->splitCondition($expression, $params);
 
-        if ($splitCondition !== null) {
-            return $splitCondition;
-        }
-
-        return parent::build($expression, $params);
+        return $splitCondition ?? parent::build($expression, $params);
     }
 
     /**
      * Oracle DBMS does not support more than 1000 parameters in `IN` condition.
+     *
      * This method splits long `IN` condition into series of smaller ones.
      *
-     * @param array $params the binding parameters.
+     * @param array $params The binding parameters.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
-     * @return string|null null when split is not required. Otherwise - built SQL condition.
+     * @return string|null `null` when split is not required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InCondition $condition, array &$params): string|null
     {
