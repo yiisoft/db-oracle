@@ -18,8 +18,7 @@ use function count;
 use function is_array;
 
 /**
- * InConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for
- * Oracle Server.
+ * Builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for Oracle Server.
  */
 final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
