@@ -9,8 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder as AbstractInConditionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\InConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_slice;
@@ -22,7 +21,7 @@ use function is_array;
  * InConditionBuilder builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for
  * Oracle Server.
  */
-final class InConditionBuilder extends AbstractInConditionBuilder
+final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -41,10 +40,11 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      * @throws NotSupportedException
      *
      * @return string The raw SQL that will not be additionally escaped or quoted.
+     *
+     * @psalm-param InConditionInterface $expression
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        /** @var Incondition $expression */
         $splitCondition = $this->splitCondition($expression, $params);
 
         return $splitCondition ?? parent::build($expression, $params);
@@ -64,7 +64,7 @@ final class InConditionBuilder extends AbstractInConditionBuilder
      *
      * @return string|null `null` when split is not required. Otherwise - built SQL condition.
      */
-    protected function splitCondition(InCondition $condition, array &$params): string|null
+    protected function splitCondition(InConditionInterface $condition, array &$params): string|null
     {
         $operator = $condition->getOperator();
         $values = $condition->getValues();
