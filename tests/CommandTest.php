@@ -559,13 +559,13 @@ final class CommandTest extends CommonCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-    public function testProfiler($sql = 'SELECT 123 FROM DUAL'): void
+    public function testProfiler(string $sql = null): void
     {
-        parent::testProfiler($sql);
+        parent::testProfiler('SELECT 123 FROM DUAL');
     }
 
-    public function testProfilerData($sql = 'SELECT 123 FROM DUAL'): void
+    public function testProfilerData(string $sql = null): void
     {
-        parent::testProfilerData($sql);
+        parent::testProfilerData('SELECT 123 FROM DUAL');
     }
 }
