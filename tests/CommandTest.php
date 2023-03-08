@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
@@ -559,24 +558,13 @@ final class CommandTest extends CommonCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-    public function testProfiler(): void
+    public function testProfiler(string $sql = null): void
     {
-        $sql = 'SELECT 123 FROM DUAL';
+        parent::testProfiler('SELECT 123 FROM DUAL');
+    }
 
-        $db = $this->getConnection();
-        $db->open();
-
-        $profiler = $this->createMock(ProfilerInterface::class);
-        $profiler->expects(self::once())
-            ->method('begin')
-            ->with($sql)
-        ;
-        $profiler->expects(self::once())
-            ->method('end')
-            ->with($sql)
-        ;
-        $db->setProfiler($profiler);
-
-        $db->createCommand($sql)->execute();
+    public function testProfilerData(string $sql = null): void
+    {
+        parent::testProfilerData('SELECT 123 FROM DUAL');
     }
 }
