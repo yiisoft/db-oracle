@@ -12,6 +12,9 @@ use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+/**
+ * Implements a (Data Definition Language) SQL statements for MySQL, MariaDb Server.
+ */
 final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 {
     public function __construct(
@@ -22,9 +25,6 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         parent::__construct($queryBuilder, $quoter, $schema);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
@@ -84,9 +84,6 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         return 'COMMENT ON TABLE ' . $this->quoter->quoteTableName($table) . " IS ''";
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function dropDefaultValue(string $name, string $table): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');

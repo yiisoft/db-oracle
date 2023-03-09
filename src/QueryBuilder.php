@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
- * QueryBuilder is the query builder for Oracle databases.
+ * Implements the MySQL, MariaDb Server specific query builder.
  */
 final class QueryBuilder extends AbstractQueryBuilder
 {
@@ -39,15 +39,12 @@ final class QueryBuilder extends AbstractQueryBuilder
         SchemaInterface::TYPE_BOOLEAN => 'NUMBER(1)',
         SchemaInterface::TYPE_MONEY => 'NUMBER(19,4)',
     ];
-    private DDLQueryBuilder $ddlBuilder;
-    private DMLQueryBuilder $dmlBuilder;
-    private DQLQueryBuilder $dqlBuilder;
 
     public function __construct(QuoterInterface $quoter, SchemaInterface $schema)
     {
-        $this->ddlBuilder = new DDLQueryBuilder($this, $quoter, $schema);
-        $this->dmlBuilder = new DMLQueryBuilder($this, $quoter, $schema);
-        $this->dqlBuilder = new DQLQueryBuilder($this, $quoter, $schema);
-        parent::__construct($quoter, $schema, $this->ddlBuilder, $this->dmlBuilder, $this->dqlBuilder);
+        $ddlBuilder = new DDLQueryBuilder($this, $quoter, $schema);
+        $dmlBuilder = new DMLQueryBuilder($this, $quoter, $schema);
+        $dqlBuilder = new DQLQueryBuilder($this, $quoter, $schema);
+        parent::__construct($quoter, $schema, $ddlBuilder, $dmlBuilder, $dqlBuilder);
     }
 }
