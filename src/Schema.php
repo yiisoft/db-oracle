@@ -64,7 +64,6 @@ final class Schema extends AbstractSchema
         return new Column($type, $length);
     }
 
-
     protected function resolveTableName(string $name): TableSchemaInterface
     {
         $resolvedName = new TableSchema();
