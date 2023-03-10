@@ -61,7 +61,7 @@ final class Schema extends AbstractSchema
 
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface
     {
-        return (new Column($type, $length));
+        return new Column($type, $length);
     }
 
 
@@ -363,7 +363,7 @@ final class Schema extends AbstractSchema
         foreach ($columns as $column) {
             $column = $this->normalizeRowKeyCase($column, false);
 
-            $c = $this->createColumn2($column);
+            $c = $this->createColumnSchema($column);
 
             $table->columns($c->getName(), $c);
         }
