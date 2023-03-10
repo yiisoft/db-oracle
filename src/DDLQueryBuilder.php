@@ -13,7 +13,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
- * Implements a (Data Definition Language) SQL statements for MySQL, MariaDb Server.
+ * Implements a (Data Definition Language) SQL statements for Oracle Server.
  */
 final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 {

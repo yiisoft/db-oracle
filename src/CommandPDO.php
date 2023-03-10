@@ -19,8 +19,8 @@ use function implode;
 use function strlen;
 
 /**
- * Implements a database command that can be executed against a PDO (PHP Data Object) database connection for MySQL,
- * MariaDb Server.
+ * Implements a database command that can be executed against a PDO (PHP Data Object) database connection for Oracle
+ * Server.
  */
 final class CommandPDO extends AbstractCommandPDO
 {

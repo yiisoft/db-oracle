@@ -25,7 +25,7 @@ use function count;
 use function reset;
 
 /**
- * Implements a DML (Data Manipulation Language) SQL statements for MySQL, MariaDb Server.
+ * Implements a DML (Data Manipulation Language) SQL statements for Oracle Server.
  */
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {

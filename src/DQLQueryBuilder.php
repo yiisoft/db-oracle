@@ -15,7 +15,7 @@ use function array_merge;
 use function implode;
 
 /**
- * Implements a DQL (Data Query Language) SQL statements for MySQL, MariaDb Server.
+ * Implements a DQL (Data Query Language) SQL statements for Oracle Server.
  */
 final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 {

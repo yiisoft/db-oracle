@@ -8,7 +8,7 @@ use PDO;
 use Yiisoft\Db\Driver\PDO\AbstractPDODriver;
 
 /**
- * Implements the MySQL, MariaDb Server driver based on the PDO (PHP Data Objects) extension.
+ * Implements the Oracle Server driver based on the PDO (PHP Data Objects) extension.
  *
  * @see https://www.php.net/manual/en/ref.pdo-oci.php
  */

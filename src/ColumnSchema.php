@@ -24,7 +24,7 @@ use function uniqid;
  * The following code shows how to use:
  *
  * ```php
- * use Yiisoft\Db\Mysql\ColumnSchema;
+ * use Yiisoft\Db\Oracle\ColumnSchema;
  *
  * $column = new ColumnSchema();
  * $column->name('id');
