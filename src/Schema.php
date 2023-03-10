@@ -17,7 +17,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Schema\AbstractSchema;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_merge;
@@ -295,13 +295,6 @@ final class Schema extends AbstractSchema
     protected function loadTableDefaultValues(string $tableName): array
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
-    }
-
-    public function createColumnSchemaBuilder(
-        string $type,
-        array|int|string $length = null
-    ): ColumnSchemaBuilderInterface {
-        return new ColumnSchemaBuilder($type, $length);
     }
 
     /**
