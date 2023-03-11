@@ -17,7 +17,8 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Schema\AbstractSchema;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_merge;
@@ -56,6 +57,11 @@ final class Schema extends AbstractSchema
     {
         $this->defaultSchema = $defaultSchema;
         parent::__construct($db, $schemaCache);
+    }
+
+    public function createColumn(string $type, array|int|string $length = null): ColumnInterface
+    {
+        return new Column($type, $length);
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
@@ -297,13 +303,6 @@ final class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
 
-    public function createColumnSchemaBuilder(
-        string $type,
-        array|int|string $length = null
-    ): ColumnSchemaBuilderInterface {
-        return new ColumnSchemaBuilder($type, $length);
-    }
-
     /**
      * Collects the table column metadata.
      *
@@ -363,7 +362,7 @@ final class Schema extends AbstractSchema
         foreach ($columns as $column) {
             $column = $this->normalizeRowKeyCase($column, false);
 
-            $c = $this->createColumn($column);
+            $c = $this->createColumnSchema($column);
 
             $table->columns($c->getName(), $c);
         }
@@ -402,9 +401,9 @@ final class Schema extends AbstractSchema
     /**
      * Creates ColumnSchema instance.
      */
-    protected function createColumn(array|string $column): ColumnSchema
+    protected function createColumnSchema(array|string $column): ColumnSchemaInterface
     {
-        $c = $this->createColumnSchema();
+        $c = new ColumnSchema();
 
         /**
          * @psalm-var array{
@@ -770,18 +769,6 @@ final class Schema extends AbstractSchema
         }
 
         return $result[$returnType];
-    }
-
-    /**
-     * Creates a column schema for the database.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema.
-     *
-     * @return ColumnSchema column schema instance.
-     */
-    protected function createColumnSchema(): ColumnSchema
-    {
-        return new ColumnSchema();
     }
 
     /**
