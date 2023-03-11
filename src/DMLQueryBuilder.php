@@ -24,6 +24,9 @@ use function strrpos;
 use function count;
 use function reset;
 
+/**
+ * Implements a DML (Data Manipulation Language) SQL statements for Oracle Server.
+ */
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
     public function __construct(
@@ -36,6 +39,11 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     /**
      * @psalm-suppress MixedArrayOffset
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
@@ -86,8 +94,6 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
@@ -230,9 +236,6 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return [$names, $placeholders, $values, $params];
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function resetSequence(string $tableName, int|string $value = null): string
     {
         $tableSchema = $this->schema->getTableSchema($tableName);
@@ -252,8 +255,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         /**
-         * Oracle needs at least many queries to reset sequence (see adding transactions and/or use alter method to
-         * avoid grants issue?)
+         * Oracle needs at least many queries to reset a sequence (see adding transactions and/or use an alter method to
+         * avoid grant issue?)
          */
         return 'declare
     lastSeq number' . ($value !== null ? (' := ' . $value) : '') . ';

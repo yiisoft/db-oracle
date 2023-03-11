@@ -6,10 +6,13 @@ namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Driver\PDO\AbstractTransactionPDO;
 
+/**
+ * Implements the Oracle Server specific transaction.
+ */
 final class TransactionPDO extends AbstractTransactionPDO
 {
     public function releaseSavepoint(string $name): void
     {
-        // does nothing as Oracle does not support this
+        // does nothing as Oracle doesn't support this.
     }
 }

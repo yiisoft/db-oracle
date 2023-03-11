@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use PDO;
+use Throwable;
 use Yiisoft\Db\Driver\PDO\AbstractConnectionPDO;
 use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -17,8 +17,9 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
- * Database connection class prefilled for Oracle SQL Server.
- * The class Connection represents a connection to a database via [PDO](https://secure.php.net/manual/en/book.pdo.php).
+ * Implements a connection to a database via PDO (PHP Data Objects) for Oracle Server.
+ *
+ * @link https://www.php.net/manual/en/ref.pdo-oci.php
  */
 final class ConnectionPDO extends AbstractConnectionPDO
 {
@@ -47,7 +48,12 @@ final class ConnectionPDO extends AbstractConnectionPDO
     }
 
     /**
-     * Override base behaviour
+     * Override base behaviour to support Oracle sequences.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidCallException
+     * @throws Throwable
      */
     public function getLastInsertID(string $sequenceName = null): string
     {
@@ -56,7 +62,7 @@ final class ConnectionPDO extends AbstractConnectionPDO
         }
 
         if ($this->isActive()) {
-            /* get the last insert id from connection */
+            // get the last insert id from connection
             $sequenceName = $this->getQuoter()->quoteSimpleTableName($sequenceName);
 
             return (string) $this->createCommand("SELECT $sequenceName.CURRVAL FROM DUAL")->queryScalar();
@@ -65,16 +71,10 @@ final class ConnectionPDO extends AbstractConnectionPDO
         throw new InvalidCallException('DB Connection is not active.');
     }
 
-    /**
-     * @throws Exception|InvalidConfigException
-     */
     public function getQueryBuilder(): QueryBuilderInterface
     {
         if ($this->queryBuilder === null) {
-            $this->queryBuilder = new QueryBuilder(
-                $this->getQuoter(),
-                $this->getSchema(),
-            );
+            $this->queryBuilder = new QueryBuilder($this->getQuoter(), $this->getSchema());
         }
 
         return $this->queryBuilder;

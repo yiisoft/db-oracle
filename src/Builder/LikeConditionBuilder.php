@@ -12,7 +12,7 @@ use Yiisoft\Db\Schema\Quoter;
 use function substr;
 
 /**
- * Builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\LikeCondition`} LIKE operator for Oracle Server.
+ * Build an object of {@see `\Yiisoft\Db\QueryBuilder\Condition\LikeCondition`} into SQL expressions for Oracle Server.
  */
 final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
 {
@@ -50,7 +50,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     }
 
     /**
-     * @return string character used to escape special characters in LIKE conditions. By default, it's assumed to be
+     * @return string Character used to escape special characters in LIKE conditions. By default, it's assumed to be
      * `!`.
      */
     private function getEscapeSql(): string

@@ -22,6 +22,8 @@ use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_merge;
+use function array_reverse;
+use function implode;
 use function is_array;
 use function md5;
 use function serialize;
@@ -31,10 +33,7 @@ use function substr;
 use function trim;
 
 /**
- * Schema is the class for retrieving metadata from an Oracle database.
- *
- * @property string $lastInsertID The row ID of the last row inserted, or the last value retrieved from the
- * sequence object. This property is read-only.
+ * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
  *
  * @psalm-type ConstraintArray = array<
  *   array-key,
@@ -209,9 +208,9 @@ final class Schema extends AbstractSchema
      */
     protected function loadTableForeignKeys(string $tableName): array
     {
-        /** @psalm-var mixed $tableForeingKeys */
-        $tableForeingKeys = $this->loadTableConstraints($tableName, self::FOREIGN_KEYS);
-        return is_array($tableForeingKeys) ? $tableForeingKeys : [];
+        /** @psalm-var mixed $tableForeignKeys */
+        $tableForeignKeys = $this->loadTableConstraints($tableName, self::FOREIGN_KEYS);
+        return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
     /**
@@ -236,7 +235,6 @@ final class Schema extends AbstractSchema
         SQL;
 
         $resolvedName = $this->resolveTableName($tableName);
-
         $indexes = $this->db->createCommand($sql, [
             ':schemaName' => $resolvedName->getSchemaName(),
             ':tableName' => $resolvedName->getName(),
@@ -296,7 +294,7 @@ final class Schema extends AbstractSchema
     }
 
     /**
-     * @throws NotSupportedException if this method is called.
+     * @throws NotSupportedException If this method is called.
      */
     protected function loadTableDefaultValues(string $tableName): array
     {
@@ -306,12 +304,12 @@ final class Schema extends AbstractSchema
     /**
      * Collects the table column metadata.
      *
-     * @param TableSchemaInterface $table the table schema.
+     * @param TableSchemaInterface $table The table schema.
      *
      * @throws Exception
      * @throws Throwable
      *
-     * @return bool whether the table exists.
+     * @return bool Whether the table exists.
      */
     protected function findColumns(TableSchemaInterface $table): bool
     {
@@ -377,9 +375,9 @@ final class Schema extends AbstractSchema
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return bool|float|int|string|null whether the sequence exists.
+     * @return bool|float|int|string|null Whether the sequence exists.
      *
-     * @internal TableSchemaInterface `$table->getName()` the table schema.
+     * @internal TableSchemaInterface `$table->getName()` The table schema.
      */
     protected function getTableSequenceName(string $tableName): bool|float|int|string|null
     {
@@ -536,9 +534,9 @@ final class Schema extends AbstractSchema
 
             if ($row['constraint_type'] !== 'R') {
                 /**
-                 * This condition is not checked in SQL WHERE because of an Oracle Bug:
+                 * This condition isn't checked in SQL WHERE because of an Oracle Bug:
                  *
-                 * {@see https://github.com/yiisoft/yii2/pull/8844}
+                 * @link https://github.com/yiisoft/yii2/pull/8844
                  */
                 continue;
             }
@@ -572,13 +570,13 @@ final class Schema extends AbstractSchema
      * ]
      * ```
      *
-     * @param TableSchemaInterface $table the table metadata.
+     * @param TableSchemaInterface $table The table metadata.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array all unique indexes for the given table.
+     * @return array All unique indexes for the given table.
      */
     public function findUniqueIndexes(TableSchemaInterface $table): array
     {
@@ -613,9 +611,9 @@ final class Schema extends AbstractSchema
      * Extracts the data types for the given column.
      *
      * @param string $dbType DB type.
-     * @param string|null $precision total number of digits.
-     * @param string|null $scale number of digits on the right of the decimal separator.
-     * @param string $length length for character types.
+     * @param string|null $precision The total number of digits.
+     * @param string|null $scale The number of digits on the right of the decimal separator.
+     * @param string $length The length for character types.
      */
     protected function extractColumnType(
         ColumnSchema $column,
@@ -648,10 +646,10 @@ final class Schema extends AbstractSchema
     /**
      * Extracts size, precision and scale information from column's DB type.
      *
-     * @param string $dbType the column's DB type.
-     * @param string|null $precision total number of digits.
-     * @param string|null $scale number of digits on the right of the decimal separator.
-     * @param string $length length for character types.
+     * @param string $dbType The column's DB type.
+     * @param string|null $precision Total number of digits.
+     * @param string|null $scale Number of digits on the right of the decimal separator.
+     * @param string $length The length for character types.
      */
     protected function extractColumnSize(
         ColumnSchema $column,
@@ -668,8 +666,8 @@ final class Schema extends AbstractSchema
     /**
      * Loads multiple types of constraints and returns the specified ones.
      *
-     * @param string $tableName table name.
-     * @param string $returnType return type:
+     * @param string $tableName The table name.
+     * @param string $returnType The return type:
      * - primaryKey
      * - foreignKeys
      * - uniques
@@ -680,7 +678,7 @@ final class Schema extends AbstractSchema
      * @throws NotSupportedException
      * @throws Throwable
      *
-     * @return mixed constraints.
+     * @return mixed Constraints.
      */
     private function loadTableConstraints(string $tableName, string $returnType): mixed
     {
@@ -706,13 +704,12 @@ final class Schema extends AbstractSchema
         SQL;
 
         $resolvedName = $this->resolveTableName($tableName);
-
         $constraints = $this->db->createCommand($sql, [
             ':schemaName' => $resolvedName->getSchemaName(),
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @var array[] $constraints */
+        /** @psalm-var array[] $constraints */
         $constraints = $this->normalizeRowKeyCase($constraints, true);
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
 
@@ -724,8 +721,8 @@ final class Schema extends AbstractSchema
         ];
 
         /**
-         * @var string $type
-         * @var array $names
+         * @psalm-var string $type
+         * @psalm-var array $names
          */
         foreach ($constraints as $type => $names) {
             /**
@@ -800,9 +797,9 @@ final class Schema extends AbstractSchema
     /**
      * Returns the cache key for the specified table name.
      *
-     * @param string $name the table name.
+     * @param string $name The table name.
      *
-     * @return array the cache key.
+     * @return array The cache key.
      */
     protected function getCacheKey(string $name): array
     {
@@ -814,7 +811,7 @@ final class Schema extends AbstractSchema
      *
      * This allows {@see refresh()} to invalidate all cached table schemas.
      *
-     * @return string the cache tag name.
+     * @return string The cache tag name.
      */
     protected function getCacheTag(): string
     {

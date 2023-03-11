@@ -7,10 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Connection\AbstractDsn;
 
 /**
- * The Dsn class is typically used to parse a DSN string, which is a string that contains all the necessary information
- * to connect to a database SQL Server, such as the database driver, host, database name, port, options.
- *
- * It also allows you to access individual components of the DSN, such as the driver, host, database name or port.
+ * Implement a Data Source Name (DSN) for an Oracle Server.
  *
  * @link https://www.php.net/manual/en/ref.pdo-oci.connection.php
  */
@@ -38,11 +35,11 @@ final class Dsn extends AbstractDsn
      * `key=value` and concatenated by `;`. For example:
      *
      * ```php
-     * $dsn = new Dsn('oci', '127.0.0.1', 'yiitest', '3306');
-     * $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->getDsn());
+     * $dsn = new Dsn('oci', 'localhost', 'yiitest', '1521', ['charset' => 'AL32UTF8']);
+     * $connection = new Connection($dsn->asString(), 'system', 'root');
      * ```
      *
-     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
+     * Will result in the DSN string `oci:dbname=localhost:1521/yiitest;charset=AL32UTF8`.
      */
     public function asString(): string
     {

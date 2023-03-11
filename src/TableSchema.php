@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Schema\AbstractTableSchema;
 
 /**
- * TableSchema represents the metadata of a database table.
+ * Implements the Oracle Server specific table schema.
  */
 final class TableSchema extends AbstractTableSchema
 {

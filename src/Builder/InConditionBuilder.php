@@ -18,7 +18,7 @@ use function count;
 use function is_array;
 
 /**
- * Builds conditions for {@see `\Yiisoft\Db\QueryBuilder\Condition\InCondition`} IN operator for Oracle Server.
+ * Build an object of {@see \Yiisoft\Db\QueryBuilder\Condition\InCondition} into SQL expressions for Oracle Server.
  */
 final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
@@ -28,7 +28,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
     }
 
     /**
-     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
+     * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
      *
      * @param ExpressionInterface $expression The expression to be built.
      * @param array $params The binding parameters.
@@ -38,7 +38,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return string The raw SQL that will not be additionally escaped or quoted.
+     * @return string The raw SQL that won't be additionally escaped or quoted.
      *
      * @psalm-param InConditionInterface $expression
      */
@@ -50,7 +50,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
     }
 
     /**
-     * Oracle DBMS does not support more than 1000 parameters in `IN` condition.
+     * Oracle DBMS doesn't support more than 1000 parameters in `IN` condition.
      *
      * This method splits long `IN` condition into series of smaller ones.
      *
@@ -61,7 +61,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return string|null `null` when split is not required. Otherwise - built SQL condition.
+     * @return string|null `null` when split isn't required. Otherwise - built SQL condition.
      */
     protected function splitCondition(InConditionInterface $condition, array &$params): string|null
     {

@@ -7,8 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Schema\Builder\AbstractColumn;
 
 /**
- * It's a utility that provides a convenient way to create column schema for use with {@see `\Yiisoft\Db\Oracle\Schema`}
- * for Oracle.
+ * It's a utility that provides a convenient way to create column schema for use with {@see Schema} for Oracle Server.
  *
  * It provides methods for specifying the properties of a column, such as its type, size, default value, and whether it
  * is nullable or not. It also provides a method for creating a column schema based on the specified properties.
@@ -27,7 +26,7 @@ final class Column extends AbstractColumn
     /**
      * Builds the unsigned string for column. Defaults to unsupported.
      *
-     * @return string a string containing UNSIGNED keyword.
+     * @return string A string containing UNSIGNED keyword.
      */
     protected function buildUnsignedString(): string
     {
@@ -36,8 +35,6 @@ final class Column extends AbstractColumn
 
     /**
      * Builds the full string for the column's schema.
-     *
-     * @return string
      */
     public function asString(): string
     {

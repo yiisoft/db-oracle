@@ -14,16 +14,17 @@ use function preg_replace;
 use function uniqid;
 
 /**
- * Represents the metadata of a column in a database table for Oracle Server. It provides information about the column's
- * name, type, size, precision, and other details.
+ * Represents the metadata of a column in a database table for Oracle Server.
  *
- * Is used to store and retrieve metadata about a column in a database table. It is typically used in conjunction with
- * the TableSchema class, which represents the metadata of a database table as a whole.
+ * It provides information about the column's name, type, size, precision, and other details.
  *
- * Here is an example of how the ColumnSchema class might be used:
+ * Is used to store and retrieve metadata about a column in a database table. It's typically used in conjunction with
+ * the {@see TableSchema}, which represents the metadata of a database table as a whole.
+ *
+ * The following code shows how to use:
  *
  * ```php
- * use Yiisoft\Db\Mysql\ColumnSchema;
+ * use Yiisoft\Db\Oracle\ColumnSchema;
  *
  * $column = new ColumnSchema();
  * $column->name('id');
