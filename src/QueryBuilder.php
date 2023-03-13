@@ -17,10 +17,10 @@ final class QueryBuilder extends AbstractQueryBuilder
      * @psalm-var string[] $typeMap Mapping from abstract column types (keys) to physical column types (values).
      */
     protected array $typeMap = [
-        SchemaInterface::TYPE_PK => 'NUMBER(10) NOT NULL',
-        SchemaInterface::TYPE_UPK => 'NUMBER(10) UNSIGNED NOT NULL',
-        SchemaInterface::TYPE_BIGPK => 'NUMBER(20) NOT NULL',
-        SchemaInterface::TYPE_UBIGPK => 'NUMBER(20) UNSIGNED NOT NULL',
+        SchemaInterface::TYPE_PK => 'NUMBER(10) NOT NULL PRIMARY KEY',
+        SchemaInterface::TYPE_UPK => 'NUMBER(10) UNSIGNED NOT NULL PRIMARY KEY',
+        SchemaInterface::TYPE_BIGPK => 'NUMBER(20) NOT NULL PRIMARY KEY',
+        SchemaInterface::TYPE_UBIGPK => 'NUMBER(20) UNSIGNED NOT NULL PRIMARY KEY',
         SchemaInterface::TYPE_CHAR => 'CHAR(1)',
         SchemaInterface::TYPE_STRING => 'VARCHAR2(255)',
         SchemaInterface::TYPE_TEXT => 'CLOB',
