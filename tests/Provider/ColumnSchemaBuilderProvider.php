@@ -8,6 +8,8 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 final class ColumnSchemaBuilderProvider extends \Yiisoft\Db\Tests\Provider\ColumnSchemaBuilderProvider
 {
+    protected static string $driverName = 'pgsql';
+
     public static function types(): array
     {
         $types = parent::types();
@@ -21,5 +23,25 @@ final class ColumnSchemaBuilderProvider extends \Yiisoft\Db\Tests\Provider\Colum
                 ['integer UNSIGNED', SchemaInterface::TYPE_INTEGER, null, [['unsigned']]],
             ],
         );
+    }
+
+    public static function createColumnTypes(): array
+    {
+        $types = parent::createColumnTypes();
+        $types['integer'][0] = '"column" NUMBER(10)';
+
+        $types['uuid'][0] = '"column" RAW(16)';
+        $types['uuid not null'][0] = '"column" RAW(16) NOT NULL';
+
+        $types['uuid with default'][0] = '"column" RAW(16) DEFAULT HEXTORAW(REGEXP_REPLACE(\'875343b3-6bd0-4bec-81bb-aa68bb52d945\', \'-\', \'\'))';
+        $types['uuid with default'][3] = [['defaultExpression', 'HEXTORAW(REGEXP_REPLACE(\'875343b3-6bd0-4bec-81bb-aa68bb52d945\', \'-\', \'\'))']];
+
+        $types['uuid pk'][0] = '"column" RAW(16) PRIMARY KEY';
+        $types['uuid pk not null'][0] = '"column" RAW(16) NOT NULL PRIMARY KEY';
+        $types['uuid pk not null with default'][0] = '"column" RAW(16) DEFAULT SYS_GUID() NOT NULL PRIMARY KEY';
+        $types['uuid pk not null with default'][3] = [['notNull'], ['defaultExpression', 'SYS_GUID()']];
+        $types['uuid pk sequence'][0] = '"column" RAW(16) DEFAULT SYS_GUID() NOT NULL PRIMARY KEY';
+
+        return $types;
     }
 }
