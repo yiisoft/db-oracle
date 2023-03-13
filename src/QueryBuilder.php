@@ -40,7 +40,7 @@ final class QueryBuilder extends AbstractQueryBuilder
         SchemaInterface::TYPE_MONEY => 'NUMBER(19,4)',
         SchemaInterface::TYPE_UUID => 'RAW(16)',
         SchemaInterface::TYPE_UUID_PK => 'RAW(16)',
-        SchemaInterface::TYPE_UUID_PK_SEQ => 'RAW(16) DEFAULT SYS_GUID() NOT NULL',
+        SchemaInterface::TYPE_UUID_PK_SEQ => 'RAW(16) DEFAULT SYS_GUID() NOT NULL PRIMARY KEY',
     ];
 
     public function __construct(QuoterInterface $quoter, SchemaInterface $schema)
