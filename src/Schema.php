@@ -449,10 +449,10 @@ final class Schema extends AbstractSchema
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
                 } else {
                     if (
-                            strlen($defaultValue) > 2
-                            && str_starts_with($defaultValue, "'")
-                            && str_ends_with($defaultValue, "'")
-                        ) {
+                        strlen($defaultValue) > 2
+                        && str_starts_with($defaultValue, "'")
+                        && str_ends_with($defaultValue, "'")
+                    ) {
                         $defaultValue = substr($defaultValue, 1, -1);
                     } else {
                         $defaultValue = trim($defaultValue);
