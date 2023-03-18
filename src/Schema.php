@@ -398,7 +398,9 @@ final class Schema extends AbstractSchema
 
     /**
      * Creates ColumnSchema instance.
+     *
      * @param array|string $column
+     *
      * @psalm-param array{
      *   column_name: string,
      *   data_type: string,
@@ -410,6 +412,7 @@ final class Schema extends AbstractSchema
      *   is_pk: string|null,
      *   column_comment: string|null
      * } $column
+     *
      * @return ColumnSchemaInterface
      */
     protected function createColumnSchema(array|string $column): ColumnSchemaInterface
