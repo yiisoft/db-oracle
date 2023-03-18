@@ -398,25 +398,23 @@ final class Schema extends AbstractSchema
 
     /**
      * Creates ColumnSchema instance.
+     * @param array|string $column
+     * @psalm-param array{
+     *   column_name: string,
+     *   data_type: string,
+     *   data_precision: string,
+     *   data_scale: string,
+     *   data_length: string,
+     *   nullable: string,
+     *   data_default: string|null,
+     *   is_pk: string|null,
+     *   column_comment: string|null
+     * } $column
+     * @return ColumnSchemaInterface
      */
     protected function createColumnSchema(array|string $column): ColumnSchemaInterface
     {
-        $c = new ColumnSchema();
-
-        /**
-         * @psalm-var array{
-         *   column_name: string,
-         *   data_type: string,
-         *   data_precision: string,
-         *   data_scale: string,
-         *   data_length: string,
-         *   nullable: string,
-         *   data_default: string|null,
-         *   is_pk: string|null,
-         *   column_comment: string|null
-         * } $column
-         */
-        $c->name($column['column_name']);
+        $c = new ColumnSchema($column['column_name']);
         $c->allowNull($column['nullable'] === 'Y');
         $c->comment($column['column_comment'] ?? '');
         $c->primaryKey((int) ($column['is_pk'] ?? 0) > 0);
