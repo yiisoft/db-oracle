@@ -360,6 +360,19 @@ final class Schema extends AbstractSchema
         foreach ($columns as $column) {
             $column = $this->normalizeRowKeyCase($column, false);
 
+            /**
+             * @psalm-var array{
+             *   column_name: string,
+             *   data_type: string,
+             *   data_precision: string,
+             *   data_scale: string,
+             *   data_length: string,
+             *   nullable: string,
+             *   data_default: string|null,
+             *   is_pk: string|null,
+             *   column_comment: string|null
+             * } $column $column
+             */
             $c = $this->createColumnSchema($column);
 
             $table->columns($c->getName(), $c);
@@ -415,7 +428,7 @@ final class Schema extends AbstractSchema
      *
      * @return ColumnSchemaInterface
      */
-    protected function createColumnSchema(array|string $column): ColumnSchemaInterface
+    protected function createColumnSchema(array $column): ColumnSchemaInterface
     {
         $c = new ColumnSchema($column['column_name']);
         $c->allowNull($column['nullable'] === 'Y');
