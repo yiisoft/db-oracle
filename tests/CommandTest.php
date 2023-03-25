@@ -48,7 +48,7 @@ final class CommandTest extends CommonCommandTest
             'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.'
         );
 
-        $command->addDefaultValue('{{name}}', '{{table}}', 'column', 'value');
+        $command->addDefaultValue('{{table}}', '{{name}}', 'column', 'value');
 
         $db->close();
     }
@@ -227,7 +227,7 @@ final class CommandTest extends CommonCommandTest
             'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.'
         );
 
-        $command->dropDefaultValue('{{name}}', '{{table}}');
+        $command->dropDefaultValue('{{table}}', '{{name}}');
     }
 
     /**
