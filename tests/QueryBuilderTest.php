@@ -39,7 +39,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.');
 
-        $qb->addDefaultValue('CN_pk', 'T_constraints_1', 'C_default', 1);
+        $qb->addDefaultValue('T_constraints_1', 'CN_pk', 'C_default', 1);
     }
 
     /**
@@ -78,7 +78,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Oracle does not support ON UPDATE clause.');
 
-        $qb->addForeignKey('fk1', 'T_constraints_1', 'C_fk1', 'T_constraints_2', 'C_fk2', 'CASCADE', 'CASCADE');
+        $qb->addForeignKey('T_constraints_1', 'fk1', 'C_fk1', 'T_constraints_2', 'C_fk2', 'CASCADE', 'CASCADE');
     }
 
     /**
@@ -398,7 +398,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.'
         );
 
-        $qb->dropDefaultValue('CN_pk', 'T_constraints_1');
+        $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
     }
 
     /**
@@ -415,7 +415,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             <<<SQL
             DROP INDEX "CN_constraints_2_single"
             SQL,
-            $qb->dropIndex('CN_constraints_2_single', 'T_constraints_2'),
+            $qb->dropIndex('T_constraints_2', 'CN_constraints_2_single'),
         );
 
         $db->close();
