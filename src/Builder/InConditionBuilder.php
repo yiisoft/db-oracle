@@ -10,7 +10,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\InConditionInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_slice;
 use function array_unshift;
