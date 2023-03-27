@@ -412,7 +412,7 @@ final class Schema extends AbstractSchema
     /**
      * Creates ColumnSchema instance.
      *
-     * @param array|string $column
+     * @param array $column
      *
      * @psalm-param array{
      *   column_name: string,
@@ -459,7 +459,7 @@ final class Schema extends AbstractSchema
             } else {
                 $defaultValue = $column['data_default'];
 
-                if ($c->getType() === 'timestamp' && $defaultValue === 'CURRENT_TIMESTAMP') {
+                if ($defaultValue === 'CURRENT_TIMESTAMP' && $c->getType() === 'timestamp') {
                     $c->defaultValue(new Expression('CURRENT_TIMESTAMP'));
                 } else {
                     if (
@@ -548,7 +548,7 @@ final class Schema extends AbstractSchema
 
             if ($row['constraint_type'] !== 'R') {
                 /**
-                 * This condition isn't checked in SQL WHERE because of an Oracle Bug:
+                 * This condition isn't checked in `WHERE` because of an Oracle Bug:
                  *
                  * @link https://github.com/yiisoft/yii2/pull/8844
                  */

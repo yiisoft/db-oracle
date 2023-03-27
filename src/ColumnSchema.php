@@ -18,7 +18,7 @@ use function uniqid;
  *
  * It provides information about the column's name, type, size, precision, and other details.
  *
- * Is used to store and retrieve metadata about a column in a database table. It's typically used in conjunction with
+ * It's used to store and retrieve metadata about a column in a database table and is typically used in conjunction with
  * the {@see TableSchema}, which represents the metadata of a database table as a whole.
  *
  * The following code shows how to use:
