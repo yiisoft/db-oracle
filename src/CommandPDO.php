@@ -10,6 +10,7 @@ use Throwable;
 use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -39,7 +40,7 @@ final class CommandPDO extends AbstractCommandPDO
 
         foreach ($returnColumns as $name) {
             /** @noRector \Rector\Php71\Rector\FuncCall\CountOnNullRector */
-            $phName = QueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
+            $phName = AbstractQueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
 
             $returnParams[$phName] = [
                 'column' => $name,

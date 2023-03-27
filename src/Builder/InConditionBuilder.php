@@ -24,7 +24,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
      *
-     * @param ExpressionInterface $expression The expression to be built.
+     * @param ExpressionInterface $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
