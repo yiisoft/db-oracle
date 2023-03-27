@@ -14,9 +14,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function implode;
 use function ltrim;
@@ -29,14 +26,6 @@ use function reset;
  */
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
-    public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema
-    ) {
-        parent::__construct($queryBuilder, $quoter, $schema);
-    }
-
     /**
      * @psalm-suppress MixedArrayOffset
      *
