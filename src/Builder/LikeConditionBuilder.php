@@ -19,8 +19,8 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     private string $escapeCharacter = '!';
 
     /**
-     * `\` is initialized in {@see buildLikeCondition()} method since we need to choose replacement value based on
-     * {@see Quoter::quoteValue()}.
+     * `\` is initialized in {@see buildLikeCondition()} method since there is a need to choose replacement value
+     * based on {@see Quoter::quoteValue()}.
      */
     protected array $escapingReplacements = [
         '%' => '!%',
@@ -40,8 +40,8 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     {
         if (!isset($this->escapingReplacements['\\'])) {
             /*
-             * Different pdo_oci8 versions may or may not implement PDO::quote(), so {@see Quoter::quoteValue()} may or
-             * may not quote \.
+             * Different pdo_oci8 versions may or may not implement `PDO::quote()`, so {@see Quoter::quoteValue()} may or
+             * may not quote `\`.
              */
             $this->escapingReplacements['\\'] = substr((string) $this->queryBuilder->quoter()->quoteValue('\\'), 1, -1);
         }
@@ -50,7 +50,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     }
 
     /**
-     * @return string Character used to escape special characters in LIKE conditions. By default, it's assumed to be
+     * @return string Character used to escape special characters in `LIKE` conditions. By default, it's assumed to be
      * `!`.
      */
     private function getEscapeSql(): string
