@@ -10,7 +10,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\InConditionInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_slice;
 use function array_unshift;
@@ -22,11 +21,6 @@ use function is_array;
  */
 final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        parent::__construct($queryBuilder);
-    }
-
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
      *
