@@ -39,10 +39,10 @@ final class Column extends AbstractColumn
     public function asString(): string
     {
         $format = match ($this->getTypeCategory()) {
-            self::CATEGORY_PK => '{type}{length}{check}{append}',
-            self::CATEGORY_NUMERIC => '{type}{length}{unsigned}{default}{notnull}{check}{append}',
-            self::CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
-            self::CATEGORY_UUID_PK => '{type}{notnull}{check}{comment}{append}',
+            self::TYPE_CATEGORY_PK => '{type}{length}{check}{append}',
+            self::TYPE_CATEGORY_NUMERIC => '{type}{length}{unsigned}{default}{notnull}{check}{append}',
+            self::TYPE_CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
+            self::TYPE_CATEGORY_UUID_PK => '{type}{notnull}{check}{comment}{append}',
             default => '{type}{length}{default}{notnull}{check}{append}',
         };
 
