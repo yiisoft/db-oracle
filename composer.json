@@ -19,7 +19,7 @@
     "require": {
         "ext-pdo": "*",
         "php": "^8.0",
-        "yiisoft/db": "^3.0@dev"
+        "yiisoft/db": "@dev"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
@@ -60,5 +60,11 @@
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
         "test-watch": "phpunit-watcher watch"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../db"
+        }
+    ]
 }
