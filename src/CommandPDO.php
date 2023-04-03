@@ -28,7 +28,7 @@ final class CommandPDO extends AbstractCommandPDO
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         $params = [];
-        $sql = $this->queryBuilder()->insert($table, $columns, $params);
+        $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
 
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
 
@@ -84,7 +84,7 @@ final class CommandPDO extends AbstractCommandPDO
         return $result;
     }
 
-    public function queryBuilder(): QueryBuilderInterface
+    protected function getQueryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
     }
