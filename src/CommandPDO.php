@@ -84,6 +84,15 @@ final class CommandPDO extends AbstractCommandPDO
         return $result;
     }
 
+    public function showDatabases(): array
+    {
+        $sql = <<<SQL
+        SELECT PDB_NAME FROM dba_pdbs WHERE PDB_NAME NOT IN ('PDB\$SEED', 'PDB\$ROOT', 'ORCLPDB1', 'XEPDB1')
+        SQL;
+
+        return $this->setSql($sql)->queryColumn();
+    }
+
     protected function getQueryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
