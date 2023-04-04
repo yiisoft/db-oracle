@@ -87,7 +87,7 @@ final class CommandPDO extends AbstractCommandPDO
     public function showDatabases(): array
     {
         $sql = <<<SQL
-        SELECT PDB_NAME FROM dba_pdbs WHERE PDB_NAME NOT IN ('PDB\$SEED', 'PDB\$ROOT', 'ORCLPDB1', 'XEPDB1')
+        SELECT PDB_NAME FROM DBA_PDBS WHERE PDB_NAME NOT IN ('PDB\$SEED', 'PDB\$ROOT', 'ORCLPDB1', 'XEPDB1')
         SQL;
 
         return $this->setSql($sql)->queryColumn();
