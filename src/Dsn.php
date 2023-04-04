@@ -19,7 +19,7 @@ final class Dsn extends AbstractDsn
     public function __construct(
         private string $driver,
         private string $host,
-        private string $databaseName = '',
+        private string|null $databaseName = null,
         private string $port = '1521',
         private array $options = []
     ) {
@@ -43,7 +43,7 @@ final class Dsn extends AbstractDsn
      */
     public function asString(): string
     {
-        if ($this->databaseName !== '') {
+        if (!empty($this->databaseName)) {
             $dsn = "$this->driver:" . "dbname=$this->host:$this->port/$this->databaseName";
         } else {
             $dsn = "$this->driver:" . "dbname=$this->host:$this->port";

@@ -575,10 +575,7 @@ final class CommandTest extends CommonCommandTest
     public function testShowDatabases(): void
     {
         $dsn = new Dsn('oci', 'localhost');
-        $db = new ConnectionPDO(
-            new PDODriver($dsn->asString(), 'SYSTEM', 'root'),
-            DbHelper::getSchemaCache(),
-        );
+        $db = new ConnectionPDO(new PDODriver($dsn->asString(), 'SYSTEM', 'root'), DbHelper::getSchemaCache());
 
         $command = $db->createCommand();
 
