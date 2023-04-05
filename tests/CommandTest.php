@@ -11,11 +11,15 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Oracle\ConnectionPDO;
+use Yiisoft\Db\Oracle\Dsn;
+use Yiisoft\Db\Oracle\PDODriver;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function is_resource;
@@ -566,5 +570,16 @@ final class CommandTest extends CommonCommandTest
     public function testProfilerData(string $sql = null): void
     {
         parent::testProfilerData('SELECT 123 FROM DUAL');
+    }
+
+    public function testShowDatabases(): void
+    {
+        $dsn = new Dsn('oci', 'localhost');
+        $db = new ConnectionPDO(new PDODriver($dsn->asString(), 'SYSTEM', 'root'), DbHelper::getSchemaCache());
+
+        $command = $db->createCommand();
+
+        $this->assertSame('oci:dbname=localhost:1521', $db->getDriver()->getDsn());
+        $this->assertSame(['YIITEST'], $command->showDatabases());
     }
 }
