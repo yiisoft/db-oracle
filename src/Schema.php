@@ -16,7 +16,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Helper\ArrayHelper;
+use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -242,7 +242,7 @@ final class Schema extends PdoAbstractSchema
 
         /** @psalm-var array[] $indexes */
         $indexes = $this->normalizeRowKeyCase($indexes, true);
-        $indexes = ArrayHelper::index($indexes, null, ['name']);
+        $indexes = DbArrayHelper::index($indexes, null, ['name']);
 
         $result = [];
 
@@ -251,7 +251,7 @@ final class Schema extends PdoAbstractSchema
          * @psalm-var array[] $index
          */
         foreach ($indexes as $name => $index) {
-            $columnNames = ArrayHelper::getColumn($index, 'column_name');
+            $columnNames = DbArrayHelper::getColumn($index, 'column_name');
 
             if ($columnNames[0] === null) {
                 $columnNames[0] = '';
@@ -725,7 +725,7 @@ final class Schema extends PdoAbstractSchema
 
         /** @psalm-var array[] $constraints */
         $constraints = $this->normalizeRowKeyCase($constraints, true);
-        $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);
+        $constraints = DbArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
             self::PRIMARY_KEY => null,
@@ -748,27 +748,27 @@ final class Schema extends PdoAbstractSchema
                     case 'P':
                         $result[self::PRIMARY_KEY] = (new Constraint())
                             ->name($name)
-                            ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
                         break;
                     case 'R':
                         $result[self::FOREIGN_KEYS][] = (new ForeignKeyConstraint())
                             ->name($name)
-                            ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
                             ->foreignSchemaName($constraint[0]['foreign_table_schema'])
                             ->foreignTableName($constraint[0]['foreign_table_name'])
-                            ->foreignColumnNames(ArrayHelper::getColumn($constraint, 'foreign_column_name'))
+                            ->foreignColumnNames(DbArrayHelper::getColumn($constraint, 'foreign_column_name'))
                             ->onDelete($constraint[0]['on_delete'])
                             ->onUpdate(null);
                         break;
                     case 'U':
                         $result[self::UNIQUES][] = (new Constraint())
                             ->name($name)
-                            ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
                         break;
                     case 'C':
                         $result[self::CHECKS][] = (new CheckConstraint())
                             ->name($name)
-                            ->columnNames(ArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
                             ->expression($constraint[0]['check_expr']);
                         break;
                 }
