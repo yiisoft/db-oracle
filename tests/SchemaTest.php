@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -237,7 +238,7 @@ final class SchemaTest extends CommonSchemaTest
 
         $commandMock = $this->createMock(CommandInterface::class);
         $commandMock->method('queryAll')->willReturn([]);
-        $mockDb = $this->createMock(ConnectionInterface::class);
+        $mockDb = $this->createMock(ConnectionPDOInterface::class);
         $mockDb->method('getQuoter')->willReturn($db->getQuoter());
         $mockDb
             ->method('createCommand')
@@ -282,5 +283,16 @@ final class SchemaTest extends CommonSchemaTest
         ]);
         */
         return parent::withIndexDataProvider();
+    }
+
+    public function testNotConnectionPDO(): void
+    {
+        $db = $this->createMock(ConnectionInterface::class);
+        $schema = new Schema($db, DbHelper::getSchemaCache(), 'system');
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Only PDO connections are supported.');
+
+        $schema->refreshTableSchema('customer');
     }
 }
