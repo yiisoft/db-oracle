@@ -11,9 +11,9 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Oracle\ConnectionPDO;
+use Yiisoft\Db\Oracle\PdoConnection;
 use Yiisoft\Db\Oracle\Dsn;
-use Yiisoft\Db\Oracle\PDODriver;
+use Yiisoft\Db\Oracle\PdoDriver;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -575,7 +575,7 @@ final class CommandTest extends CommonCommandTest
     public function testShowDatabases(): void
     {
         $dsn = new Dsn('oci', 'localhost');
-        $db = new ConnectionPDO(new PDODriver($dsn->asString(), 'SYSTEM', 'root'), DbHelper::getSchemaCache());
+        $db = new PdoConnection(new PdoDriver($dsn->asString(), 'SYSTEM', 'root'), DbHelper::getSchemaCache());
 
         $command = $db->createCommand();
 
