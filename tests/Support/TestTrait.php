@@ -7,9 +7,9 @@ namespace Yiisoft\Db\Oracle\Tests\Support;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Oracle\PdoConnection;
+use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Dsn;
-use Yiisoft\Db\Oracle\PdoDriver;
+use Yiisoft\Db\Oracle\Driver;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
 trait TestTrait
@@ -22,7 +22,7 @@ trait TestTrait
      */
     protected function getConnection(bool $fixture = false): ConnectionPDOInterface
     {
-        $db = new PdoConnection(new PdoDriver($this->getDsn(), 'system', 'root'), DbHelper::getSchemaCache());
+        $db = new Connection(new Driver($this->getDsn(), 'system', 'root'), DbHelper::getSchemaCache());
 
         if ($fixture) {
             DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
@@ -35,7 +35,7 @@ trait TestTrait
     {
         $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
 
-        return new PdoConnection(new PdoDriver($dsn, 'system', 'root'), DbHelper::getSchemaCache());
+        return new Connection(new Driver($dsn, 'system', 'root'), DbHelper::getSchemaCache());
     }
 
     protected function getDsn(): string

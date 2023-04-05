@@ -9,7 +9,7 @@ use Yiisoft\Db\Driver\PDO\AbstractTransactionPDO;
 /**
  * Implements the Oracle Server specific transaction.
  */
-final class PdoTransaction extends AbstractTransactionPDO
+final class Transaction extends AbstractTransactionPDO
 {
     public function releaseSavepoint(string $name): void
     {
