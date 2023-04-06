@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\Common\CommonCommandPDOTest;
+use Yiisoft\Db\Tests\Common\CommonPdoCommandTest;
 
 /**
  * @group oracle
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class CommandPDOTest extends CommonCommandPDOTest
+final class PdoCommandTest extends CommonPdoCommandTest
 {
     use TestTrait;
 
