@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\Tests;
+namespace Yiisoft\Db\Oracle\Tests\Pdo;
 
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\Common\CommonCommandPDOTest;
 
 /**
  * @group oracle
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class CommandPDOTest extends CommonCommandPDOTest
+final class CommandTest extends \Yiisoft\Db\Tests\Common\Pdo\CommonCommandTest
 {
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParam
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\Pdo\CommandProvider::bindParam
      */
     public function testBindParam(
         string $field,
@@ -32,7 +31,7 @@ final class CommandPDOTest extends CommonCommandPDOTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
+     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\Pdo\CommandProvider::bindParamsNonWhere
      */
     public function testBindParamsNonWhere(string $sql): void
     {
