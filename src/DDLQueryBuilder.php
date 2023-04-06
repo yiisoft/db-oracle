@@ -23,16 +23,16 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): string {
         $sql = 'ALTER TABLE ' . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' FOREIGN KEY (' . $this->queryBuilder->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->quoter->quoteTableName($refTable)
-            . ' (' . $this->queryBuilder->buildColumns($refColumns) . ')';
+            . ' REFERENCES ' . $this->quoter->quoteTableName($referenceTable)
+            . ' (' . $this->queryBuilder->buildColumns($referenceColumns) . ')';
 
         if ($delete !== null) {
             $sql .= ' ON DELETE ' . $delete;
