@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle\Tests\Pdo;
+namespace Yiisoft\Db\Oracle\Tests;
 
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -10,13 +10,14 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Common\CommonConnectionPDOTest;
 
 /**
  * @group oracle
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ConnectionTest extends \Yiisoft\Db\Tests\Common\Pdo\CommonConnectionTest
+final class ConnectionPDOTest extends CommonConnectionPDOTest
 {
     use TestTrait;
 

@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PDO;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -124,7 +125,7 @@ final class ConnectionTest extends CommonConnectionTest
         $this->assertNotNull($connection->getPDO());
 
         $unserialized = unserialize($serialized);
-        $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
+        $this->assertInstanceOf(ConnectionPDOInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
         $this->assertNotNull($connection->getPDO());

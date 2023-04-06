@@ -7,7 +7,8 @@ namespace Yiisoft\Db\Oracle;
 use PDO;
 use PDOException;
 use Throwable;
-use Yiisoft\Db\Driver\Pdo\ConnectionInterface;
+use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -22,7 +23,7 @@ use function strlen;
  * Implements a database command that can be executed against a PDO (PHP Data Object) database connection for Oracle
  * Server.
  */
-final class Command extends \Yiisoft\Db\Driver\Pdo\AbstractCommand
+final class Command extends AbstractCommandPDO
 {
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
@@ -136,7 +137,7 @@ final class Command extends \Yiisoft\Db\Driver\Pdo\AbstractCommand
                     && $this->db->getTransaction() === null
                 ) {
                     $this->db->transaction(
-                        fn (ConnectionInterface $db) => $this->internalExecute($rawSql),
+                        fn (ConnectionPDOInterface $db) => $this->internalExecute($rawSql),
                         $this->isolationLevel
                     );
                 } else {
