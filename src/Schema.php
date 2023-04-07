@@ -375,7 +375,7 @@ final class Schema extends PdoAbstractSchema
              */
             $c = $this->createColumnSchema($column);
 
-            $table->columns($c->getName(), $c);
+            $table->column($c->getName(), $c);
         }
 
         return true;
