@@ -11,7 +11,7 @@ use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
-use Yiisoft\Db\Driver\PDO\PdoAbstractSchema;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoSchema;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -50,7 +50,7 @@ use function trim;
  *   }
  * >
  */
-final class Schema extends PdoAbstractSchema
+final class Schema extends AbstractPdoSchema
 {
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {

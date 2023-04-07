@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
-use Yiisoft\Db\Driver\PDO\AbstractPDODriver;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoDriver;
 
 /**
  * Implements the Oracle Server driver based on the PDO (PHP Data Objects) extension.
  *
  * @see https://www.php.net/manual/en/ref.pdo-oci.php
  */
-final class Driver extends AbstractPDODriver
+final class Driver extends AbstractPdoDriver
 {
     public function createConnection(): PDO
     {
