@@ -225,22 +225,22 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return [$names, $placeholders, $values, $params];
     }
 
-    public function resetSequence(string $tableName, int|string $value = null): string
+    public function resetSequence(string $table, int|string $value = null): string
     {
-        $tableSchema = $this->schema->getTableSchema($tableName);
+        $tableSchema = $this->schema->getTableSchema($table);
 
         if ($tableSchema === null) {
-            throw new InvalidArgumentException("Table not found: '$tableName'.");
+            throw new InvalidArgumentException("Table not found: '$table'.");
         }
 
         $sequenceName = $tableSchema->getSequenceName();
 
         if ($sequenceName === null) {
-            throw new InvalidArgumentException("There is not sequence associated with table '$tableName'.");
+            throw new InvalidArgumentException("There is not sequence associated with table '$table'.");
         }
 
         if ($value === null && count($tableSchema->getPrimaryKey()) > 1) {
-            throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $tableName");
+            throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $table");
         }
 
         /**
