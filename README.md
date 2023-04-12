@@ -5,20 +5,21 @@
     <a href="https://www.oracle.com/database/technologies/" target="_blank">
         <img src="https://avatars3.githubusercontent.com/u/4430336" height="100px">
     </a>
-    <h1 align="center">Yii Database Oracle Extension</h1>
+    <h1 align="center">Oracle driver for Yii Database</h1>
     <br>
 </p>
 
-Yii Database Oracle Extension is a database driver for [Oracle] databases that is part of the [Yii Framework]. The Yii framework is an open-source PHP framework for web application development.
+Oracle driver for [Yii Database](https://github.com/yiisoft/db) is a database driver for [Oracle] databases.
 
-The package allows you to connect to [Oracle] databases from your Yii application and perform various database operations such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of [Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases in your Yii application.
+The package allows you to connect to [Oracle] databases from your application and perform various database operations
+such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of
+[Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases.
 
-To use Yii Database Oracle Extension in your Yii application, you need to have the [Oracle] client library installed and configured on your server, and you need to specify the correct database connection parameters in your Yii application's configuration file. Once you have done this, you can use the Yii Database Oracle Extension driver to connect to your Oracle database and perform various database operations as needed.
-
-It is used in [Yii Framework] but can be used separately.
+To use the package, you need to have the [Oracle] client library installed and configured on your server, and you need
+to specify the correct database connection parameters. Once you have done this, you can use the driver to connect to
+your Oracle database and perform various database operations as needed.
 
 [Oracle]: https://www.oracle.com/database/technologies/
-[Yii Framework]: https://www.yiiframework.com/
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v/stable.png)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads.png)](https://packagist.org/packages/yiisoft/db-oracle)
