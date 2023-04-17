@@ -10,7 +10,7 @@ build:
 
   environment:
     php:
-      version: 8.0.18
+      version: 8.1.18
       ini:
         xdebug.mode: coverage
 
@@ -61,10 +61,10 @@ build:
           - make
           - sudo make install
           - sudo ldconfig
-          - curl -k -L --output /home/scrutinizer/php-8.0.18.tar.gz https://www.php.net/distributions/php-8.0.18.tar.gz
+          - curl -k -L --output /home/scrutinizer/php-8.1.18.tar.gz https://www.php.net/distributions/php-8.1.18.tar.gz
           - cd /home/scrutinizer
-          - tar -zxf php-8.0.18.tar.gz
-          - cd php-8.0.18/ext/pdo_oci
+          - tar -zxf php-8.1.18.tar.gz
+          - cd php-8.1.18/ext/pdo_oci
           - phpize
           - ./configure --with-pdo-oci=instantclient,/opt/oracle/instantclient_21_3
           - make
@@ -74,7 +74,7 @@ build:
           - composer self-update
           - composer config preferred-install.yiisoft/db source
           - composer update --no-interaction --no-progress --optimize-autoloader --ansi
-          - echo 'extension=pdo_oci' >> /home/scrutinizer/.phpenv/versions/8.0.18/etc/php.ini
+          - echo 'extension=pdo_oci' >> /home/scrutinizer/.phpenv/versions/8.1.18/etc/php.ini
 
       tests:
         override:
