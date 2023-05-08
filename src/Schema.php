@@ -412,8 +412,6 @@ final class Schema extends AbstractPdoSchema
     /**
      * Creates ColumnSchema instance.
      *
-     * @param array $column
-     *
      * @psalm-param array{
      *   column_name: string,
      *   data_type: string,
@@ -425,8 +423,6 @@ final class Schema extends AbstractPdoSchema
      *   is_pk: string|null,
      *   column_comment: string|null
      * } $column
-     *
-     * @return ColumnSchemaInterface
      */
     protected function createColumnSchema(array $column): ColumnSchemaInterface
     {

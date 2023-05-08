@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\Config\RectorConfig;
+use Rector\Php71\Rector\FuncCall\CountOnNullRector;
+use Rector\Php73\Rector\String_\SensitiveHereNowDocRector;
+use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Set\ValueObject\LevelSetList;
 
 return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->disableParallel();
-
     $rectorConfig->paths([
         __DIR__ . '/src',
         __DIR__ . '/tests',
@@ -20,5 +21,13 @@ return static function (RectorConfig $rectorConfig): void {
     // define sets of rules
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_80,
+    ]);
+
+    $rectorConfig->skip([
+        ClosureToArrowFunctionRector::class,
+        SensitiveHereNowDocRector::class,
+        CountOnNullRector::class => [
+            'src/Command.php',
+        ],
     ]);
 };
