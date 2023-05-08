@@ -179,7 +179,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             ->offset(5);
 
         $this->assertSame(
-            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
             <<<SQL
             WITH USER_SQL AS (SELECT * FROM admin_user ORDER BY "id", "name" DESC), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rowNumId > 5 AND rownum <= 10
@@ -226,7 +225,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
             <<<SQL
             WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rownum <= 10
@@ -254,7 +252,6 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            /** @noRector \Rector\Php73\Rector\String_\SensitiveHereNowDocRector */
             <<<SQL
             WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rowNumId > 10

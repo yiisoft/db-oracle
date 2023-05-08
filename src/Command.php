@@ -39,7 +39,6 @@ final class Command extends AbstractPdoCommand
         $returning = [];
 
         foreach ($returnColumns as $name) {
-            /** @noRector \Rector\Php71\Rector\FuncCall\CountOnNullRector */
             $phName = AbstractQueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
 
             $returnParams[$phName] = [
