@@ -45,7 +45,7 @@ composer require yiisoft/db-oracle
 
 For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/en/connection/oracle.md).
 
-[Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/en/getting-started.md) to learn about usage.
+[Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/en/README.md) to learn about usage.
 
 ## Testing
 
