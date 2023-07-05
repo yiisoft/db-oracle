@@ -415,8 +415,8 @@ final class Schema extends AbstractPdoSchema
      * @psalm-param array{
      *   column_name: string,
      *   data_type: string,
-     *   data_precision: string,
-     *   data_scale: string,
+     *   data_precision: string|null,
+     *   data_scale: string|null,
      *   data_length: string,
      *   nullable: string,
      *   data_default: string|null,
@@ -453,17 +453,18 @@ final class Schema extends AbstractPdoSchema
     {
         return match (true) {
             $defaultValue === null,
-            $columnSchema->isPrimaryKey(),
+            $columnSchema->isPrimaryKey()
                 => null,
             $defaultValue === 'CURRENT_TIMESTAMP'
                 && $columnSchema->getType() === self::TYPE_TIMESTAMP
                     => new Expression($defaultValue),
+            /** @psalm-var string $defaultValue */
             strlen($defaultValue) > 2
                 && str_starts_with($defaultValue, "'")
                 && str_ends_with($defaultValue, "'")
                     => $columnSchema->phpTypecast(substr($defaultValue, 1, -1)),
             default
-                => $columnSchema->phpTypecast(trim($defaultValue)),
+            => $columnSchema->phpTypecast(trim($defaultValue)),
         };
     }
 
@@ -617,7 +618,7 @@ final class Schema extends AbstractPdoSchema
      */
     private function extractColumnType(ColumnSchemaInterface $columnSchema): string
     {
-        $dbType = $columnSchema->getDbType();
+        $dbType = $columnSchema->getDbType() ?? '';
 
         return match (true) {
             str_contains($dbType, 'FLOAT') || str_contains($dbType, 'DOUBLE')
@@ -633,7 +634,7 @@ final class Schema extends AbstractPdoSchema
             str_contains($dbType, 'TIMESTAMP')
                 => self::TYPE_TIMESTAMP,
             default
-                => self::TYPE_STRING,
+            => self::TYPE_STRING,
         };
     }
 
