@@ -459,7 +459,6 @@ final class Schema extends AbstractPdoSchema
                 && $columnSchema->getType() === self::TYPE_TIMESTAMP
                     => new Expression($defaultValue),
             /** @psalm-var string $defaultValue */
-            /** @psalm-suppress PossiblyNullOperand */
             strlen($defaultValue) > 2
                 && str_starts_with($defaultValue, "'")
                 && str_ends_with($defaultValue, "'")
