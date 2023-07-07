@@ -35,6 +35,18 @@ use function trim;
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
  *
+ * @psalm-type ColumnInfoArray = array{
+ *   column_name: string,
+ *   data_type: string,
+ *   data_precision: string|null,
+ *   data_scale: string|null,
+ *   data_length: string,
+ *   nullable: string,
+ *   data_default: string|null,
+ *   is_pk: string|null,
+ *   column_comment: string|null
+ * }
+ *
  * @psalm-type ConstraintArray = array<
  *   array-key,
  *   array {
@@ -358,21 +370,9 @@ final class Schema extends AbstractPdoSchema
 
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
+            /** @psalm-var ColumnInfoArray $column */
             $column = $this->normalizeRowKeyCase($column, false);
 
-            /**
-             * @psalm-var array{
-             *   column_name: string,
-             *   data_type: string,
-             *   data_precision: string,
-             *   data_scale: string,
-             *   data_length: string,
-             *   nullable: string,
-             *   data_default: string|null,
-             *   is_pk: string|null,
-             *   column_comment: string|null
-             * } $column $column
-             */
             $c = $this->createColumnSchema($column);
 
             $table->column($c->getName(), $c);
@@ -412,61 +412,51 @@ final class Schema extends AbstractPdoSchema
     /**
      * Creates ColumnSchema instance.
      *
-     * @psalm-param array{
-     *   column_name: string,
-     *   data_type: string,
-     *   data_precision: string|null,
-     *   data_scale: string|null,
-     *   data_length: string,
-     *   nullable: string,
-     *   data_default: string|null,
-     *   is_pk: string|null,
-     *   column_comment: string|null
-     * } $column
+     * @psalm-param ColumnInfoArray $info
      */
-    protected function createColumnSchema(array $column): ColumnSchemaInterface
+    protected function createColumnSchema(array $info): ColumnSchemaInterface
     {
-        $columnSchema = new ColumnSchema($column['column_name']);
-        $columnSchema->allowNull($column['nullable'] === 'Y');
-        $columnSchema->comment($column['column_comment']);
-        $columnSchema->primaryKey((bool) $column['is_pk']);
-        $columnSchema->size((int) $column['data_length']);
-        $columnSchema->precision($column['data_precision'] !== null ? (int) $column['data_precision'] : null);
-        $columnSchema->scale($column['data_scale'] !== null ? (int) $column['data_scale'] : null);
-        $columnSchema->dbType($column['data_type']);
-        $columnSchema->type($this->extractColumnType($columnSchema));
-        $columnSchema->phpType($this->getColumnPhpType($columnSchema));
-        $columnSchema->defaultValue($this->normalizeDefaultValue($column['data_default'], $columnSchema));
+        $column = new ColumnSchema($info['column_name']);
+        $column->allowNull($info['nullable'] === 'Y');
+        $column->comment($info['column_comment']);
+        $column->primaryKey((bool) $info['is_pk']);
+        $column->size((int) $info['data_length']);
+        $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
+        $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
+        $column->dbType($info['data_type']);
+        $column->type($this->extractColumnType($column));
+        $column->phpType($this->getColumnPhpType($column));
+        $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
-        return $columnSchema;
+        return $column;
     }
 
     /**
      * Converts column's default value according to {@see ColumnSchema::phpType} after retrieval from the database.
      *
      * @param string|null $defaultValue The default value retrieved from the database.
-     * @param ColumnSchemaInterface $columnSchema The column schema object.
+     * @param ColumnSchemaInterface $column The column schema object.
      *
      * @return mixed The normalized default value.
      *
      * @psalm-suppress PossiblyNullArgument
      */
-    private function normalizeDefaultValue(?string $defaultValue, ColumnSchemaInterface $columnSchema): mixed
+    private function normalizeDefaultValue(?string $defaultValue, ColumnSchemaInterface $column): mixed
     {
         return match (true) {
             $defaultValue === null,
-            $columnSchema->isPrimaryKey()
+            $column->isPrimaryKey()
                 => null,
             $defaultValue === 'CURRENT_TIMESTAMP'
-                && $columnSchema->getType() === self::TYPE_TIMESTAMP
+                && $column->getType() === self::TYPE_TIMESTAMP
                     => new Expression($defaultValue),
             /** @psalm-var string $defaultValue */
             strlen($defaultValue) > 2
                 && str_starts_with($defaultValue, "'")
                 && str_ends_with($defaultValue, "'")
-                    => $columnSchema->phpTypecast(substr($defaultValue, 1, -1)),
+                    => $column->phpTypecast(substr($defaultValue, 1, -1)),
             default
-            => $columnSchema->phpTypecast(trim($defaultValue)),
+            => $column->phpTypecast(trim($defaultValue)),
         };
     }
 
@@ -614,19 +604,19 @@ final class Schema extends AbstractPdoSchema
     /**
      * Extracts the data type for the given column.
      *
-     * @param ColumnSchemaInterface $columnSchema The column schema object.
+     * @param ColumnSchemaInterface $column The column schema object.
      *
      * @return string The abstract column type.
      */
-    private function extractColumnType(ColumnSchemaInterface $columnSchema): string
+    private function extractColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = (string) $columnSchema->getDbType();
+        $dbType = (string) $column->getDbType();
 
         return match (true) {
             str_contains($dbType, 'FLOAT') || str_contains($dbType, 'DOUBLE')
                 => self::TYPE_DOUBLE,
             str_contains($dbType, 'NUMBER')
-                => $columnSchema->getScale() === null || $columnSchema->getScale() > 0
+                => $column->getScale() === null || $column->getScale() > 0
                     ? self::TYPE_DECIMAL
                     : self::TYPE_INTEGER,
             str_contains($dbType, 'BLOB')
