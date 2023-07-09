@@ -613,7 +613,8 @@ final class Schema extends AbstractPdoSchema
         $dbType = (string) $column->getDbType();
 
         return match (true) {
-            str_contains($dbType, 'FLOAT') || str_contains($dbType, 'DOUBLE')
+            str_contains($dbType, 'FLOAT'),
+            str_contains($dbType, 'DOUBLE')
                 => self::TYPE_DOUBLE,
             str_contains($dbType, 'NUMBER')
                 => $column->getScale() === null || $column->getScale() > 0
