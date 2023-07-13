@@ -42,12 +42,13 @@ jobs:
           - 8.2
 
         oracle:
-          - 18
-          - 21
+          - konnecteam/docker-oracle-12c
+          - gvenzl/oracle-xe:18
+          - gvenzl/oracle-xe:21
 
     services:
       oci:
-        image: gvenzl/oracle-xe:${{ matrix.oracle }}
+        image: ${{ matrix.oracle }}
         ports:
           - 1521:1521
         env:
@@ -59,18 +60,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
-
-      oci-12:
-        image: konnecteam/docker-oracle-12c
-        ports:
-          - 1521:1521
-        options: >-
-          --name=oci-12
-          --health-cmd healthcheck.sh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
 
     steps:
       - name: Checkout.
