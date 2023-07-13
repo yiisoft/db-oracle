@@ -42,7 +42,7 @@ jobs:
           - 8.2
 
         oracle:
-          - sath89/oracle-12c
+          - absolutapps/oracle-12c-ee
           - gvenzl/oracle-xe:18
           - gvenzl/oracle-xe:21
 
