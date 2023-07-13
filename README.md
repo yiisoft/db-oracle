@@ -31,7 +31,7 @@ your Oracle database and perform various database operations as needed.
 
 |  PHP | Oracle Version           |  CI-Actions
 |:----:|:------------------------:|:---:|
-|**8.0 - 8.2**| **12 - 21**|[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml) [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master) [![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml) [![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
+|**8.0 - 8.2**| **18 - 21**|[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml) [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master) [![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml) [![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
 
 ## Installation
 
