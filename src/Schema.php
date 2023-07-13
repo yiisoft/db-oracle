@@ -319,6 +319,7 @@ final class Schema extends AbstractPdoSchema
             A.DATA_TYPE,
             A.DATA_PRECISION,
             A.DATA_SCALE,
+            A.IDENTITY_COLUMN,
             (
             CASE A.CHAR_USED WHEN 'C' THEN A.CHAR_LENGTH
                 ELSE A.DATA_LENGTH
@@ -430,6 +431,7 @@ final class Schema extends AbstractPdoSchema
         $c->allowNull($column['nullable'] === 'Y');
         $c->comment($column['column_comment'] ?? '');
         $c->primaryKey((int) ($column['is_pk'] ?? 0) > 0);
+        $c->autoIncrement($column['identity_column'] === 'YES');
 
         $this->extractColumnType(
             $c,
