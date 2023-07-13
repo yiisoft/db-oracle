@@ -42,7 +42,7 @@ jobs:
           - 8.2
 
         oracle:
-          - konnecteam/docker-oracle-12c
+          - sath89/oracle-12c
           - gvenzl/oracle-xe:18
           - gvenzl/oracle-xe:21
 
