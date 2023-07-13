@@ -54,7 +54,7 @@ build:
           - sudo ldconfig
           - curl -k -L --output /home/scrutinizer/oci8-3.0.1.tgz https://pecl.php.net/get/oci8-3.3.0.tgz
           - cd /home/scrutinizer
-          - tar -zxf oci8-3.0.1.tgz
+          - tar -zxf oci8-3.3.0.tgz
           - cd oci8-3.0.1
           - phpize
           - ./configure --with-oci8=instantclient,/opt/oracle/instantclient_21_3
