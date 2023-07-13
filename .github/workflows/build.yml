@@ -52,13 +52,25 @@ jobs:
           - 1521:1521
         env:
           ORACLE_DATABASE : yiitest
-          ORACLE_PASSWORD : root
+          ORACLE_PASSWORD : oracle
         options: >-
           --name=oci
           --health-cmd healthcheck.sh
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
+
+      oci-12:
+        image: konnecteam/docker-oracle-12c
+        ports:
+          - 1521:1521
+        options: >-
+          --name=oci-12
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
 
     steps:
       - name: Checkout.

@@ -22,7 +22,7 @@ trait TestTrait
      */
     protected function getConnection(bool $fixture = false): PdoConnectionInterface
     {
-        $db = new Connection(new Driver($this->getDsn(), 'system', 'root'), DbHelper::getSchemaCache());
+        $db = new Connection(new Driver($this->getDsn(), 'system', 'oracle'), DbHelper::getSchemaCache());
 
         if ($fixture) {
             DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
@@ -35,7 +35,7 @@ trait TestTrait
     {
         $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
 
-        return new Connection(new Driver($dsn, 'system', 'root'), DbHelper::getSchemaCache());
+        return new Connection(new Driver($dsn, 'system', 'oracle'), DbHelper::getSchemaCache());
     }
 
     protected function getDsn(): string
