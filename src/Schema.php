@@ -27,7 +27,6 @@ use function implode;
 use function is_array;
 use function md5;
 use function serialize;
-use function str_contains;
 use function strlen;
 use function substr;
 use function trim;
@@ -372,6 +371,7 @@ final class Schema extends AbstractPdoSchema
 
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
+            /** @psalm-var ColumnInfoArray $column */
             $column = $this->normalizeRowKeyCase($column, false);
 
             $c = $this->createColumnSchema($column);
