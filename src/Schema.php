@@ -612,24 +612,17 @@ final class Schema extends AbstractPdoSchema
      */
     private function extractColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = (string) $column->getDbType();
+        $dbType = explode('(', (string) $column->getDbType(), 2)[0];
 
-        return match (true) {
-            str_contains($dbType, 'FLOAT'),
-            str_contains($dbType, 'DOUBLE')
-                => self::TYPE_DOUBLE,
-            str_contains($dbType, 'NUMBER')
-                => $column->getScale() === null || $column->getScale() > 0
-                    ? self::TYPE_DECIMAL
-                    : self::TYPE_INTEGER,
-            str_contains($dbType, 'BLOB')
-                => self::TYPE_BINARY,
-            str_contains($dbType, 'CLOB')
-                => self::TYPE_TEXT,
-            str_contains($dbType, 'TIMESTAMP')
-                => self::TYPE_TIMESTAMP,
-            default
-            => self::TYPE_STRING,
+        return match ($dbType) {
+            'FLOAT', 'DOUBLE' => self::TYPE_DOUBLE,
+            'NUMBER' => $column->getScale() === null || $column->getScale() > 0
+                ? self::TYPE_DECIMAL
+                : self::TYPE_INTEGER,
+            'BLOB' => self::TYPE_BINARY,
+            'CLOB' => self::TYPE_TEXT,
+            'TIMESTAMP' => self::TYPE_TIMESTAMP,
+            default => self::TYPE_STRING,
         };
     }
 
