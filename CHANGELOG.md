@@ -2,8 +2,8 @@
 
 ## 1.0.1 under development
 
-- Enh #225: Typecast refactoring (@Tigrov)
 - Enh #226: Add support for auto increment in primary key column. (@terabytesoftw)
+- Enh #225: Typecast refactoring (@Tigrov)
 
 ## 1.0.0 April 12, 2023
 
