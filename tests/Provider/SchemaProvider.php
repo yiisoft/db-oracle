@@ -233,7 +233,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'phpType' => 'integer',
                         'primaryKey' => true,
                         'allowNull' => false,
-                        'autoIncrement' => false,
+                        'autoIncrement' => true,
                         'enumValues' => null,
                         'size' => 22,
                         'precision' => null,

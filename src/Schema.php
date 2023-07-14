@@ -44,6 +44,7 @@ use function trim;
  *   nullable: string,
  *   data_default: string|null,
  *   is_pk: string|null,
+ *   identity_column: string,
  *   column_comment: string|null
  * }
  *
@@ -331,6 +332,7 @@ final class Schema extends AbstractPdoSchema
             A.DATA_TYPE,
             A.DATA_PRECISION,
             A.DATA_SCALE,
+            A.IDENTITY_COLUMN,
             (
             CASE A.CHAR_USED WHEN 'C' THEN A.CHAR_LENGTH
                 ELSE A.DATA_LENGTH
@@ -370,7 +372,6 @@ final class Schema extends AbstractPdoSchema
 
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
-            /** @psalm-var ColumnInfoArray $column */
             $column = $this->normalizeRowKeyCase($column, false);
 
             $c = $this->createColumnSchema($column);
@@ -420,6 +421,7 @@ final class Schema extends AbstractPdoSchema
         $column->allowNull($info['nullable'] === 'Y');
         $column->comment($info['column_comment']);
         $column->primaryKey((bool) $info['is_pk']);
+        $column->autoIncrement($info['identity_column'] === 'YES');
         $column->size((int) $info['data_length']);
         $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
         $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
