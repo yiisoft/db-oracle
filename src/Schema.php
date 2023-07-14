@@ -449,10 +449,10 @@ final class Schema extends AbstractPdoSchema
             $defaultValue === null,
             $column->isPrimaryKey()
                 => null,
+            /** @var string $defaultValue */
             $defaultValue === 'CURRENT_TIMESTAMP'
                 && $column->getType() === self::TYPE_TIMESTAMP
                     => new Expression($defaultValue),
-            /** @psalm-var string $defaultValue */
             strlen($defaultValue) > 2
                 && str_starts_with($defaultValue, "'")
                 && str_ends_with($defaultValue, "'")
