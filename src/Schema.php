@@ -446,19 +446,19 @@ final class Schema extends AbstractPdoSchema
     private function normalizeDefaultValue(?string $defaultValue, ColumnSchemaInterface $column): mixed
     {
         return match (true) {
-            $defaultValue === null,
-            $column->isPrimaryKey()
-                => null,
+            $defaultValue === null, $column->isPrimaryKey() => null,
+
             /** @var string $defaultValue */
             $defaultValue === 'CURRENT_TIMESTAMP'
-                && $column->getType() === self::TYPE_TIMESTAMP
-                    => new Expression($defaultValue),
+            && $column->getType() === self::TYPE_TIMESTAMP
+                => new Expression($defaultValue),
+
             strlen($defaultValue) > 2
-                && str_starts_with($defaultValue, "'")
-                && str_ends_with($defaultValue, "'")
-                    => $column->phpTypecast(substr($defaultValue, 1, -1)),
-            default
-            => $column->phpTypecast(trim($defaultValue)),
+            && str_starts_with($defaultValue, "'")
+            && str_ends_with($defaultValue, "'")
+                => $column->phpTypecast(substr($defaultValue, 1, -1)),
+
+            default => $column->phpTypecast(trim($defaultValue)),
         };
     }
 
