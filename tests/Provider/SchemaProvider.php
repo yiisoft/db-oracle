@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Yiisoft\Db\Constraint\CheckConstraint;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Tests\Support\AnyValue;
 
 final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
@@ -90,7 +91,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'size' => 100,
                         'precision' => null,
                         'scale' => null,
-                        'defaultValue' => 'something',
+                        'defaultValue' => 'some\'thing',
                     ],
                     'char_col3' => [
                         'type' => 'string',
@@ -104,6 +105,19 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'precision' => null,
                         'scale' => null,
                         'defaultValue' => null,
+                    ],
+                    'nvarchar_col' => [
+                        'type' => 'string',
+                        'dbType' => 'NVARCHAR2',
+                        'phpType' => 'string',
+                        'primaryKey' => false,
+                        'allowNull' => true,
+                        'autoIncrement' => false,
+                        'enumValues' => null,
+                        'size' => 100,
+                        'precision' => null,
+                        'scale' => null,
+                        'defaultValue' => '',
                     ],
                     'float_col' => [
                         'type' => 'double',
@@ -207,7 +221,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'size' => 11,
                         'precision' => null,
                         'scale' => 6,
-                        'defaultValue' => 'CURRENT_TIMESTAMP',
+                        'defaultValue' => new Expression('CURRENT_TIMESTAMP'),
                     ],
                     'bit_col' => [
                         'type' => 'string',
