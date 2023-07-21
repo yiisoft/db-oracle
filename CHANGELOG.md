@@ -4,6 +4,7 @@
 
 - Enh #226: Add support for auto increment in primary key column. (@terabytesoftw)
 - Enh #225: Typecast refactoring (@Tigrov)
+- Bug #229: Refactoring of `Schema::normalizeDefaultValue()` method (@Tigrov)
 
 ## 1.0.0 April 12, 2023
 
