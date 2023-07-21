@@ -449,6 +449,10 @@ final class Schema extends AbstractPdoSchema
 
         $defaultValue = trim($defaultValue);
 
+        if ($defaultValue === 'NULL') {
+            return null;
+        }
+
         if ($column->getType() === self::TYPE_TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
             return new Expression($defaultValue);
         }

@@ -172,7 +172,7 @@ CREATE TABLE "type" (
   "nvarchar_col" nvarchar2(100) DEFAULT '',
   "float_col" double precision NOT NULL,
   "float_col2" double precision DEFAULT 1.23,
-  "blob_col" blob,
+  "blob_col" blob DEFAULT NULL,
   "numeric_col" decimal(5,2) DEFAULT 33.22,
   "time" timestamp DEFAULT to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss') NOT NULL,
   "bool_col" char NOT NULL check ("bool_col" in (0,1)),
