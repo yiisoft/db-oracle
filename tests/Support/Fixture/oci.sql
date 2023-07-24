@@ -174,7 +174,7 @@ CREATE TABLE "type" (
   "float_col2" double precision DEFAULT 1.23,
   "blob_col" blob DEFAULT NULL,
   "numeric_col" decimal(5,2) DEFAULT 33.22,
-  "time" timestamp DEFAULT to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss') NOT NULL,
+  "timestamp_col" timestamp DEFAULT to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss') NOT NULL,
   "bool_col" char NOT NULL check ("bool_col" in (0,1)),
   "bool_col2" char DEFAULT 1 check("bool_col2" in (0,1)),
   "ts_default" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
