@@ -26,9 +26,9 @@ use function array_reverse;
 use function implode;
 use function is_array;
 use function md5;
+use function preg_match;
 use function serialize;
-use function strlen;
-use function substr;
+use function str_replace;
 use function trim;
 
 /**
@@ -440,26 +440,28 @@ final class Schema extends AbstractPdoSchema
      * @param ColumnSchemaInterface $column The column schema object.
      *
      * @return mixed The normalized default value.
-     *
-     * @psalm-suppress PossiblyNullArgument
      */
-    private function normalizeDefaultValue(?string $defaultValue, ColumnSchemaInterface $column): mixed
+    private function normalizeDefaultValue(string|null $defaultValue, ColumnSchemaInterface $column): mixed
     {
-        return match (true) {
-            $defaultValue === null, $column->isPrimaryKey() => null,
+        if ($defaultValue === null || $column->isPrimaryKey()) {
+            return null;
+        }
 
-            /** @var string $defaultValue */
-            $defaultValue === 'CURRENT_TIMESTAMP'
-            && $column->getType() === self::TYPE_TIMESTAMP
-                => new Expression($defaultValue),
+        $defaultValue = trim($defaultValue);
 
-            strlen($defaultValue) > 2
-            && str_starts_with($defaultValue, "'")
-            && str_ends_with($defaultValue, "'")
-                => $column->phpTypecast(substr($defaultValue, 1, -1)),
+        if ($defaultValue === 'NULL') {
+            return null;
+        }
 
-            default => $column->phpTypecast(trim($defaultValue)),
-        };
+        if ($column->getType() === self::TYPE_TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
+            return new Expression($defaultValue);
+        }
+
+        if (preg_match("/^'(.*)'$/s", $defaultValue, $matches) === 1) {
+            $defaultValue = str_replace("''", "'", $matches[1]);
+        }
+
+        return $column->phpTypecast($defaultValue);
     }
 
     /**
