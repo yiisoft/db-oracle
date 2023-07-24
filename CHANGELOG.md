@@ -1,5 +1,9 @@
 # Oracle driver for Yii Database Change Log
 
+## 1.1.1 under development
+
+- no changes in this release.
+
 ## 1.1.0 July 24, 2023
 
 - Enh #225: Typecast refactoring (@Tigrov)
