@@ -27,8 +27,10 @@ use function implode;
 use function is_array;
 use function md5;
 use function preg_match;
+use function preg_replace;
 use function serialize;
 use function str_replace;
+use function strtolower;
 use function trim;
 
 /**
@@ -649,10 +651,8 @@ final class Schema extends AbstractPdoSchema
     private function getColumnType(ColumnSchemaInterface $column): string
     {
         $dbType = (string) $column->getDbType();
-        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
-        $dbType = strtolower($dbType);
 
-        if ($dbType === 'number') {
+        if ($dbType === 'NUMBER') {
             return match ($column->getScale()) {
                 null => self::TYPE_DOUBLE,
                 0 => self::TYPE_INTEGER,
@@ -660,7 +660,9 @@ final class Schema extends AbstractPdoSchema
             };
         }
 
-        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
+        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
+
+        return $this->typeMap[strtolower($dbType)] ?? self::TYPE_STRING;
     }
 
     /**
