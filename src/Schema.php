@@ -93,8 +93,6 @@ final class Schema extends AbstractPdoSchema
         'timestamp with local time zone' => self::TYPE_TIMESTAMP,
         'date' => self::TYPE_DATE,
         'interval day to second' => self::TYPE_TIME,
-        'json' => self::TYPE_JSON, // since 21c
-        'boolean' => self::TYPE_BOOLEAN, // since 23c
 
         /** Deprecated */
         'long' => self::TYPE_TEXT,
