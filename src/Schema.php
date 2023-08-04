@@ -64,6 +64,59 @@ use function trim;
  */
 final class Schema extends AbstractPdoSchema
 {
+    /**
+     * @var array The mapping from physical column types (keys) to abstract column types (values).
+     *
+     * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
+     *
+     * @psalm-var string[]
+     */
+    private array $typeMap = [
+        'char' => self::TYPE_STRING,
+        'character' => self::TYPE_STRING,
+        'nchar' => self::TYPE_STRING,
+        'national char' => self::TYPE_STRING,
+        'national character' => self::TYPE_STRING,
+        'varchar2' => self::TYPE_STRING,
+        'nvarchar2' => self::TYPE_STRING,
+        'varchar' => self::TYPE_STRING,
+        'char varying' => self::TYPE_STRING,
+        'character varying' => self::TYPE_STRING,
+        'nchar varying' => self::TYPE_STRING,
+        'national char varying' => self::TYPE_STRING,
+        'national character varying' => self::TYPE_STRING,
+        'clob' => self::TYPE_TEXT,
+        'nclob' => self::TYPE_TEXT,
+        'blob' => self::TYPE_BINARY,
+        'bfile' => self::TYPE_BINARY,
+        'long raw' => self::TYPE_BINARY,
+        'raw' => self::TYPE_BINARY,
+        'integer' => self::TYPE_INTEGER, // alias NUMBER(38)
+        'int' => self::TYPE_INTEGER, // alias NUMBER(38)
+        'smallint' => self::TYPE_SMALLINT, // alias NUMBER(38)
+        'number' => self::TYPE_DECIMAL,
+        'numeric' => self::TYPE_DECIMAL,
+        'decimal' => self::TYPE_DECIMAL,
+        'dec' => self::TYPE_DECIMAL,
+        'binary_float' => self::TYPE_FLOAT, // 32 bit
+        'binary_double' => self::TYPE_DOUBLE, // 64 bit
+        'real' => self::TYPE_DOUBLE, // 63 bit, alias FLOAT(63)
+        'float' => self::TYPE_DOUBLE, // 126 bit
+        'double precision' => self::TYPE_DOUBLE, // 126 bit, alias FLOAT(126)
+        'timestamp' => self::TYPE_TIMESTAMP,
+        'timestamp with time zone' => self::TYPE_TIMESTAMP,
+        'timestamp with local time zone' => self::TYPE_TIMESTAMP,
+        'date' => self::TYPE_DATE,
+        'interval day to second' => self::TYPE_TIME,
+        'json' => self::TYPE_JSON, // since 21c
+        'bool' => self::TYPE_BOOLEAN, // since 23c
+        'boolean' => self::TYPE_BOOLEAN, // since 23c
+
+        /** Deprecated */
+        'long' => self::TYPE_TEXT,
+        'long varchar' => self::TYPE_TEXT,
+    ];
+
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
@@ -426,7 +479,7 @@ final class Schema extends AbstractPdoSchema
         $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
         $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
         $column->dbType($info['data_type']);
-        $column->type($this->extractColumnType($column));
+        $column->type($this->getColumnType($column));
         $column->phpType($this->getColumnPhpType($column));
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
@@ -606,26 +659,27 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Extracts the data type for the given column.
+     * Get the data type for the given column.
      *
      * @param ColumnSchemaInterface $column The column schema object.
      *
      * @return string The abstract column type.
      */
-    private function extractColumnType(ColumnSchemaInterface $column): string
+    private function getColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = explode('(', (string) $column->getDbType(), 2)[0];
+        $dbType = (string) $column->getDbType();
+        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
+        $dbType = strtolower($dbType);
 
-        return match ($dbType) {
-            'FLOAT', 'DOUBLE' => self::TYPE_DOUBLE,
-            'NUMBER' => $column->getScale() === null || $column->getScale() > 0
-                ? self::TYPE_DECIMAL
-                : self::TYPE_INTEGER,
-            'BLOB' => self::TYPE_BINARY,
-            'CLOB' => self::TYPE_TEXT,
-            'TIMESTAMP' => self::TYPE_TIMESTAMP,
-            default => self::TYPE_STRING,
-        };
+        if ($dbType === 'number') {
+            return match ($column->getScale()) {
+                null => self::TYPE_DOUBLE,
+                0 => self::TYPE_INTEGER,
+                default => self::TYPE_DECIMAL,
+            };
+        }
+
+        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
     }
 
     /**
