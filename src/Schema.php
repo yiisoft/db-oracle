@@ -428,6 +428,7 @@ final class Schema extends AbstractPdoSchema
         $column->dbType($info['data_type']);
         $column->type($this->extractColumnType($column));
         $column->phpType($this->getColumnPhpType($column));
+        $column->dateTimeFormat($this->getDateTimeFormat($column));
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;
@@ -453,8 +454,11 @@ final class Schema extends AbstractPdoSchema
             return null;
         }
 
-        if ($column->getType() === self::TYPE_TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
-            return new Expression($defaultValue);
+        if ($column->getDateTimeFormat() !== null) {
+            $dateTimeRegex = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()?\s*'(?:\d )?([^']+)'.*/";
+            $value = preg_replace($dateTimeRegex, '$1', $defaultValue, 1);
+
+            return date_create_immutable($value) ?: new Expression($defaultValue);
         }
 
         if (preg_match("/^'(.*)'$/s", $defaultValue, $matches) === 1) {
@@ -624,6 +628,7 @@ final class Schema extends AbstractPdoSchema
             'BLOB' => self::TYPE_BINARY,
             'CLOB' => self::TYPE_TEXT,
             'TIMESTAMP' => self::TYPE_TIMESTAMP,
+            'DATE' => self::TYPE_DATE,
             default => self::TYPE_STRING,
         };
     }
@@ -781,5 +786,28 @@ final class Schema extends AbstractPdoSchema
     protected function getCacheTag(): string
     {
         return md5(serialize(array_merge([self::class], $this->generateCacheKey())));
+    }
+
+    protected function getDateTimeFormat(ColumnSchemaInterface $column): string|null
+    {
+        return match ($column->getType()) {
+            self::TYPE_TIMESTAMP => 'Y-m-d H:i:s'
+                . $this->getMillisecondsFormat($column)
+                . ($column->hasTimezone() ? 'P' : ''),
+            self::TYPE_DATE => 'Y-m-d',
+            self::TYPE_TIME => '0 H:i:s' . $this->getMillisecondsFormat($column),
+            default => null,
+        };
+    }
+
+    protected function getMillisecondsFormat(ColumnSchemaInterface $column): string
+    {
+        $precision = $column->getScale();
+
+        return match (true) {
+            $precision > 3 => '.u',
+            $precision > 0 => '.v',
+            default => '',
+        };
     }
 }
