@@ -74,8 +74,8 @@ final class Schema extends AbstractPdoSchema
      * @psalm-var string[]
      */
     private array $typeMap = [
-        'char' => self::TYPE_STRING,
-        'nchar' => self::TYPE_STRING,
+        'char' => self::TYPE_CHAR,
+        'nchar' => self::TYPE_CHAR,
         'varchar2' => self::TYPE_STRING,
         'nvarchar2' => self::TYPE_STRING,
         'clob' => self::TYPE_TEXT,

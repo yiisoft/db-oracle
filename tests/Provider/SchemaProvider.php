@@ -68,7 +68,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'defaultValue' => 1,
                     ],
                     'char_col' => [
-                        'type' => 'string',
+                        'type' => 'char',
                         'dbType' => 'CHAR',
                         'phpType' => 'string',
                         'primaryKey' => false,
@@ -198,7 +198,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'defaultValue' => "INTERVAL '0 10:33:21' DAY(0) TO SECOND(0)",
                     ],
                     'bool_col' => [
-                        'type' => 'string',
+                        'type' => 'char',
                         'dbType' => 'CHAR',
                         'phpType' => 'string',
                         'primaryKey' => false,
@@ -211,7 +211,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'defaultValue' => null,
                     ],
                     'bool_col2' => [
-                        'type' => 'string',
+                        'type' => 'char',
                         'dbType' => 'CHAR',
                         'phpType' => 'string',
                         'primaryKey' => false,
@@ -237,17 +237,17 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'defaultValue' => new Expression('CURRENT_TIMESTAMP'),
                     ],
                     'bit_col' => [
-                        'type' => 'string',
-                        'dbType' => 'CHAR',
-                        'phpType' => 'string',
+                        'type' => 'integer',
+                        'dbType' => 'NUMBER',
+                        'phpType' => 'integer',
                         'primaryKey' => false,
                         'allowNull' => false,
                         'autoIncrement' => false,
                         'enumValues' => null,
-                        'size' => 3,
-                        'precision' => null,
-                        'scale' => null,
-                        'defaultValue' => '130', // b'10000010'
+                        'size' => null,
+                        'precision' => 3,
+                        'scale' => 0,
+                        'defaultValue' => 130, // b'10000010'
                     ],
                 ],
                 'type',
@@ -289,7 +289,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
     public static function columnsTypeChar(): array
     {
         return [
-            ['char_col', 'string', 100, 'CHAR'],
+            ['char_col', 'char', 100, 'CHAR'],
             ['char_col2', 'string', 100, 'VARCHAR2'],
             ['char_col3', 'string', 4000, 'VARCHAR2'],
         ];
