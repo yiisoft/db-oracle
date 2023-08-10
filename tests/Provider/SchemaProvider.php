@@ -244,7 +244,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'allowNull' => false,
                         'autoIncrement' => false,
                         'enumValues' => null,
-                        'size' => null,
+                        'size' => 22,
                         'precision' => 3,
                         'scale' => 0,
                         'defaultValue' => 130, // b'10000010'
