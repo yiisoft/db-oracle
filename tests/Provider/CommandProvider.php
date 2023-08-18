@@ -32,8 +32,8 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['issue11242']['expected']);
         $batchInsert['issue11242']['expectedParams'][':qp3'] = '1';
 
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['wrongBehavior']['expected']);
-        $batchInsert['wrongBehavior']['expectedParams'][':qp3'] = '0';
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['table name with column name with brackets']['expected']);
+        $batchInsert['table name with column name with brackets']['expectedParams'][':qp3'] = '0';
 
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['batchInsert binds params from expression']['expected']);
         $batchInsert['batchInsert binds params from expression']['expectedParams'][':qp3'] = '0';
