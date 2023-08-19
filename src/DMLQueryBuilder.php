@@ -43,9 +43,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
         /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
+            $i = 0;
             $placeholders = [];
             /** @psalm-var mixed $value */
-            foreach ($row as $i => $value) {
+            foreach ($row as $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
                     /** @psalm-var mixed $value */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
@@ -56,6 +57,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 } else {
                     $placeholders[] = $this->queryBuilder->bindParam($value, $params);
                 }
+
+                ++$i;
             }
             $values[] = '(' . implode(', ', $placeholders) . ')';
         }
