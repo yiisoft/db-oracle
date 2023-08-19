@@ -41,12 +41,13 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $columns = $this->getNormalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /** @psalm-var string[][] $rows */
+        /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
             $placeholders = [];
+            /** @psalm-var mixed $value */
             foreach ($row as $i => $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    /** @var mixed $value */
+                    /** @psalm-var mixed $value */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
 
