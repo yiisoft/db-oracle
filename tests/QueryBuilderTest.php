@@ -633,4 +633,16 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     ): void {
         parent::testUpsertExecute($table, $insertColumns, $updateColumns);
     }
+
+    public function testDefaultValues(): void
+    {
+        $db = $this->getConnection();
+        $queryBuilder = $db->getQueryBuilder();
+
+        // Non-primary key columns should have DEFAULT as value
+        $this->assertSame(
+            'INSERT INTO "negative_default_values" ("tinyint_col") VALUES (DEFAULT)',
+            $queryBuilder->insert('negative_default_values', []),
+        );
+    }
 }
