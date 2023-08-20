@@ -135,9 +135,7 @@ final class Command extends AbstractPdoCommand
                     && $this->db->getTransaction() === null
                 ) {
                     $this->db->transaction(
-                        function () use ($rawSql): void {
-                            $this->internalExecute($rawSql);
-                        },
+                        fn () => $this->internalExecute($rawSql),
                         $this->isolationLevel
                     );
                 } else {
