@@ -8,7 +8,6 @@ use PDO;
 use PDOException;
 use Throwable;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -136,7 +135,9 @@ final class Command extends AbstractPdoCommand
                     && $this->db->getTransaction() === null
                 ) {
                     $this->db->transaction(
-                        fn (PdoConnectionInterface $db) => $this->internalExecute($rawSql),
+                        function () use ($rawSql): void {
+                            $this->internalExecute($rawSql);
+                        },
                         $this->isolationLevel
                     );
                 } else {
