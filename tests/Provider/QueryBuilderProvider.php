@@ -56,6 +56,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['column table names are not checked']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['with associative values']['expected']);
 
         return $batchInsert;
     }
