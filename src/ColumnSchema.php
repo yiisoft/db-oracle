@@ -9,6 +9,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\AbstractColumnSchema;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function explode;
 use function is_string;
 use function preg_replace;
 use function uniqid;
@@ -53,5 +54,19 @@ final class ColumnSchema extends AbstractColumnSchema
         }
 
         return parent::dbTypecast($value);
+    }
+
+    public function phpTypecast(mixed $value): mixed
+    {
+        if (is_string($value) && $this->getType() === SchemaInterface::TYPE_TIME) {
+            $value = explode(' ', $value)[1] ?? $value;
+        }
+
+        return parent::phpTypecast($value);
+    }
+
+    public function hasTimezone(): bool
+    {
+        return str_ends_with((string) $this->getDbType(), ' WITH TIME ZONE');
     }
 }

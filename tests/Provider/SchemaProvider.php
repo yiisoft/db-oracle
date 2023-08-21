@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
+use DateTimeImmutable;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Tests\Support\AnyValue;
@@ -173,16 +174,59 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'timestamp_col' => [
                         'type' => 'timestamp',
-                        'dbType' => 'TIMESTAMP(6)',
-                        'phpType' => 'string',
+                        'dbType' => 'TIMESTAMP(0)',
+                        'phpType' => 'DateTimeInterface',
                         'primaryKey' => false,
                         'allowNull' => false,
+                        'autoIncrement' => false,
+                        'enumValues' => null,
+                        'size' => 7,
+                        'precision' => null,
+                        'scale' => 0,
+                        'defaultValue' => new DateTimeImmutable('2002-01-01 00:00:00'),
+                        'dateTimeFormat' => 'Y-m-d H:i:s',
+                    ],
+                    'timestamp_col2' => [
+                        'type' => 'timestamp',
+                        'dbType' => 'TIMESTAMP(6)',
+                        'phpType' => 'DateTimeInterface',
+                        'primaryKey' => false,
+                        'allowNull' => true,
                         'autoIncrement' => false,
                         'enumValues' => null,
                         'size' => 11,
                         'precision' => null,
                         'scale' => 6,
-                        'defaultValue' => "to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')",
+                        'defaultValue' => null,
+                        'dateTimeFormat' => 'Y-m-d H:i:s.u',
+                    ],
+                    'timestamptz_col' => [
+                        'type' => 'timestamp',
+                        'dbType' => 'TIMESTAMP(2) WITH TIME ZONE',
+                        'phpType' => 'DateTimeInterface',
+                        'primaryKey' => false,
+                        'allowNull' => false,
+                        'autoIncrement' => false,
+                        'enumValues' => null,
+                        'size' => 13,
+                        'precision' => null,
+                        'scale' => 2,
+                        'defaultValue' => new DateTimeImmutable('2023-06-11 15:24:11.12 +02:00'),
+                        'dateTimeFormat' => 'Y-m-d H:i:s.vP',
+                    ],
+                    'date_col' => [
+                        'type' => 'date',
+                        'dbType' => 'DATE',
+                        'phpType' => 'DateTimeInterface',
+                        'primaryKey' => false,
+                        'allowNull' => false,
+                        'autoIncrement' => false,
+                        'enumValues' => null,
+                        'size' => 7,
+                        'precision' => null,
+                        'scale' => null,
+                        'defaultValue' => new DateTimeImmutable('2023-06-11'),
+                        'dateTimeFormat' => 'Y-m-d',
                     ],
                     'bool_col' => [
                         'type' => 'string',
@@ -213,7 +257,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     'ts_default' => [
                         'type' => 'timestamp',
                         'dbType' => 'TIMESTAMP(6)',
-                        'phpType' => 'string',
+                        'phpType' => 'DateTimeInterface',
                         'primaryKey' => false,
                         'allowNull' => false,
                         'autoIncrement' => false,
@@ -222,6 +266,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'precision' => null,
                         'scale' => 6,
                         'defaultValue' => new Expression('CURRENT_TIMESTAMP'),
+                        'dateTimeFormat' => 'Y-m-d H:i:s.u',
                     ],
                     'bit_col' => [
                         'type' => 'string',

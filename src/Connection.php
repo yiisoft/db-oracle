@@ -97,4 +97,27 @@ final class Connection extends AbstractPdoConnection
 
         return $this->schema;
     }
+
+    /**
+     * Initializes the DB connection and sets default date and time format.
+     *
+     * This method is invoked right after the DB connection is established.
+     *
+     * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`, if {@see getEmulatePrepare()} is `true`.
+     */
+    protected function initConnection(): void
+    {
+        parent::initConnection();
+
+        $this->pdo->exec(
+            <<<SQL
+            ALTER SESSION SET
+                NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFF'
+                NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFFTZH:TZM'
+                NLS_DATE_FORMAT = 'YYYY-MM-DD'
+                NLS_TIME_FORMAT = 'HH24:MI:SSXFF'
+                NLS_TIME_TZ_FORMAT = 'HH24:MI:SSXFFTZH:TZM'
+            SQL
+        );
+    }
 }
