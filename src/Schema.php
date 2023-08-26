@@ -648,9 +648,9 @@ final class Schema extends AbstractPdoSchema
      */
     private function getColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = (string) $column->getDbType();
+        $dbType = strtolower((string) $column->getDbType());
 
-        if ($dbType === 'NUMBER') {
+        if ($dbType === 'number') {
             return match ($column->getScale()) {
                 null => self::TYPE_DOUBLE,
                 0 => self::TYPE_INTEGER,
@@ -660,7 +660,7 @@ final class Schema extends AbstractPdoSchema
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
-        return $this->typeMap[strtolower($dbType)] ?? self::TYPE_STRING;
+        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
     }
 
     /**

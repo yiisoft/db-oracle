@@ -2,7 +2,7 @@
 
 ## 1.1.1 under development
 
-- no changes in this release.
+- Enh #230: Improve column type #230 (@Tigrov)
 
 ## 1.1.0 July 24, 2023
 
