@@ -660,6 +660,10 @@ final class Schema extends AbstractPdoSchema
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
+        if ($dbType === 'interval day to second' && $column->getPrecision() > 0) {
+            return self::TYPE_STRING;
+        }
+
         return $this->typeMap[$dbType] ?? self::TYPE_STRING;
     }
 
