@@ -30,6 +30,7 @@ use function preg_match;
 use function preg_replace;
 use function serialize;
 use function str_replace;
+use function strtolower;
 use function trim;
 
 /**
@@ -73,28 +74,28 @@ final class Schema extends AbstractPdoSchema
      * @psalm-var string[]
      */
     private array $typeMap = [
-        'CHAR' => self::TYPE_CHAR,
-        'NCHAR' => self::TYPE_CHAR,
-        'VARCHAR2' => self::TYPE_STRING,
-        'NVARCHAR2' => self::TYPE_STRING,
-        'CLOB' => self::TYPE_TEXT,
-        'NCLOB' => self::TYPE_TEXT,
-        'BLOB' => self::TYPE_BINARY,
-        'BFILE' => self::TYPE_BINARY,
-        'LONG RAW' => self::TYPE_BINARY,
-        'RAW' => self::TYPE_BINARY,
-        'NUMBER' => self::TYPE_DECIMAL,
-        'BINARY_FLOAT' => self::TYPE_FLOAT, // 32 bit
-        'BINARY_DOUBLE' => self::TYPE_DOUBLE, // 64 bit
-        'FLOAT' => self::TYPE_DOUBLE, // 126 bit
-        'TIMESTAMP' => self::TYPE_TIMESTAMP,
-        'TIMESTAMP WITH TIME ZONE' => self::TYPE_TIMESTAMP,
-        'TIMESTAMP WITH LOCAL TIME ZONE' => self::TYPE_TIMESTAMP,
-        'DATE' => self::TYPE_DATE,
-        'INTERVAL DAY TO SECOND' => self::TYPE_TIME,
+        'char' => self::TYPE_CHAR,
+        'nchar' => self::TYPE_CHAR,
+        'varchar2' => self::TYPE_STRING,
+        'nvarchar2' => self::TYPE_STRING,
+        'clob' => self::TYPE_TEXT,
+        'nclob' => self::TYPE_TEXT,
+        'blob' => self::TYPE_BINARY,
+        'bfile' => self::TYPE_BINARY,
+        'long raw' => self::TYPE_BINARY,
+        'raw' => self::TYPE_BINARY,
+        'number' => self::TYPE_DECIMAL,
+        'binary_float' => self::TYPE_FLOAT, // 32 bit
+        'binary_double' => self::TYPE_DOUBLE, // 64 bit
+        'float' => self::TYPE_DOUBLE, // 126 bit
+        'timestamp' => self::TYPE_TIMESTAMP,
+        'timestamp with time zone' => self::TYPE_TIMESTAMP,
+        'timestamp with local time zone' => self::TYPE_TIMESTAMP,
+        'date' => self::TYPE_DATE,
+        'interval day to second' => self::TYPE_TIME,
 
         /** Deprecated */
-        'LONG' => self::TYPE_TEXT,
+        'long' => self::TYPE_TEXT,
     ];
 
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
@@ -647,9 +648,9 @@ final class Schema extends AbstractPdoSchema
      */
     private function getColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = (string) $column->getDbType();
+        $dbType = strtolower((string) $column->getDbType());
 
-        if ($dbType === 'NUMBER') {
+        if ($dbType === 'number') {
             return match ($column->getScale()) {
                 null => self::TYPE_DOUBLE,
                 0 => self::TYPE_INTEGER,
@@ -659,7 +660,7 @@ final class Schema extends AbstractPdoSchema
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
-        if ($dbType === 'INTERVAL DAY TO SECOND' && $column->getPrecision() > 0) {
+        if ($dbType === 'interval day to second' && $column->getPrecision() > 0) {
             return self::TYPE_STRING;
         }
 
