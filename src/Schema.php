@@ -460,7 +460,7 @@ final class Schema extends AbstractPdoSchema
         $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
         $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
         $column->dbType($info['data_type']);
-        $column->type($this->getColumnType($column));
+        $column->type($this->extractColumnType($column));
         $column->phpType($this->getColumnPhpType($column));
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
@@ -640,13 +640,13 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Get the data type for the given column.
+     * Extracts the data type for the given column.
      *
      * @param ColumnSchemaInterface $column The column schema object.
      *
      * @return string The abstract column type.
      */
-    private function getColumnType(ColumnSchemaInterface $column): string
+    private function extractColumnType(ColumnSchemaInterface $column): string
     {
         $dbType = strtolower((string) $column->getDbType());
 
