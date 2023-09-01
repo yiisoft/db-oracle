@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\BinaryColumnSchema;
@@ -14,15 +13,14 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Tests\Common\CommonColumnSchemaTest;
 
-use function fopen;
 use function str_repeat;
 
 /**
  * @group oracle
  */
-final class ColumnSchemaTest extends TestCase
+final class ColumnSchemaTest extends CommonColumnSchemaTest
 {
     use TestTrait;
 
@@ -83,27 +81,24 @@ final class ColumnSchemaTest extends TestCase
         $this->assertInstanceOf(BinaryColumnSchema::class, $tableSchema->getColumn('blob_col'));
     }
 
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::predefinedTypes */
+    public function testPredefinedType(string $className, string $type, string $phpType)
+    {
+        parent::testPredefinedType($className, $type, $phpType);
+    }
+
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns */
+    public function testDbTypecastColumns(string $className, array $values)
+    {
+        parent::testDbTypecastColumns($className, $values);
+    }
+
     public function testBinaryColumnSchema()
     {
         $binaryCol = new BinaryColumnSchema('binary_col');
+        $binaryCol->dbType('BLOB');
 
         $this->assertSame('binary_col', $binaryCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_BINARY, $binaryCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_RESOURCE, $binaryCol->getPhpType());
-
-        $this->assertNull($binaryCol->dbTypecast(null));
-        $this->assertSame('1', $binaryCol->dbTypecast(1));
-        $this->assertSame('1', $binaryCol->dbTypecast(true));
-        $this->assertSame('0', $binaryCol->dbTypecast(false));
-        $this->assertSame($resource = fopen('php://memory', 'rb'), $binaryCol->dbTypecast($resource));
-        $this->assertEquals(new Param("\x10\x11\x12", PDO::PARAM_LOB), $binaryCol->dbTypecast("\x10\x11\x12"));
-        $this->assertSame($expression = new Expression('expression'), $binaryCol->dbTypecast($expression));
-
-        $this->assertNull($binaryCol->phpTypecast(null));
-        $this->assertSame("\x10\x11\x12", $binaryCol->phpTypecast("\x10\x11\x12"));
-        $this->assertSame($resource = fopen('php://memory', 'rb'), $binaryCol->phpTypecast($resource));
-
-        $binaryCol->dbType('BLOB');
         $this->assertInstanceOf(Expression::class, $binaryCol->dbTypecast("\x10\x11\x12"));
         $this->assertInstanceOf(
             Expression::class,
