@@ -52,10 +52,9 @@ build:
           - export ORACLE_HOME=/opt/oracle/instantclient_21_3
           - sudo sh -c "echo /opt/oracle/instantclient_21_3 > /etc/ld.so.conf.d/oracle-instantclient.conf"
           - sudo ldconfig
-          - wget -O /home/scrutinizer/oci8-3.0.1.tgz https://pecl.php.net/get/oci8-3.0.1.tgz
-          - cd /home/scrutinizer
-          - tar -zxvf oci8-3.0.1.tgz
-          - cd oci8-3.0.1
+          - wget https://pecl.php.net/get/oci8-3.2.1.tgz
+          - tar xzf oci8-3.2.1.tgz
+          - cd oci8-3.2.1
           - phpize
           - ./configure --with-oci8=instantclient,/opt/oracle/instantclient_21_3
           - make
