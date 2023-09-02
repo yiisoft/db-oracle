@@ -52,7 +52,7 @@ build:
           - export ORACLE_HOME=/opt/oracle/instantclient_21_3
           - sudo sh -c "echo /opt/oracle/instantclient_21_3 > /etc/ld.so.conf.d/oracle-instantclient.conf"
           - sudo ldconfig
-          - wget --no-check-certificate -O /home/scrutinizer/oci8-3.0.1.tgz https://pecl.php.net/get/oci8-3.0.1.tgz
+          - wget -O /home/scrutinizer/oci8-3.0.1.tgz https://pecl.php.net/get/oci8-3.0.1.tgz
           - cd /home/scrutinizer
           - tar -zxvf oci8-3.0.1.tgz
           - cd oci8-3.0.1
@@ -61,7 +61,7 @@ build:
           - make
           - sudo make install
           - sudo ldconfig
-          - wget --no-check-certificate -O /home/scrutinizer/php-8.1.18.tar.gz https://www.php.net/distributions/php-8.1.18.tar.gz
+          - wget -O /home/scrutinizer/php-8.1.18.tar.gz https://www.php.net/distributions/php-8.1.18.tar.gz
           - cd /home/scrutinizer
           - tar -zxvf php-8.1.18.tar.gz
           - cd php-8.1.18/ext/pdo_oci
