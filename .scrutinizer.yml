@@ -47,10 +47,10 @@ build:
           - sudo unzip /opt/oracle/instantclient-basic-linux.x64-21.3.0.0.0.zip -d /opt/oracle
           - sudo unzip /opt/oracle/instantclient-sdk-linux.x64-21.3.0.0.0.zip -d /opt/oracle
           - sudo apt-get install libaio1 -y
-          - export ORACLE_HOME=instantclient,/opt/oracle/instantclient_21_3
+          - export ORACLE_HOME=/opt/oracle/instantclient_21_3
           - sudo sh -c "echo /opt/oracle/instantclient_21_3 > /etc/ld.so.conf.d/oracle-instantclient.conf"
           - sudo ldconfig
-          - printf "\n" | pecl install oci8
+          - sudo sh -c "echo 'instantclient,/opt/oracle/instantclient_21_3' | pecl install oci8-3.0.1"
           - sudo ldconfig
           - wget -O /home/scrutinizer/php-8.1.18.tar.gz https://www.php.net/distributions/php-8.1.18.tar.gz
           - cd /home/scrutinizer
