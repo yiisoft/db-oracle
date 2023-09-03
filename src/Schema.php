@@ -668,7 +668,9 @@ final class Schema extends AbstractPdoSchema
         $dbType = strtolower($dbType);
 
         if ($dbType === 'number') {
-            return match ($info['data_scale']) {
+            $scale = $info['data_scale'] !== null ? (int) $info['data_scale'] : null;
+
+            return match ($scale) {
                 null => self::TYPE_DOUBLE,
                 0 => self::TYPE_INTEGER,
                 default => self::TYPE_DECIMAL,
