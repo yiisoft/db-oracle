@@ -64,7 +64,7 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
         $this->assertSame(1.234, $floatColPhpType);
         $this->assertSame("\x10\x11\x12", stream_get_contents($blobColPhpType));
         $this->assertEquals(false, $boolColPhpType);
-        $this->assertEquals(0b0110_0110, $bitColPhpType);
+        $this->assertSame(0b0110_0110, $bitColPhpType);
 
         $db->close();
     }
