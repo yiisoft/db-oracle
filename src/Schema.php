@@ -18,7 +18,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_merge;
@@ -403,14 +403,14 @@ final class Schema extends AbstractPdoSchema
             return false;
         }
 
-        /** @psalm-var string[][] $columns */
-        foreach ($columns as $column) {
-            /** @psalm-var ColumnInfoArray $column */
-            $column = $this->normalizeRowKeyCase($column, false);
+        /** @psalm-var ColumnInfoArray $info */
+        foreach ($columns as $info) {
+            /** @psalm-var ColumnInfoArray $info */
+            $info = $this->normalizeRowKeyCase($info, false);
 
-            $c = $this->createColumnSchema($column);
+            $column = $this->loadColumnSchema($info);
 
-            $table->column($c->getName(), $c);
+            $table->column($column->getName(), $column);
         }
 
         return true;
@@ -445,13 +445,20 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Creates ColumnSchema instance.
+     * Loads the column information into a {@see ColumnSchemaInterface} object.
      *
-     * @psalm-param ColumnInfoArray $info
+     * @param array $info The column information.
+     *
+     * @return ColumnSchemaInterface The column schema object.
+     *
+     * @psalm-param ColumnInfoArray $info The column information.
      */
-    protected function createColumnSchema(array $info): ColumnSchemaInterface
+    private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
-        $column = new ColumnSchema($info['column_name']);
+        $dbType = $info['data_type'];
+        $type = $this->extractColumnType($dbType, $info);
+        /** @psalm-var ColumnInfoArray $info */
+        $column = $this->createColumnSchema($type, $info['column_name']);
         $column->allowNull($info['nullable'] === 'Y');
         $column->comment($info['column_comment']);
         $column->primaryKey((bool) $info['is_pk']);
@@ -459,12 +466,20 @@ final class Schema extends AbstractPdoSchema
         $column->size((int) $info['data_length']);
         $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
         $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
-        $column->dbType($info['data_type']);
-        $column->type($this->extractColumnType($column));
-        $column->phpType($this->getColumnPhpType($column));
+        $column->dbType($dbType);
+        $column->phpType($this->getColumnPhpType($type));
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;
+    }
+
+    protected function createPhpTypeColumnSchema(string $phpType, string $name): ColumnSchemaInterface
+    {
+        if ($phpType === self::PHP_TYPE_RESOURCE) {
+            return new BinaryColumnSchema($name);
+        }
+
+        return parent::createPhpTypeColumnSchema($phpType, $name);
     }
 
     /**
@@ -642,16 +657,20 @@ final class Schema extends AbstractPdoSchema
     /**
      * Extracts the data type for the given column.
      *
-     * @param ColumnSchemaInterface $column The column schema object.
+     * @param string $dbType The database data type
+     * @param array $info Column information.
+     * @psalm-param ColumnInfoArray $info
      *
      * @return string The abstract column type.
      */
-    private function extractColumnType(ColumnSchemaInterface $column): string
+    private function extractColumnType(string $dbType, array $info): string
     {
-        $dbType = strtolower((string) $column->getDbType());
+        $dbType = strtolower($dbType);
 
         if ($dbType === 'number') {
-            return match ($column->getScale()) {
+            $scale = $info['data_scale'] !== null ? (int) $info['data_scale'] : null;
+
+            return match ($scale) {
                 null => self::TYPE_DOUBLE,
                 0 => self::TYPE_INTEGER,
                 default => self::TYPE_DECIMAL,
@@ -660,7 +679,7 @@ final class Schema extends AbstractPdoSchema
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
-        if ($dbType === 'interval day to second' && $column->getPrecision() > 0) {
+        if ($dbType === 'interval day to second' && $info['data_precision'] > 0) {
             return self::TYPE_STRING;
         }
 

@@ -14,6 +14,10 @@ use function preg_replace;
 use function uniqid;
 
 /**
+ * @deprecated Use the following class for specific type:
+ * `StringColumnSchema`, `IntegerColumnSchema`, `BigIntColumnSchema`, `DoubleColumnSchema`, `BooleanColumnSchema`,
+ * `BinaryColumnSchema`
+ *
  * Represents the metadata of a column in a database table for Oracle Server.
  *
  * It provides information about the column's name, type, size, precision, and other details.
@@ -36,6 +40,9 @@ use function uniqid;
  * $column->autoIncrement(true);
  * $column->primaryKey(true);
  * ```
+ *
+ * @psalm-suppress DeprecatedInterface
+ * @psalm-suppress DeprecatedClass
  */
 final class ColumnSchema extends AbstractColumnSchema
 {
@@ -52,6 +59,7 @@ final class ColumnSchema extends AbstractColumnSchema
             }
         }
 
+        /** @psalm-suppress DeprecatedClass */
         return parent::dbTypecast($value);
     }
 }
