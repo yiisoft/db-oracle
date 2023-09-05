@@ -3,6 +3,8 @@
 ## 1.1.1 under development
 
 - Enh #230: Improve column type #230 (@Tigrov)
+- Enh #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+  for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 
 ## 1.1.0 July 24, 2023
 
