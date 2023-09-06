@@ -27,8 +27,10 @@ use function implode;
 use function is_array;
 use function md5;
 use function preg_match;
+use function preg_replace;
 use function serialize;
 use function str_replace;
+use function strtolower;
 use function trim;
 
 /**
@@ -64,6 +66,38 @@ use function trim;
  */
 final class Schema extends AbstractPdoSchema
 {
+    /**
+     * @var array The mapping from physical column types (keys) to abstract column types (values).
+     *
+     * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
+     *
+     * @psalm-var string[]
+     */
+    private array $typeMap = [
+        'char' => self::TYPE_CHAR,
+        'nchar' => self::TYPE_CHAR,
+        'varchar2' => self::TYPE_STRING,
+        'nvarchar2' => self::TYPE_STRING,
+        'clob' => self::TYPE_TEXT,
+        'nclob' => self::TYPE_TEXT,
+        'blob' => self::TYPE_BINARY,
+        'bfile' => self::TYPE_BINARY,
+        'long raw' => self::TYPE_BINARY,
+        'raw' => self::TYPE_BINARY,
+        'number' => self::TYPE_DECIMAL,
+        'binary_float' => self::TYPE_FLOAT, // 32 bit
+        'binary_double' => self::TYPE_DOUBLE, // 64 bit
+        'float' => self::TYPE_DOUBLE, // 126 bit
+        'timestamp' => self::TYPE_TIMESTAMP,
+        'timestamp with time zone' => self::TYPE_TIMESTAMP,
+        'timestamp with local time zone' => self::TYPE_TIMESTAMP,
+        'date' => self::TYPE_DATE,
+        'interval day to second' => self::TYPE_TIME,
+
+        /** Deprecated */
+        'long' => self::TYPE_TEXT,
+    ];
+
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
@@ -614,18 +648,23 @@ final class Schema extends AbstractPdoSchema
      */
     private function extractColumnType(ColumnSchemaInterface $column): string
     {
-        $dbType = explode('(', (string) $column->getDbType(), 2)[0];
+        $dbType = strtolower((string) $column->getDbType());
 
-        return match ($dbType) {
-            'FLOAT', 'DOUBLE' => self::TYPE_DOUBLE,
-            'NUMBER' => $column->getScale() === null || $column->getScale() > 0
-                ? self::TYPE_DECIMAL
-                : self::TYPE_INTEGER,
-            'BLOB' => self::TYPE_BINARY,
-            'CLOB' => self::TYPE_TEXT,
-            'TIMESTAMP' => self::TYPE_TIMESTAMP,
-            default => self::TYPE_STRING,
-        };
+        if ($dbType === 'number') {
+            return match ($column->getScale()) {
+                null => self::TYPE_DOUBLE,
+                0 => self::TYPE_INTEGER,
+                default => self::TYPE_DECIMAL,
+            };
+        }
+
+        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
+
+        if ($dbType === 'interval day to second' && $column->getPrecision() > 0) {
+            return self::TYPE_STRING;
+        }
+
+        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
     }
 
     /**

@@ -309,7 +309,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             \t"name" VARCHAR2(255) NOT NULL,
             \t"email" VARCHAR2(255) NOT NULL,
             \t"status" NUMBER(10) NOT NULL,
-            \t"created_at" TIMESTAMP NOT NULL
+            \t"created_at" TIMESTAMP(0) NOT NULL
             )
             SQL,
             $qb->createTable(

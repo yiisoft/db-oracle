@@ -10,6 +10,7 @@ on:
       - 'phpunit.xml.dist'
 
   push:
+    branches: ['master']
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -20,6 +21,10 @@ on:
       - 'phpunit.xml.dist'
 
 name: static analysis
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   psalm:

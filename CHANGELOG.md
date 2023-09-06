@@ -3,6 +3,7 @@
 ## 1.1.1 under development
 
 - Bug #233: Refactor `DMLQueryBuilder`, related with yiisoft/db#746 (@Tigrov)
+- Enh #230: Improve column type #230 (@Tigrov)
 
 ## 1.1.0 July 24, 2023
 
