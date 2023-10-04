@@ -15,6 +15,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
+use function array_map;
 use function implode;
 use function count;
 
@@ -67,9 +68,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        foreach ($columns as $i => $name) {
-            $columns[$i] = $this->quoter->quoteColumnName($name);
-        }
+        $columns = array_map(
+            [$this->quoter, 'quoteColumnName'],
+            $columns,
+        );
 
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)
             . ' (' . implode(', ', $columns) . ') VALUES ';
