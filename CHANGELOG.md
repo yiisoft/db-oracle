@@ -3,6 +3,7 @@
 ## 1.1.1 under development
 
 - Enh #230: Improve column type #230 (@Tigrov)
+- Bug #240: Remove `RECURSIVE` expression from CTE queries (@Tigrov)
 
 ## 1.1.0 July 24, 2023
 
