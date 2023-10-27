@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
@@ -58,6 +59,16 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
     public function selectExists(string $rawSql): string
     {
         return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END FROM DUAL';
+    }
+
+    public function buildWithQueries(array $withs, array &$params): string
+    {
+        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
+        foreach ($withs as &$with) {
+            $with['recursive'] = false;
+        }
+
+        return parent::buildWithQueries($withs, $params);
     }
 
     protected function defaultExpressionBuilders(): array
