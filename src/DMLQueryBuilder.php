@@ -24,8 +24,6 @@ use function count;
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
     /**
-     * @psalm-suppress MixedArrayOffset
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
@@ -41,14 +39,12 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $columns = $this->getNormalizeColumnNames('', $columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
             $i = 0;
             $placeholders = [];
-            /** @psalm-var mixed $value */
+
             foreach ($row as $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    /** @psalm-var mixed $value */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
 
