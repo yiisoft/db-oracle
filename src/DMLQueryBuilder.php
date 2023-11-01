@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -15,11 +14,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
+use function array_map;
 use function implode;
-use function ltrim;
-use function strrpos;
 use function count;
-use function reset;
 
 /**
  * Implements a DML (Data Manipulation Language) SQL statements for Oracle Server.
@@ -27,35 +24,28 @@ use function reset;
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
     /**
-     * @psalm-suppress MixedArrayOffset
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
         if (empty($rows)) {
             return '';
         }
 
-        if (($tableSchema = $this->schema->getTableSchema($table)) !== null) {
-            $columnSchemas = $tableSchema->getColumns();
-        } else {
-            $columnSchemas = [];
-        }
-
-        $mappedNames = $this->getNormalizeColumnNames($table, $columns);
         $values = [];
+        $columns = $this->getNormalizeColumnNames('', $columns);
+        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
+            $i = 0;
             $placeholders = [];
-            foreach ($row as $index => $value) {
-                if (isset($columns[$index], $mappedNames[$columns[$index]], $columnSchemas[$mappedNames[$columns[$index]]])) {
-                    /** @var mixed $value */
-                    $value = $this->getTypecastValue($value, $columnSchemas[$mappedNames[$columns[$index]]]);
+
+            foreach ($row as $value) {
+                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
 
                 if ($value instanceof ExpressionInterface) {
@@ -63,6 +53,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 } else {
                     $placeholders[] = $this->queryBuilder->bindParam($value, $params);
                 }
+
+                ++$i;
             }
             $values[] = '(' . implode(', ', $placeholders) . ')';
         }
@@ -71,9 +63,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        foreach ($columns as $i => $name) {
-            $columns[$i] = $this->quoter->quoteColumnName($mappedNames[$name]);
-        }
+        $columns = array_map(
+            [$this->quoter, 'quoteColumnName'],
+            $columns,
+        );
 
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)
             . ' (' . implode(', ', $columns) . ') VALUES ';
@@ -105,7 +98,6 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         array|bool $updateColumns,
         array &$params = []
     ): string {
-        $usingValues = null;
         $constraints = [];
 
         [$uniqueNames, $insertNames, $updateNames] = $this->prepareUpsertColumns(
@@ -119,16 +111,11 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return $this->insert($table, $insertColumns, $params);
         }
 
-        if ($updateNames === []) {
-            /** there are no columns to update */
-            $updateColumns = false;
-        }
-
         $onCondition = ['or'];
         $quotedTableName = $this->quoter->quoteTableName($table);
 
         foreach ($constraints as $constraint) {
-            $columnNames = $constraint->getColumnNames() ?? [];
+            $columnNames = (array) $constraint->getColumnNames();
             $constraintCondition = ['and'];
             /** @psalm-var string[] $columnNames */
             foreach ($columnNames as $name) {
@@ -140,60 +127,43 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         $on = $this->queryBuilder->buildCondition($onCondition, $params);
-        /** @psalm-var string[] $placeholders */
+
         [, $placeholders, $values, $params] = $this->prepareInsertValues($table, $insertColumns, $params);
 
         if (!empty($placeholders)) {
             $usingSelectValues = [];
-            /** @psalm-var string[] $insertNames */
+
             foreach ($insertNames as $index => $name) {
                 $usingSelectValues[$name] = new Expression($placeholders[$index]);
             }
 
-            /** @psalm-var array $params */
-            $usingValues = $this->queryBuilder->buildSelect($usingSelectValues, $params) . ' ' . $this->queryBuilder->buildFrom(['DUAL'], $params);
+            $values = $this->queryBuilder->buildSelect($usingSelectValues, $params)
+                . ' ' . $this->queryBuilder->buildFrom(['DUAL'], $params);
         }
 
         $insertValues = [];
-        $mergeSql = 'MERGE INTO '
-            . $this->quoter->quoteTableName($table)
-            . ' '
-            . 'USING (' . ($usingValues ?? ltrim((string) $values, ' '))
-            . ') "EXCLUDED" '
-            . "ON ($on)";
+        $mergeSql = 'MERGE INTO ' . $quotedTableName . ' USING (' . $values . ') "EXCLUDED" ON (' . $on . ')';
 
-        /** @psalm-var string[] $insertNames */
-        foreach ($insertNames as $name) {
-            $quotedName = $this->quoter->quoteColumnName($name);
-
-            if (strrpos($quotedName, '.') === false) {
-                $quotedName = '"EXCLUDED".' . $quotedName;
-            }
-
-            $insertValues[] = $quotedName;
+        foreach ($insertNames as $quotedName) {
+            $insertValues[] = '"EXCLUDED".' . $quotedName;
         }
 
         $insertSql = 'INSERT (' . implode(', ', $insertNames) . ')' . ' VALUES (' . implode(', ', $insertValues) . ')';
 
-        if ($updateColumns === false) {
+        if ($updateColumns === false || $updateNames === []) {
+            /** there are no columns to update */
             return "$mergeSql WHEN NOT MATCHED THEN $insertSql";
         }
 
         if ($updateColumns === true) {
             $updateColumns = [];
             /** @psalm-var string[] $updateNames */
-            foreach ($updateNames as $name) {
-                $quotedName = $this->quoter->quoteColumnName($name);
-
-                if (strrpos($quotedName, '.') === false) {
-                    $quotedName = '"EXCLUDED".' . $quotedName;
-                }
-                $updateColumns[$name] = new Expression($quotedName);
+            foreach ($updateNames as $quotedName) {
+                $updateColumns[$quotedName] = new Expression('"EXCLUDED".' . $quotedName);
             }
         }
 
-        /** @psalm-var string[] $updates */
-        [$updates, $params] = $this->prepareUpdateSets($table, $updateColumns, (array) $params);
+        [$updates, $params] = $this->prepareUpdateSets($table, $updateColumns, $params);
         $updateSql = 'UPDATE SET ' . implode(', ', $updates);
 
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
@@ -201,28 +171,28 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
     {
-        /**
-         * @var array $names
-         * @var array $placeholders
-         */
-        [$names, $placeholders, $values, $params] = parent::prepareInsertValues($table, $columns, $params);
-
-        if (!$columns instanceof QueryInterface && empty($names)) {
+        if (empty($columns)) {
+            $names = [];
+            $placeholders = [];
             $tableSchema = $this->schema->getTableSchema($table);
 
             if ($tableSchema !== null) {
-                $tableColumns = $tableSchema->getColumns();
-                $columns = !empty($tableSchema->getPrimaryKey())
-                    ? $tableSchema->getPrimaryKey() : [reset($tableColumns)->getName()];
+                if (!empty($tableSchema->getPrimaryKey())) {
+                    $columns = $tableSchema->getPrimaryKey();
+                } else {
+                    $columns = [current($tableSchema->getColumns())->getName()];
+                }
+
                 foreach ($columns as $name) {
-                    /** @psalm-var mixed */
                     $names[] = $this->quoter->quoteColumnName($name);
                     $placeholders[] = 'DEFAULT';
                 }
             }
+
+            return [$names, $placeholders, '', $params];
         }
 
-        return [$names, $placeholders, $values, $params];
+        return parent::prepareInsertValues($table, $columns, $params);
     }
 
     public function resetSequence(string $table, int|string $value = null): string
