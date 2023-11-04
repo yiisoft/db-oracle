@@ -37,25 +37,31 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
         $values = [];
         $columns = $this->getNormalizeColumnNames('', $columns);
+        $columnNames = array_values($columns);
+        $columnKeys = array_fill_keys($columnNames, false);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
             $i = 0;
-            $placeholders = [];
+            $placeholders = $columnKeys;
 
-            foreach ($row as $value) {
-                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
+            foreach ($row as $key => $value) {
+                /** @psalm-suppress MixedArrayTypeCoercion */
+                $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
+                /** @psalm-suppress MixedArrayTypeCoercion */
+                if (isset($columnSchemas[$columnName])) {
+                    $value = $columnSchemas[$columnName]->dbTypecast($value);
                 }
 
                 if ($value instanceof ExpressionInterface) {
-                    $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
+                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $params);
                 } else {
-                    $placeholders[] = $this->queryBuilder->bindParam($value, $params);
+                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $params);
                 }
 
                 ++$i;
             }
+
             $values[] = '(' . implode(', ', $placeholders) . ')';
         }
 
@@ -63,13 +69,13 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $columns = array_map(
+        $columnNames = array_map(
             [$this->quoter, 'quoteColumnName'],
-            $columns,
+            $columnNames,
         );
 
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)
-            . ' (' . implode(', ', $columns) . ') VALUES ';
+            . ' (' . implode(', ', $columnNames) . ') VALUES ';
 
         return 'INSERT ALL ' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
     }
