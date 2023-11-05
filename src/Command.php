@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
-use PDOException;
-use Throwable;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
