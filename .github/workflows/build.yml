@@ -7,7 +7,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+      - 'psalm.xml'
 
   push:
     branches: ['master']
@@ -18,7 +18,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+      - 'psalm.xml'
 
 name: build
 
