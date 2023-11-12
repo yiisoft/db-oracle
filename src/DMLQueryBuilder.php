@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
+use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -29,7 +30,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         if (empty($rows)) {
             return '';
