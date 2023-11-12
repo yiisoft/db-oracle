@@ -6,7 +6,7 @@
   </php>
   <testsuites>
     <testsuite name="Db">
-      <directory>./vendor/yiisoft/db/tests</directory>
+      <directory>./vendor/yiisoft/db/tests/Db</directory>
     </testsuite>
     <testsuite name="Oracle">
       <directory>./tests</directory>
