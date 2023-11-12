@@ -1,13 +1,13 @@
 # Oracle driver for Yii Database Change Log
 
-## 1.1.1 under development
+## 1.2.0 November 12, 2023
 
-- Bug #233: Refactor `DMLQueryBuilder`, related with yiisoft/db#746 (@Tigrov)
 - Enh #230: Improve column type #230 (@Tigrov)
+- Enh #243: Move methods from `Command` to `AbstractPdoCommand` class (@Tigrov)
+- Bug #233: Refactor `DMLQueryBuilder`, related with yiisoft/db#746 (@Tigrov)
 - Bug #240: Remove `RECURSIVE` expression from CTE queries (@Tigrov)
 - Bug #242: Fix `AbstractDMLQueryBuilder::batchInsert()` for values as associative arrays, 
   related with yiisoft/db#769 (@Tigrov)
-- Enh #243: Move methods from `Command` to `AbstractPdoCommand` class (@Tigrov)
 
 ## 1.1.0 July 24, 2023
 
