@@ -67,13 +67,13 @@ use function trim;
 final class Schema extends AbstractPdoSchema
 {
     /**
-     * @var array The mapping from physical column types (keys) to abstract column types (values).
+     * The mapping from physical column types (keys) to abstract column types (values).
      *
      * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
      *
-     * @psalm-var string[]
+     * @var string[]
      */
-    private array $typeMap = [
+    private const TYPE_MAP = [
         'char' => self::TYPE_CHAR,
         'nchar' => self::TYPE_CHAR,
         'varchar2' => self::TYPE_STRING,
@@ -664,7 +664,7 @@ final class Schema extends AbstractPdoSchema
             return self::TYPE_STRING;
         }
 
-        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
+        return self::TYPE_MAP[$dbType] ?? self::TYPE_STRING;
     }
 
     /**
