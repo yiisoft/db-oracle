@@ -22,14 +22,21 @@ final class Command extends AbstractPdoCommand
 {
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
+        $tableSchema = $this->db->getSchema()->getTableSchema($table);
+        $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
+
+        if ($returnColumns === []) {
+            if ($this->insert($table, $columns)->execute() === 0) {
+                return false;
+            }
+
+            return [];
+        }
+
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
 
-        $tableSchema = $this->db->getSchema()->getTableSchema($table);
-
-        $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
         $columnSchemas = $tableSchema?->getColumns() ?? [];
-
         $returnParams = [];
         $returning = [];
 
