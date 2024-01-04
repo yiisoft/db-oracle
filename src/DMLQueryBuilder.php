@@ -50,10 +50,12 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 $columns,
             );
 
-            $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ') VALUES ';
+            $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
 
-        return 'INSERT ALL ' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
+        $tableAndColumns .= ' VALUES ';
+
+        return 'INSERT ALL' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
     }
 
     /**

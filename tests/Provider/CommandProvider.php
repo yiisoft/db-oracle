@@ -25,7 +25,7 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         $batchInsert = parent::batchInsert();
 
         $batchInsert['multirow']['expected'] = <<<SQL
-        INSERT ALL  INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
+        INSERT ALL INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
         SQL;
         $batchInsert['multirow']['expectedParams'][':qp3'] = '1';
         $batchInsert['multirow']['expectedParams'][':qp7'] = '0';
@@ -54,6 +54,18 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             ],
             'with shuffled indexes of values' => [
                 ':qp0' => '1',
+            ],
+            'empty columns and associative values' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and objects' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and Traversable' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and indexed values' => [
+                ':qp3' => '1',
             ],
         ];
 
