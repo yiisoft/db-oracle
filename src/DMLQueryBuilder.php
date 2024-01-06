@@ -34,9 +34,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-        $columns = $this->extractColumnNames($columns, $columnSchemas, $rows);
-        $values = $this->prepareBatchInsertValues($columns, $columnSchemas, $rows, $params);
+        $columns = $this->extractColumnNames($table, $rows, $columns);
+        $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
         if (empty($values)) {
             return '';
@@ -45,10 +44,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table);
 
         if (count($columns) > 0) {
-            $quotedColumnNames = array_map(
-                [$this->quoter, 'quoteColumnName'],
-                $columns,
-            );
+            $quotedColumnNames = array_map([$this->quoter, 'quoteColumnName'], $columns);
 
             $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
