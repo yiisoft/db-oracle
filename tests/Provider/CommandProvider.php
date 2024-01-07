@@ -64,9 +64,6 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             'empty columns and Traversable' => [
                 ':qp3' => '1',
             ],
-            'empty columns and indexed values' => [
-                ':qp3' => '1',
-            ],
         ];
 
         foreach ($replaceParams as $key => $expectedParams) {

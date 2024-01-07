@@ -34,7 +34,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $columns = $this->extractColumnNames($table, $rows, $columns);
+        $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
         if (empty($values)) {
