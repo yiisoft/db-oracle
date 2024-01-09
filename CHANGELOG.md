@@ -4,6 +4,7 @@
 
 - Enh #248: Change property `Schema::$typeMap` to constant `Schema::TYPE_MAP` (@Tigrov)
 - Bug #250: Fix `Command::insertWithReturningPks()` method for table without primary keys (@Tigrov)
+- Enh #251: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 

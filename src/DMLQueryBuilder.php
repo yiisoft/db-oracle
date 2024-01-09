@@ -10,7 +10,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
@@ -35,49 +34,24 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $values = [];
-        $columns = $this->getNormalizeColumnNames('', $columns);
-        $columnNames = array_values($columns);
-        $columnKeys = array_fill_keys($columnNames, false);
-        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-
-        foreach ($rows as $row) {
-            $i = 0;
-            $placeholders = $columnKeys;
-
-            foreach ($row as $key => $value) {
-                /** @psalm-suppress MixedArrayTypeCoercion */
-                $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
-                /** @psalm-suppress MixedArrayTypeCoercion */
-                if (isset($columnSchemas[$columnName])) {
-                    $value = $columnSchemas[$columnName]->dbTypecast($value);
-                }
-
-                if ($value instanceof ExpressionInterface) {
-                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $params);
-                } else {
-                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $params);
-                }
-
-                ++$i;
-            }
-
-            $values[] = '(' . implode(', ', $placeholders) . ')';
-        }
+        $columns = $this->extractColumnNames($rows, $columns);
+        $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
         if (empty($values)) {
             return '';
         }
 
-        $columnNames = array_map(
-            [$this->quoter, 'quoteColumnName'],
-            $columnNames,
-        );
+        $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table);
 
-        $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table)
-            . ' (' . implode(', ', $columnNames) . ') VALUES ';
+        if (count($columns) > 0) {
+            $quotedColumnNames = array_map([$this->quoter, 'quoteColumnName'], $columns);
 
-        return 'INSERT ALL ' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
+            $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ')';
+        }
+
+        $tableAndColumns .= ' VALUES ';
+
+        return 'INSERT ALL' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
     }
 
     /**

@@ -51,11 +51,12 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
 
         $batchInsert['wrong']['expected'] = <<<SQL
-        INSERT ALL  INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
+        INSERT ALL INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
         SQL;
 
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['column table names are not checked']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['empty columns and non-exists table']['expected']);
 
         $batchInsert['bool-false, bool2-null']['expectedParams'][':qp0'] = '0';
         $batchInsert['bool-false, time-now()']['expectedParams'][':qp0'] = '0';
