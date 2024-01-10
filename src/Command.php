@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
-use PDOException;
-use Throwable;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
@@ -26,14 +22,21 @@ final class Command extends AbstractPdoCommand
 {
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
+        $tableSchema = $this->db->getSchema()->getTableSchema($table);
+        $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
+
+        if ($returnColumns === []) {
+            if ($this->insert($table, $columns)->execute() === 0) {
+                return false;
+            }
+
+            return [];
+        }
+
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
 
-        $tableSchema = $this->db->getSchema()->getTableSchema($table);
-
-        $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
         $columnSchemas = $tableSchema?->getColumns() ?? [];
-
         $returnParams = [];
         $returning = [];
 
@@ -91,11 +94,6 @@ final class Command extends AbstractPdoCommand
         return $this->setSql($sql)->queryColumn();
     }
 
-    protected function getQueryBuilder(): QueryBuilderInterface
-    {
-        return $this->db->getQueryBuilder();
-    }
-
     protected function bindPendingParams(): void
     {
         $paramsPassedByReference = [];
@@ -114,41 +112,6 @@ final class Command extends AbstractPdoCommand
                 );
             } else {
                 $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
-            }
-        }
-    }
-
-    /**
-     * @psalm-suppress UnusedClosureParam
-     *
-     * @throws Throwable
-     */
-    protected function internalExecute(?string $rawSql): void
-    {
-        $attempt = 0;
-
-        while (true) {
-            try {
-                if (
-                    ++$attempt === 1
-                    && $this->isolationLevel !== null
-                    && $this->db->getTransaction() === null
-                ) {
-                    $this->db->transaction(
-                        fn () => $this->internalExecute($rawSql),
-                        $this->isolationLevel
-                    );
-                } else {
-                    $this->pdoStatement?->execute();
-                }
-                break;
-            } catch (PDOException $e) {
-                $rawSql = $rawSql ?: $this->getRawSql();
-                $e = (new ConvertException($e, $rawSql))->run();
-
-                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
-                    throw $e;
-                }
             }
         }
     }

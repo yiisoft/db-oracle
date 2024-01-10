@@ -51,10 +51,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
 
         $batchInsert['wrong']['expected'] = <<<SQL
-        INSERT ALL  INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
+        INSERT ALL INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
         SQL;
 
         DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['column table names are not checked']['expected']);
+        DbHelper::changeSqlForOracleBatchInsert($batchInsert['empty columns and non-exists table']['expected']);
+
+        $batchInsert['bool-false, bool2-null']['expectedParams'][':qp0'] = '0';
+        $batchInsert['bool-false, time-now()']['expectedParams'][':qp0'] = '0';
+        $batchInsert['column table names are not checked']['expectedParams'] = [
+            ':qp0' => '1',
+            ':qp1' => '0',
+        ];
 
         return $batchInsert;
     }
@@ -122,6 +131,11 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             'regular values' => [
                 3 => <<<SQL
                 MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"="EXCLUDED"."address", "status"="EXCLUDED"."status", "profile_id"="EXCLUDED"."profile_id" WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES ("EXCLUDED"."email", "EXCLUDED"."address", "EXCLUDED"."status", "EXCLUDED"."profile_id")
+                SQL,
+            ],
+            'regular values with unique at not the first position' => [
+                3 => <<<SQL
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "address", :qp1 AS "email", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"="EXCLUDED"."address", "status"="EXCLUDED"."status", "profile_id"="EXCLUDED"."profile_id" WHEN NOT MATCHED THEN INSERT ("address", "email", "status", "profile_id") VALUES ("EXCLUDED"."address", "EXCLUDED"."email", "EXCLUDED"."status", "EXCLUDED"."profile_id")
                 SQL,
             ],
             'regular values with update part' => [

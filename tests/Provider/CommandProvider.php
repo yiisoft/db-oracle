@@ -10,6 +10,7 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
+use function array_merge;
 use function json_encode;
 use function serialize;
 
@@ -24,19 +25,51 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         $batchInsert = parent::batchInsert();
 
         $batchInsert['multirow']['expected'] = <<<SQL
-        INSERT ALL  INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
+        INSERT ALL INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
         SQL;
         $batchInsert['multirow']['expectedParams'][':qp3'] = '1';
         $batchInsert['multirow']['expectedParams'][':qp7'] = '0';
 
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['issue11242']['expected']);
-        $batchInsert['issue11242']['expectedParams'][':qp3'] = '1';
+        $replaceParams = [
+            'issue11242' => [
+                ':qp3' => '1',
+            ],
+            'table name with column name with brackets' => [
+                ':qp3' => '0',
+            ],
+            'batchInsert binds params from expression' => [
+                ':qp3' => '0',
+            ],
+            'with associative values with different keys' => [
+                ':qp3' => '1',
+            ],
+            'with associative values with different keys and columns with keys' => [
+                ':qp3' => '1',
+            ],
+            'with associative values with keys of column names' => [
+                ':qp0' => '1',
+            ],
+            'with associative values with keys of column keys' => [
+                ':qp0' => '1',
+            ],
+            'with shuffled indexes of values' => [
+                ':qp0' => '1',
+            ],
+            'empty columns and associative values' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and objects' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and Traversable' => [
+                ':qp3' => '1',
+            ],
+        ];
 
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['wrongBehavior']['expected']);
-        $batchInsert['wrongBehavior']['expectedParams'][':qp3'] = '0';
-
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['batchInsert binds params from expression']['expected']);
-        $batchInsert['batchInsert binds params from expression']['expectedParams'][':qp3'] = '0';
+        foreach ($replaceParams as $key => $expectedParams) {
+            DbHelper::changeSqlForOracleBatchInsert($batchInsert[$key]['expected']);
+            $batchInsert[$key]['expectedParams'] = array_merge($batchInsert[$key]['expectedParams'], $expectedParams);
+        }
 
         return $batchInsert;
     }
