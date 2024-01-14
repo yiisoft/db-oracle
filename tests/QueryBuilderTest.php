@@ -230,7 +230,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->assertSame(
             <<<SQL
-            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            WITH USER_SQL AS (SELECT * FROM DUAL), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rownum <= 10
             SQL,
             $sql,
@@ -257,7 +257,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->assertSame(
             <<<SQL
-            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            WITH USER_SQL AS (SELECT * FROM DUAL), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rowNumId > 10
             SQL,
             $sql,

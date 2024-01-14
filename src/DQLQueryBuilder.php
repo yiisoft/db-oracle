@@ -61,6 +61,15 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END FROM DUAL';
     }
 
+    public function buildFrom(array|null $tables, array &$params): string
+    {
+        if (empty($tables)) {
+            return 'FROM DUAL';
+        }
+
+        return parent::buildFrom($tables, $params);
+    }
+
     public function buildWithQueries(array $withs, array &$params): string
     {
         /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
