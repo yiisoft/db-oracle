@@ -151,7 +151,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
     {
-        if (empty($columns)) {
+        if ($columns === []) {
             $names = [];
             $placeholders = [];
             $tableSchema = $this->schema->getTableSchema($table);
