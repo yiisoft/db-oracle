@@ -560,7 +560,7 @@ final class Schema extends AbstractPdoSchema
                 $table->getColumns()[$row['column_name']]->primaryKey(true);
                 $table->primaryKey($row['column_name']);
 
-                if ($table->getSequenceName() === null) {
+                if (empty($table->getSequenceName())) {
                     $table->sequenceName($this->getTableSequenceName($table->getName()));
                 }
             }

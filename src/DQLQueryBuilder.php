@@ -63,7 +63,6 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 
     public function buildFrom(array|null $tables, array &$params): string
     {
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (empty($tables)) {
             return 'FROM DUAL';
         }
