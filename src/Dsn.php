@@ -43,8 +43,7 @@ final class Dsn extends AbstractDsn
      */
     public function asString(): string
     {
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
-        if (!empty($this->databaseName)) {
+        if ($this->databaseName !== null && $this->databaseName !== '') {
             $dsn = "$this->driver:" . "dbname=$this->host:$this->port/$this->databaseName";
         } else {
             $dsn = "$this->driver:" . "dbname=$this->host:$this->port";
