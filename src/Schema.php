@@ -21,6 +21,8 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
+use function array_change_key_case;
+use function array_map;
 use function array_merge;
 use function array_reverse;
 use function implode;
@@ -208,7 +210,7 @@ final class Schema extends AbstractPdoSchema
         /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
             /** @psalm-var string[] $row */
-            $row = $this->normalizeRowKeyCase($row, false);
+            $row = array_change_key_case($row);
             $names[] = $row['table_name'];
         }
 
@@ -287,7 +289,7 @@ final class Schema extends AbstractPdoSchema
         ])->queryAll();
 
         /** @psalm-var array[] $indexes */
-        $indexes = $this->normalizeRowKeyCase($indexes, true);
+        $indexes = array_map('array_change_key_case', $indexes);
         $indexes = DbArrayHelper::index($indexes, null, ['name']);
 
         $result = [];
@@ -406,7 +408,7 @@ final class Schema extends AbstractPdoSchema
         /** @psalm-var string[][] $columns */
         foreach ($columns as $column) {
             /** @psalm-var ColumnInfoArray $column */
-            $column = $this->normalizeRowKeyCase($column, false);
+            $column = array_change_key_case($column);
 
             $c = $this->createColumnSchema($column);
 
@@ -553,7 +555,7 @@ final class Schema extends AbstractPdoSchema
 
         foreach ($rows as $row) {
             /** @psalm-var string[] $row */
-            $row = $this->normalizeRowKeyCase($row, false);
+            $row = array_change_key_case($row);
 
             if ($row['constraint_type'] === 'P') {
                 $table->getColumns()[$row['column_name']]->primaryKey(true);
@@ -714,7 +716,7 @@ final class Schema extends AbstractPdoSchema
         ])->queryAll();
 
         /** @psalm-var array[] $constraints */
-        $constraints = $this->normalizeRowKeyCase($constraints, true);
+        $constraints = array_map('array_change_key_case', $constraints);
         $constraints = DbArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
@@ -807,7 +809,7 @@ final class Schema extends AbstractPdoSchema
      */
     protected function getCacheKey(string $name): array
     {
-        return array_merge([self::class], $this->generateCacheKey(), [$this->getRawTableName($name)]);
+        return array_merge([self::class], $this->generateCacheKey(), [$this->db->getQuoter()->getRawTableName($name)]);
     }
 
     /**
