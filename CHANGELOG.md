@@ -6,6 +6,7 @@
 - Bug #250: Fix `Command::insertWithReturningPks()` method for table without primary keys (@Tigrov)
 - Enh #251: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
 - Bug #238: Fix execution `Query` without table(s) to select from (@Tigrov)
+- Enh #253: Resolve deprecated methods (@Tigrov) 
 
 ## 1.2.0 November 12, 2023
 
