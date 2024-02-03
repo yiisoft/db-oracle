@@ -425,11 +425,11 @@ final class Schema extends AbstractPdoSchema
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return bool|float|int|string|null Whether the sequence exists.
+     * @return string|null Whether the sequence exists.
      *
      * @internal TableSchemaInterface `$table->getName()` The table schema.
      */
-    protected function getTableSequenceName(string $tableName): bool|float|int|string|null
+    protected function getTableSequenceName(string $tableName): string|null
     {
         $sequenceNameSql = <<<SQL
         SELECT
@@ -443,6 +443,7 @@ final class Schema extends AbstractPdoSchema
         SQL;
         $sequenceName = $this->db->createCommand($sequenceNameSql, [':tableName' => $tableName])->queryScalar();
 
+        /** @var string|null */
         return $sequenceName === false ? null : $sequenceName;
     }
 
@@ -562,7 +563,7 @@ final class Schema extends AbstractPdoSchema
                 $table->primaryKey($row['column_name']);
 
                 if (empty($table->getSequenceName())) {
-                    $table->sequenceName((string) $this->getTableSequenceName($table->getName()));
+                    $table->sequenceName($this->getTableSequenceName($table->getName()));
                 }
             }
 

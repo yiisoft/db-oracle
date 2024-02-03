@@ -566,16 +566,30 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function testResetSequenceCompositeException(): void
+    public function testResetNonExistSequenceException(): void
     {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: default_multiple_pk");
-
+        $this->expectExceptionMessage("There is not sequence associated with table 'default_multiple_pk'.");
         $qb->resetSequence('default_multiple_pk');
+
+        $db->close();
+    }
+
+    public function testResetSequenceCompositeException(): void
+    {
+        self::markTestSkipped('Sequence name not found for composite primary key');
+
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: employee");
+        $qb->resetSequence('employee');
+
+        $db->close();
     }
 
     /**
