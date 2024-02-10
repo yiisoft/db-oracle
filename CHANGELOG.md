@@ -7,6 +7,7 @@
 - Enh #251: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
 - Bug #238: Fix execution `Query` without table(s) to select from (@Tigrov)
 - Bug #254: Fix, table sequence name should be null if sequence name not found (@Tigrov)
+- Enh #253: Resolve deprecated methods (@Tigrov) 
 
 ## 1.2.0 November 12, 2023
 
