@@ -1,5 +1,9 @@
 # Oracle driver for Yii Database Change Log
 
+## 1.3.1 under development
+
+- no changes in this release.
+
 ## 1.3.0 March 21, 2024
 
 - Enh #248: Change property `Schema::$typeMap` to constant `Schema::TYPE_MAP` (@Tigrov)
