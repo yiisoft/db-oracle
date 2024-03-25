@@ -117,7 +117,7 @@ final class ConnectionTest extends CommonConnectionTest
         $db->close();
     }
 
-    public function testSerialized()
+    public function testSerialized(): void
     {
         $connection = $this->getConnection();
         $connection->open();
