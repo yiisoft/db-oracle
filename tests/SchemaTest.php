@@ -293,6 +293,6 @@ final class SchemaTest extends CommonSchemaTest
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Only PDO connections are supported.');
 
-        $schema->refreshTableSchema('customer');
+        $schema->refresh();
     }
 }

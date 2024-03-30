@@ -1,11 +1,16 @@
 # Oracle driver for Yii Database Change Log
 
-## 1.2.1 under development
+## 1.3.1 under development
+
+- no changes in this release.
+
+## 1.3.0 March 21, 2024
 
 - Enh #248: Change property `Schema::$typeMap` to constant `Schema::TYPE_MAP` (@Tigrov)
-- Bug #250: Fix `Command::insertWithReturningPks()` method for table without primary keys (@Tigrov)
 - Enh #251: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
+- Enh #253: Resolve deprecated methods (@Tigrov)
 - Bug #238: Fix execution `Query` without table(s) to select from (@Tigrov)
+- Bug #250: Fix `Command::insertWithReturningPks()` method for table without primary keys (@Tigrov)
 - Bug #254: Fix, table sequence name should be null if sequence name not found (@Tigrov)
 
 ## 1.2.0 November 12, 2023
