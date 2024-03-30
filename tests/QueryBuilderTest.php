@@ -614,7 +614,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|string $condition,
         array $params,
         string $expectedSql,
-        array $expectedParams = null,
+        array $expectedParams,
     ): void {
         parent::testUpdate($table, $columns, $condition, $params, $expectedSql, $expectedParams);
     }
