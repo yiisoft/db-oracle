@@ -663,4 +663,10 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             $queryBuilder->insert('negative_default_values', []),
         );
     }
+
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::selectScalar */
+    public function testSelectScalar(array|bool|float|int $columns, string $expected): void
+    {
+        parent::testSelectScalar($columns, $expected);
+    }
 }
