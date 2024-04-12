@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Oracle\Builder\ExpressionBuilder;
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
 use Yiisoft\Db\Query\Query;
@@ -87,6 +89,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
             [
                 InCondition::class => InConditionBuilder::class,
                 LikeCondition::class => LikeConditionBuilder::class,
+                Expression::class => ExpressionBuilder::class,
             ],
         );
     }
