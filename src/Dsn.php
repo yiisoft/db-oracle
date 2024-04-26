@@ -29,7 +29,7 @@ final class Dsn extends AbstractDsn
     /**
      * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
      *
-     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
+     * Please refer to the [PHP manual](https://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
      *
      * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
      * `key=value` and concatenated by `;`. For example:
