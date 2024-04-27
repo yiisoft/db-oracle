@@ -61,7 +61,10 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             'empty columns and objects' => [
                 ':qp3' => '1',
             ],
-            'empty columns and Traversable' => [
+            'empty columns and a Traversable value' => [
+                ':qp3' => '1',
+            ],
+            'empty columns and Traversable values' => [
                 ':qp3' => '1',
             ],
         ];

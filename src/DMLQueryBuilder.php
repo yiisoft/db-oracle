@@ -30,6 +30,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
      */
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
+        if (!is_array($rows)) {
+            $rows = $this->prepareTraversable($rows);
+        }
+
         if (empty($rows)) {
             return '';
         }
