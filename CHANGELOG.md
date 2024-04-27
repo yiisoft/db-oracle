@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #255: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
 
 ## 1.3.0 March 21, 2024
