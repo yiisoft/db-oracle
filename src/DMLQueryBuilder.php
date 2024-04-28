@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use JsonException;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
