@@ -33,6 +33,10 @@ your Oracle database and perform various database operations as needed.
 |:----:|:------------------------:|:---:|
 |**8.0 - 8.2**| **12c - 21c**|[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml) [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master) [![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml) [![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
 
+## Requirements
+
+- PHP 8.0 or higher.
+
 ## Installation
 
 The package could be installed via composer:
@@ -41,15 +45,14 @@ The package could be installed via composer:
 composer require yiisoft/db-oracle
 ```
 
-## Usage 
+## Documentation
 
-For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/en/connection/oracle.md).
+- For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/en/connection/oracle.md).
+- [Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/en/README.md) to learn about usage.
+- [Internals](docs/internals.md)
 
-[Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/en/README.md) to learn about usage.
-
-## Testing
-
-[Check the documentation](/docs/en/testing.md) to learn about testing.
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
+You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## Support the project
 
@@ -61,7 +64,7 @@ For config connection to Oracle database check [Connecting Oracle](https://githu
 [![Twitter](https://img.shields.io/badge/twitter-follow-1DA1F2?logo=twitter&logoColor=1DA1F2&labelColor=555555?style=flat)](https://twitter.com/yiiframework)
 [![Telegram](https://img.shields.io/badge/telegram-join-1DA1F2?style=flat&logo=telegram)](https://t.me/yii3en)
 [![Facebook](https://img.shields.io/badge/facebook-join-1DA1F2?style=flat&logo=facebook&logoColor=ffffff)](https://www.facebook.com/groups/yiitalk)
-[![Slack](https://img.shields.io/badge/slack-join-1DA1F2?style=flat&logo=slack)](https://yiiframework.com/go/slack)
+[![Slack](https://img.shields.io/badge/slack-join-1DA1F2?style=flat&logo=slack)](https://www.yiiframework.com/chat)
 
 ## License
 

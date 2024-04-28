@@ -1,4 +1,4 @@
-# Testing
+# Internals
 
 ## Github actions
 
