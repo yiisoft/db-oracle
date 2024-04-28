@@ -22,13 +22,7 @@ use function count;
  */
 final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
     {
         if (!is_array($rows)) {
             $rows = $this->prepareTraversable($rows);
@@ -58,10 +52,6 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return 'INSERT ALL' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
     }
 
-    /**
-     * @throws Exception
-     * @throws NotSupportedException
-     */
     public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
@@ -69,12 +59,6 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
     /**
      * @link https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
      */
     public function upsert(
         string $table,

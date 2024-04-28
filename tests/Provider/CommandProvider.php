@@ -37,7 +37,7 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             'table name with column name with brackets' => [
                 ':qp3' => '0',
             ],
-            'batchInsert binds params from expression' => [
+            'binds params from expression' => [
                 ':qp3' => '0',
             ],
             'with associative values with different keys' => [
