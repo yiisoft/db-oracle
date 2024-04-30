@@ -36,7 +36,7 @@ final class Column extends AbstractColumn
     /**
      * Builds the full string for the column's schema.
      */
-    public function asString(): string
+    public function buildString(): string
     {
         $format = match ($this->getTypeCategory()) {
             self::TYPE_CATEGORY_PK => '{type}{length}{check}{append}',
