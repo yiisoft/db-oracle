@@ -3,7 +3,7 @@
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
     </a>
     <a href="https://www.oracle.com/database/technologies/" target="_blank">
-        <img src="https://avatars3.githubusercontent.com/u/4430336" height="100px">
+        <img src="https://avatars3.githubusercontent.com/u/4430336" height="80px">
     </a>
     <h1 align="center">Oracle driver for Yii Database</h1>
     <br>
