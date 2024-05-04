@@ -21,6 +21,8 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
+use function array_change_key_case;
+use function array_map;
 use function array_merge;
 use function array_reverse;
 use function implode;
@@ -67,13 +69,13 @@ use function trim;
 final class Schema extends AbstractPdoSchema
 {
     /**
-     * @var array The mapping from physical column types (keys) to abstract column types (values).
+     * The mapping from physical column types (keys) to abstract column types (values).
      *
      * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
      *
-     * @psalm-var string[]
+     * @var string[]
      */
-    private array $typeMap = [
+    private const TYPE_MAP = [
         'char' => self::TYPE_CHAR,
         'nchar' => self::TYPE_CHAR,
         'varchar2' => self::TYPE_STRING,
@@ -208,7 +210,7 @@ final class Schema extends AbstractPdoSchema
         /** @psalm-var string[][] $rows */
         foreach ($rows as $row) {
             /** @psalm-var string[] $row */
-            $row = $this->normalizeRowKeyCase($row, false);
+            $row = array_change_key_case($row);
             $names[] = $row['table_name'];
         }
 
@@ -287,7 +289,7 @@ final class Schema extends AbstractPdoSchema
         ])->queryAll();
 
         /** @psalm-var array[] $indexes */
-        $indexes = $this->normalizeRowKeyCase($indexes, true);
+        $indexes = array_map('array_change_key_case', $indexes);
         $indexes = DbArrayHelper::index($indexes, null, ['name']);
 
         $result = [];
@@ -406,7 +408,7 @@ final class Schema extends AbstractPdoSchema
         /** @psalm-var ColumnInfoArray $info */
         foreach ($columns as $info) {
             /** @psalm-var ColumnInfoArray $info */
-            $info = $this->normalizeRowKeyCase($info, false);
+            $info = array_change_key_case($info);
 
             $column = $this->loadColumnSchema($info);
 
@@ -423,11 +425,11 @@ final class Schema extends AbstractPdoSchema
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return bool|float|int|string|null Whether the sequence exists.
+     * @return string|null Whether the sequence exists.
      *
      * @internal TableSchemaInterface `$table->getName()` The table schema.
      */
-    protected function getTableSequenceName(string $tableName): bool|float|int|string|null
+    protected function getTableSequenceName(string $tableName): string|null
     {
         $sequenceNameSql = <<<SQL
         SELECT
@@ -441,6 +443,7 @@ final class Schema extends AbstractPdoSchema
         SQL;
         $sequenceName = $this->db->createCommand($sequenceNameSql, [':tableName' => $tableName])->queryScalar();
 
+        /** @var string|null */
         return $sequenceName === false ? null : $sequenceName;
     }
 
@@ -467,7 +470,6 @@ final class Schema extends AbstractPdoSchema
         $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
         $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
         $column->dbType($dbType);
-        $column->phpType($this->getColumnPhpType($type));
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;
@@ -568,14 +570,14 @@ final class Schema extends AbstractPdoSchema
 
         foreach ($rows as $row) {
             /** @psalm-var string[] $row */
-            $row = $this->normalizeRowKeyCase($row, false);
+            $row = array_change_key_case($row);
 
             if ($row['constraint_type'] === 'P') {
                 $table->getColumns()[$row['column_name']]->primaryKey(true);
                 $table->primaryKey($row['column_name']);
 
                 if (empty($table->getSequenceName())) {
-                    $table->sequenceName((string) $this->getTableSequenceName($table->getName()));
+                    $table->sequenceName($this->getTableSequenceName($table->getName()));
                 }
             }
 
@@ -683,7 +685,7 @@ final class Schema extends AbstractPdoSchema
             return self::TYPE_STRING;
         }
 
-        return $this->typeMap[$dbType] ?? self::TYPE_STRING;
+        return self::TYPE_MAP[$dbType] ?? self::TYPE_STRING;
     }
 
     /**
@@ -733,7 +735,7 @@ final class Schema extends AbstractPdoSchema
         ])->queryAll();
 
         /** @psalm-var array[] $constraints */
-        $constraints = $this->normalizeRowKeyCase($constraints, true);
+        $constraints = array_map('array_change_key_case', $constraints);
         $constraints = DbArrayHelper::index($constraints, null, ['type', 'name']);
 
         $result = [
@@ -823,6 +825,8 @@ final class Schema extends AbstractPdoSchema
      * @param string $name The table name.
      *
      * @return array The cache key.
+     *
+     * @psalm-suppress DeprecatedMethod
      */
     protected function getCacheKey(string $name): array
     {

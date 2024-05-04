@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Generator;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -125,9 +124,14 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
      * @throws InvalidArgumentException
      * @throws NotSupportedException
      */
-    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
-    {
-        parent::testBatchInsert($table, $columns, $rows, $expected);
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        iterable $rows,
+        string $expected,
+        array $expectedParams = [],
+    ): void {
+        parent::testBatchInsert($table, $columns, $rows, $expected, $expectedParams);
     }
 
     /**
@@ -226,7 +230,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->assertSame(
             <<<SQL
-            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            WITH USER_SQL AS (SELECT * FROM DUAL), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rownum <= 10
             SQL,
             $sql,
@@ -253,7 +257,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->assertSame(
             <<<SQL
-            WITH USER_SQL AS (SELECT *), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+            WITH USER_SQL AS (SELECT * FROM DUAL), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
             SELECT * FROM PAGINATION WHERE rowNumId > 10
             SQL,
             $sql,
@@ -562,16 +566,30 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function testResetSequenceCompositeException(): void
+    public function testResetNonExistSequenceException(): void
     {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: default_multiple_pk");
-
+        $this->expectExceptionMessage("There is not sequence associated with table 'default_multiple_pk'.");
         $qb->resetSequence('default_multiple_pk');
+
+        $db->close();
+    }
+
+    public function testResetSequenceCompositeException(): void
+    {
+        self::markTestSkipped('Sequence name not found for composite primary key');
+
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Can't reset sequence for composite primary key in table: employee");
+        $qb->resetSequence('employee');
+
+        $db->close();
     }
 
     /**
@@ -594,10 +612,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
-        array $expectedParams
+        array $params,
+        string $expectedSql,
+        array $expectedParams,
     ): void {
-        parent::testUpdate($table, $columns, $condition, $expectedSQL, $expectedParams);
+        parent::testUpdate($table, $columns, $condition, $params, $expectedSql, $expectedParams);
     }
 
     /**
@@ -632,5 +651,23 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|bool $updateColumns
     ): void {
         parent::testUpsertExecute($table, $insertColumns, $updateColumns);
+    }
+
+    public function testDefaultValues(): void
+    {
+        $db = $this->getConnection();
+        $queryBuilder = $db->getQueryBuilder();
+
+        // Non-primary key columns should have DEFAULT as value
+        $this->assertSame(
+            'INSERT INTO "negative_default_values" ("tinyint_col") VALUES (DEFAULT)',
+            $queryBuilder->insert('negative_default_values', []),
+        );
+    }
+
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::selectScalar */
+    public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
+    {
+        parent::testSelectScalar($columns, $expected);
     }
 }

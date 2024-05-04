@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Oracle\Builder\ExpressionBuilder;
 use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
@@ -60,6 +63,25 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END FROM DUAL';
     }
 
+    public function buildFrom(array|null $tables, array &$params): string
+    {
+        if (empty($tables)) {
+            return 'FROM DUAL';
+        }
+
+        return parent::buildFrom($tables, $params);
+    }
+
+    public function buildWithQueries(array $withs, array &$params): string
+    {
+        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
+        foreach ($withs as &$with) {
+            $with['recursive'] = false;
+        }
+
+        return parent::buildWithQueries($withs, $params);
+    }
+
     protected function defaultExpressionBuilders(): array
     {
         return array_merge(
@@ -67,6 +89,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
             [
                 InCondition::class => InConditionBuilder::class,
                 LikeCondition::class => LikeConditionBuilder::class,
+                Expression::class => ExpressionBuilder::class,
             ],
         );
     }

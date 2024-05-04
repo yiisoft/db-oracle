@@ -54,6 +54,7 @@ final class ColumnSchema extends AbstractColumnSchema
             }
 
             if (is_string($value)) {
+                /** @var non-empty-string $placeholder */
                 $placeholder = uniqid('exp_' . preg_replace('/[^a-z0-9]/i', '', $this->getName()));
                 return new Expression('TO_BLOB(UTL_RAW.CAST_TO_RAW(:' . $placeholder . '))', [$placeholder => $value]);
             }
