@@ -95,10 +95,9 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
 
     public function testBinaryColumnSchema()
     {
-        $binaryCol = new BinaryColumnSchema('binary_col');
+        $binaryCol = new BinaryColumnSchema();
         $binaryCol->dbType('BLOB');
 
-        $this->assertSame('binary_col', $binaryCol->getName());
         $this->assertInstanceOf(Expression::class, $binaryCol->dbTypecast("\x10\x11\x12"));
         $this->assertInstanceOf(
             Expression::class,
