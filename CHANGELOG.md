@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Enh #268: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilder` and change parameters 
+  from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #255: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
 
