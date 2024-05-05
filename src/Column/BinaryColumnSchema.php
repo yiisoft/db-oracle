@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Oracle;
+namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Expression\Expression;
@@ -16,13 +16,12 @@ final class BinaryColumnSchema extends BaseBinaryColumnSchema
     {
         if ($this->getDbType() === 'BLOB') {
             if ($value instanceof ParamInterface && is_string($value->getValue())) {
-                /** @psalm-var string */
+                /** @var string */
                 $value = $value->getValue();
             }
 
             if (is_string($value)) {
-                $placeholder = uniqid('exp_' . preg_replace('/[^a-z0-9]/i', '', $this->getName()));
-                return new Expression('TO_BLOB(UTL_RAW.CAST_TO_RAW(:' . $placeholder . '))', [$placeholder => $value]);
+                return new Expression('TO_BLOB(UTL_RAW.CAST_TO_RAW(:value))', ['value' => $value]);
             }
         }
 

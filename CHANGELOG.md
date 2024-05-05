@@ -4,6 +4,8 @@
 
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #255: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
+- Enh #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+  for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
@@ -17,8 +19,6 @@
 ## 1.2.0 November 12, 2023
 
 - Enh #230: Improve column type #230 (@Tigrov)
-- Enh #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
-  for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 - Enh #243: Move methods from `Command` to `AbstractPdoCommand` class (@Tigrov)
 - Bug #233: Refactor `DMLQueryBuilder`, related with yiisoft/db#746 (@Tigrov)
 - Bug #240: Remove `RECURSIVE` expression from CTE queries (@Tigrov)

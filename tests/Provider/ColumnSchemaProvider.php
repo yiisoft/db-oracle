@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
-use Yiisoft\Db\Oracle\BinaryColumnSchema;
+use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
 
 class ColumnSchemaProvider extends \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider
 {

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\BinaryColumnSchema;
+use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;

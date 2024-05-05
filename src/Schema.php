@@ -17,6 +17,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
+use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -405,14 +406,14 @@ final class Schema extends AbstractPdoSchema
             return false;
         }
 
-        /** @psalm-var ColumnInfoArray $info */
+        /** @psalm-var string[][] $info */
         foreach ($columns as $info) {
             /** @psalm-var ColumnInfoArray $info */
             $info = array_change_key_case($info);
 
             $column = $this->loadColumnSchema($info);
 
-            $table->column($column->getName(), $column);
+            $table->column($info['column_name'], $column);
         }
 
         return true;
@@ -460,8 +461,9 @@ final class Schema extends AbstractPdoSchema
     {
         $dbType = $info['data_type'];
         $type = $this->extractColumnType($dbType, $info);
-        /** @psalm-var ColumnInfoArray $info */
-        $column = $this->createColumnSchema($type, $info['column_name']);
+
+        $column = $this->createColumnSchema($type);
+        $column->name($info['column_name']);
         $column->allowNull($info['nullable'] === 'Y');
         $column->comment($info['column_comment']);
         $column->primaryKey((bool) $info['is_pk']);
@@ -475,13 +477,13 @@ final class Schema extends AbstractPdoSchema
         return $column;
     }
 
-    protected function createPhpTypeColumnSchema(string $phpType, string $name): ColumnSchemaInterface
+    protected function createColumnSchemaFromPhpType(string $phpType, string $type): ColumnSchemaInterface
     {
         if ($phpType === self::PHP_TYPE_RESOURCE) {
-            return new BinaryColumnSchema($name);
+            return new BinaryColumnSchema($type, $phpType);
         }
 
-        return parent::createPhpTypeColumnSchema($phpType, $name);
+        return parent::createColumnSchemaFromPhpType($phpType, $type);
     }
 
     /**
