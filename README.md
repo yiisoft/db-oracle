@@ -35,7 +35,7 @@ your Oracle database and perform various database operations as needed.
 
 ## Installation
 
-The package could be installed via composer:
+The package could be installed with [Composer](https://getcomposer.org):
 
 ```php
 composer require yiisoft/db-oracle
