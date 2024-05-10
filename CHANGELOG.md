@@ -6,6 +6,7 @@
   from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #255: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
+- Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
