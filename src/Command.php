@@ -54,7 +54,7 @@ final class Command extends AbstractPdoCommand
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
             }
 
-            $returnParams[$phName]['size'] = $columnSchemas[$name]?->getSize() ?? -1;
+            $returnParams[$phName]['size'] = isset($columnSchemas[$name]) ? $columnSchemas[$name]->getSize() : -1;
 
             $returning[] = $this->db->getQuoter()->quoteColumnName($name);
         }
