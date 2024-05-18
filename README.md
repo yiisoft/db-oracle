@@ -3,7 +3,7 @@
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
     <a href="https://www.oracle.com/database/technologies/" target="_blank">
-        <img src="https://avatars3.githubusercontent.com/u/4430336" height="80px" alt="Oracle">
+        <img src="https://avatars3.githubusercontent.com/u/4430336" height="100px" alt="Oracle">
     </a>
     <h1 align="center">Yii Database Oracle driver</h1>
     <br>
@@ -43,8 +43,10 @@ composer require yiisoft/db-oracle
 
 ## Documentation
 
-- For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/guide/en/connection/oracle.md).
-- [Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/guide/en/README.md) to learn about usage.
+For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/guide/en/connection/oracle.md).
+
+[Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/guide/en/README.md) to learn about usage.
+
 - [Internals](docs/internals.md)
 
 If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
