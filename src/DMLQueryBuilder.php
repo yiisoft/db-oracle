@@ -10,6 +10,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
+use function array_key_first;
 use function array_map;
 use function implode;
 use function count;
@@ -145,7 +146,8 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
                 if (!empty($tableSchema->getPrimaryKey())) {
                     $columns = $tableSchema->getPrimaryKey();
                 } else {
-                    $columns = [current($tableSchema->getColumns())->getName()];
+                    /** @var list<string> $columns */
+                    $columns = [array_key_first($tableSchema->getColumns())];
                 }
 
                 foreach ($columns as $name) {
