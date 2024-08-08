@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
+use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_keys;
 use function count;
@@ -48,7 +48,7 @@ final class Command extends AbstractPdoCommand
                 'value' => '',
             ];
 
-            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== SchemaInterface::PHP_TYPE_INTEGER) {
+            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== PhpType::INT) {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
             } else {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
