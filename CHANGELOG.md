@@ -9,6 +9,7 @@
 - Enh #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
   for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
+- Enh #275: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

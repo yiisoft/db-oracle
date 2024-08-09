@@ -477,13 +477,13 @@ final class Schema extends AbstractPdoSchema
         return $column;
     }
 
-    protected function createColumnSchemaFromPhpType(string $phpType, string $type): ColumnSchemaInterface
+    protected function createColumnSchemaFromType(string $type, bool $isUnsigned = false): ColumnSchemaInterface
     {
-        if ($phpType === self::PHP_TYPE_RESOURCE) {
-            return new BinaryColumnSchema($type, $phpType);
+        if ($type === self::TYPE_BINARY) {
+            return new BinaryColumnSchema($type);
         }
 
-        return parent::createColumnSchemaFromPhpType($phpType, $type);
+        return parent::createColumnSchemaFromType($type, $isUnsigned);
     }
 
     /**
