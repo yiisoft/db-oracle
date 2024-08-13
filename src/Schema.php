@@ -434,7 +434,7 @@ final class Schema extends AbstractPdoSchema
         $dbType = $info['data_type'];
         $column = $this->getColumnFactory()->fromDbType($dbType, [
             'scale' => $info['data_scale'],
-            'precision' => $info['data_precision']
+            'precision' => $info['data_precision'],
         ]);
         $column->name($info['column_name']);
         $column->allowNull($info['nullable'] === 'Y');
