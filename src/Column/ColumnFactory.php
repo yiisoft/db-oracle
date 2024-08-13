@@ -15,6 +15,8 @@ class ColumnFactory extends \Yiisoft\Db\Schema\Column\ColumnFactory
      * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
      *
      * @var string[]
+     *
+     * @psalm-suppress MissingClassConstType
      */
     private const TYPE_MAP = [
         'char' => SchemaInterface::TYPE_CHAR,
