@@ -31,16 +31,16 @@
     ],
     "require": {
         "ext-pdo": "*",
-        "php": "^8.0",
+        "php": "^8.1",
         "yiisoft/db": "dev-master"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
-        "phpunit/phpunit": "^9.6|^10.0",
+        "phpunit/phpunit": "^10.0",
         "rector/rector": "^1.0",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.20",
+        "vimeo/psalm": "^5.25",
         "yiisoft/aliases": "^2.0",
         "yiisoft/cache-file": "^3.1",
         "yiisoft/var-dumper": "^1.5"
