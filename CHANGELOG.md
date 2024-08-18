@@ -10,6 +10,7 @@
   for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
 - Enh #275: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
+- Chg #277: Raise minimum PHP version to `^8.1` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
