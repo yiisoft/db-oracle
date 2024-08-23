@@ -17,12 +17,10 @@ final class ColumnSchemaBuilderProvider extends \Yiisoft\Db\Tests\Provider\Colum
         $types[0][0] = 'integer UNSIGNED DEFAULT NULL NULL';
         $types[1][0] = 'integer(10) UNSIGNED';
 
-        return array_merge(
-            $types,
-            [
-                ['integer UNSIGNED', SchemaInterface::TYPE_INTEGER, null, [['unsigned']]],
-            ],
-        );
+        return [
+            ...$types,
+            ['integer UNSIGNED', SchemaInterface::TYPE_INTEGER, null, [['unsigned']]],
+        ];
     }
 
     public static function createColumnTypes(): array
