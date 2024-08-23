@@ -14,7 +14,6 @@ use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 
-use function array_merge;
 use function implode;
 
 /**
@@ -84,13 +83,11 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 
     protected function defaultExpressionBuilders(): array
     {
-        return array_merge(
-            parent::defaultExpressionBuilders(),
-            [
-                InCondition::class => InConditionBuilder::class,
-                LikeCondition::class => LikeConditionBuilder::class,
-                Expression::class => ExpressionBuilder::class,
-            ],
-        );
+        return [
+            ...parent::defaultExpressionBuilders(),
+            InCondition::class => InConditionBuilder::class,
+            LikeCondition::class => LikeConditionBuilder::class,
+            Expression::class => ExpressionBuilder::class,
+        ];
     }
 }

@@ -40,7 +40,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table);
 
         if (count($columns) > 0) {
-            $quotedColumnNames = array_map([$this->quoter, 'quoteColumnName'], $columns);
+            $quotedColumnNames = array_map($this->quoter->quoteColumnName(...), $columns);
 
             $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
