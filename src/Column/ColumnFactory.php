@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Column;
 
+use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-class ColumnFactory extends \Yiisoft\Db\Schema\Column\ColumnFactory
+use function preg_replace;
+use function strtolower;
+
+class ColumnFactory extends AbstractColumnFactory
 {
     /**
      * The mapping from physical column types (keys) to abstract column types (values).
