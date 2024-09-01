@@ -17,8 +17,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
-use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
+use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
@@ -29,10 +30,8 @@ use function implode;
 use function is_array;
 use function md5;
 use function preg_match;
-use function preg_replace;
 use function serialize;
 use function str_replace;
-use function strtolower;
 use function trim;
 
 /**
@@ -68,38 +67,6 @@ use function trim;
  */
 final class Schema extends AbstractPdoSchema
 {
-    /**
-     * The mapping from physical column types (keys) to abstract column types (values).
-     *
-     * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
-     *
-     * @var string[]
-     */
-    private const TYPE_MAP = [
-        'char' => self::TYPE_CHAR,
-        'nchar' => self::TYPE_CHAR,
-        'varchar2' => self::TYPE_STRING,
-        'nvarchar2' => self::TYPE_STRING,
-        'clob' => self::TYPE_TEXT,
-        'nclob' => self::TYPE_TEXT,
-        'blob' => self::TYPE_BINARY,
-        'bfile' => self::TYPE_BINARY,
-        'long raw' => self::TYPE_BINARY,
-        'raw' => self::TYPE_BINARY,
-        'number' => self::TYPE_DECIMAL,
-        'binary_float' => self::TYPE_FLOAT, // 32 bit
-        'binary_double' => self::TYPE_DOUBLE, // 64 bit
-        'float' => self::TYPE_DOUBLE, // 126 bit
-        'timestamp' => self::TYPE_TIMESTAMP,
-        'timestamp with time zone' => self::TYPE_TIMESTAMP,
-        'timestamp with local time zone' => self::TYPE_TIMESTAMP,
-        'date' => self::TYPE_DATE,
-        'interval day to second' => self::TYPE_TIME,
-
-        /** Deprecated */
-        'long' => self::TYPE_TEXT,
-    ];
-
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
@@ -109,6 +76,11 @@ final class Schema extends AbstractPdoSchema
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface
     {
         return new Column($type, $length);
+    }
+
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return new ColumnFactory();
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
@@ -459,30 +431,20 @@ final class Schema extends AbstractPdoSchema
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
         $dbType = $info['data_type'];
-        $type = $this->extractColumnType($dbType, $info);
-
-        $column = $this->createColumnSchema($type);
+        $column = $this->getColumnFactory()->fromDbType($dbType, [
+            'scale' => $info['data_scale'],
+            'precision' => $info['data_precision'],
+        ]);
         $column->name($info['column_name']);
         $column->allowNull($info['nullable'] === 'Y');
         $column->comment($info['column_comment']);
         $column->primaryKey((bool) $info['is_pk']);
         $column->autoIncrement($info['identity_column'] === 'YES');
         $column->size((int) $info['data_length']);
-        $column->precision($info['data_precision'] !== null ? (int) $info['data_precision'] : null);
-        $column->scale($info['data_scale'] !== null ? (int) $info['data_scale'] : null);
         $column->dbType($dbType);
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;
-    }
-
-    protected function createColumnSchemaFromType(string $type, bool $isUnsigned = false): ColumnSchemaInterface
-    {
-        if ($type === self::TYPE_BINARY) {
-            return new BinaryColumnSchema($type);
-        }
-
-        return parent::createColumnSchemaFromType($type, $isUnsigned);
     }
 
     /**
@@ -655,38 +617,6 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $result;
-    }
-
-    /**
-     * Extracts the data type for the given column.
-     *
-     * @param string $dbType The database data type
-     * @param array $info Column information.
-     * @psalm-param ColumnInfoArray $info
-     *
-     * @return string The abstract column type.
-     */
-    private function extractColumnType(string $dbType, array $info): string
-    {
-        $dbType = strtolower($dbType);
-
-        if ($dbType === 'number') {
-            $scale = $info['data_scale'] !== null ? (int) $info['data_scale'] : null;
-
-            return match ($scale) {
-                null => self::TYPE_DOUBLE,
-                0 => self::TYPE_INTEGER,
-                default => self::TYPE_DECIMAL,
-            };
-        }
-
-        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
-
-        if ($dbType === 'interval day to second' && $info['data_precision'] > 0) {
-            return self::TYPE_STRING;
-        }
-
-        return self::TYPE_MAP[$dbType] ?? self::TYPE_STRING;
     }
 
     /**

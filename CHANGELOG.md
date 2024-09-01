@@ -11,6 +11,7 @@
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
 - Enh #275: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Enh #277: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov)
+- Enh #276: Implement `ColumnFactory` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
