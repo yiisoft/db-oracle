@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function preg_replace;
 use function strtolower;
@@ -23,28 +23,28 @@ final class ColumnFactory extends AbstractColumnFactory
      * @psalm-suppress MissingClassConstType
      */
     private const TYPE_MAP = [
-        'char' => SchemaInterface::TYPE_CHAR,
-        'nchar' => SchemaInterface::TYPE_CHAR,
-        'varchar2' => SchemaInterface::TYPE_STRING,
-        'nvarchar2' => SchemaInterface::TYPE_STRING,
-        'clob' => SchemaInterface::TYPE_TEXT,
-        'nclob' => SchemaInterface::TYPE_TEXT,
-        'blob' => SchemaInterface::TYPE_BINARY,
-        'bfile' => SchemaInterface::TYPE_BINARY,
-        'long raw' => SchemaInterface::TYPE_BINARY,
-        'raw' => SchemaInterface::TYPE_BINARY,
-        'number' => SchemaInterface::TYPE_DECIMAL,
-        'binary_float' => SchemaInterface::TYPE_FLOAT, // 32 bit
-        'binary_double' => SchemaInterface::TYPE_DOUBLE, // 64 bit
-        'float' => SchemaInterface::TYPE_DOUBLE, // 126 bit
-        'date' => SchemaInterface::TYPE_DATE,
-        'interval day to second' => SchemaInterface::TYPE_TIME,
-        'timestamp' => SchemaInterface::TYPE_TIMESTAMP,
-        'timestamp with time zone' => SchemaInterface::TYPE_TIMESTAMP,
-        'timestamp with local time zone' => SchemaInterface::TYPE_TIMESTAMP,
+        'char' => ColumnType::CHAR,
+        'nchar' => ColumnType::CHAR,
+        'varchar2' => ColumnType::STRING,
+        'nvarchar2' => ColumnType::STRING,
+        'clob' => ColumnType::TEXT,
+        'nclob' => ColumnType::TEXT,
+        'blob' => ColumnType::BINARY,
+        'bfile' => ColumnType::BINARY,
+        'long raw' => ColumnType::BINARY,
+        'raw' => ColumnType::BINARY,
+        'number' => ColumnType::DECIMAL,
+        'binary_float' => ColumnType::FLOAT, // 32 bit
+        'binary_double' => ColumnType::DOUBLE, // 64 bit
+        'float' => ColumnType::DOUBLE, // 126 bit
+        'date' => ColumnType::DATE,
+        'interval day to second' => ColumnType::TIME,
+        'timestamp' => ColumnType::TIMESTAMP,
+        'timestamp with time zone' => ColumnType::TIMESTAMP,
+        'timestamp with local time zone' => ColumnType::TIMESTAMP,
 
         /** Deprecated */
-        'long' => SchemaInterface::TYPE_TEXT,
+        'long' => ColumnType::TEXT,
     ];
 
     protected function getType(string $dbType, array $info = []): string
@@ -55,24 +55,24 @@ final class ColumnFactory extends AbstractColumnFactory
             $scale = isset($info['scale']) ? (int) $info['scale'] : null;
 
             return match ($scale) {
-                null => SchemaInterface::TYPE_DOUBLE,
-                0 => SchemaInterface::TYPE_INTEGER,
-                default => SchemaInterface::TYPE_DECIMAL,
+                null => ColumnType::DOUBLE,
+                0 => ColumnType::INTEGER,
+                default => ColumnType::DECIMAL,
             };
         }
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
         if ($dbType === 'interval day to second' && isset($info['precision']) && $info['precision'] > 0) {
-            return SchemaInterface::TYPE_STRING;
+            return ColumnType::STRING;
         }
 
-        return self::TYPE_MAP[$dbType] ?? SchemaInterface::TYPE_STRING;
+        return self::TYPE_MAP[$dbType] ?? ColumnType::STRING;
     }
 
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
-        if ($type === SchemaInterface::TYPE_BINARY) {
+        if ($type === ColumnType::BINARY) {
             return (new BinaryColumnSchema($type))->load($info);
         }
 

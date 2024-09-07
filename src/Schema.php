@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -467,7 +468,7 @@ final class Schema extends AbstractPdoSchema
             return null;
         }
 
-        if ($column->getType() === self::TYPE_TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
+        if ($column->getType() === ColumnType::TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
             return new Expression($defaultValue);
         }
 

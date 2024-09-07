@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
@@ -14,26 +15,26 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
     {
         return [
             // db type, expected abstract type, expected instance of
-            ['char', 'char', StringColumnSchema::class],
-            ['nchar', 'char', StringColumnSchema::class],
-            ['varchar2', 'string', StringColumnSchema::class],
-            ['nvarchar2', 'string', StringColumnSchema::class],
-            ['clob', 'text', StringColumnSchema::class],
-            ['nclob', 'text', StringColumnSchema::class],
-            ['long', 'text', StringColumnSchema::class],
-            ['blob', 'binary', BinaryColumnSchema::class],
-            ['bfile', 'binary', BinaryColumnSchema::class],
-            ['long raw', 'binary', BinaryColumnSchema::class],
-            ['raw', 'binary', BinaryColumnSchema::class],
-            ['number', 'double', DoubleColumnSchema::class],
-            ['binary_float', 'float', DoubleColumnSchema::class],
-            ['binary_double', 'double', DoubleColumnSchema::class],
-            ['float', 'double', DoubleColumnSchema::class],
-            ['date', 'date', StringColumnSchema::class],
-            ['interval day(0) to second', 'time', StringColumnSchema::class],
-            ['timestamp', 'timestamp', StringColumnSchema::class],
-            ['timestamp with time zone', 'timestamp', StringColumnSchema::class],
-            ['timestamp with local time zone', 'timestamp', StringColumnSchema::class],
+            ['char', ColumnType::CHAR, StringColumnSchema::class],
+            ['nchar', ColumnType::CHAR, StringColumnSchema::class],
+            ['varchar2', ColumnType::STRING, StringColumnSchema::class],
+            ['nvarchar2', ColumnType::STRING, StringColumnSchema::class],
+            ['clob', ColumnType::TEXT, StringColumnSchema::class],
+            ['nclob', ColumnType::TEXT, StringColumnSchema::class],
+            ['long', ColumnType::TEXT, StringColumnSchema::class],
+            ['blob', ColumnType::BINARY, BinaryColumnSchema::class],
+            ['bfile', ColumnType::BINARY, BinaryColumnSchema::class],
+            ['long raw', ColumnType::BINARY, BinaryColumnSchema::class],
+            ['raw', ColumnType::BINARY, BinaryColumnSchema::class],
+            ['number', ColumnType::DOUBLE, DoubleColumnSchema::class],
+            ['binary_float', ColumnType::FLOAT, DoubleColumnSchema::class],
+            ['binary_double', ColumnType::DOUBLE, DoubleColumnSchema::class],
+            ['float', ColumnType::DOUBLE, DoubleColumnSchema::class],
+            ['date', ColumnType::DATE, StringColumnSchema::class],
+            ['interval day(0) to second', ColumnType::TIME, StringColumnSchema::class],
+            ['timestamp', ColumnType::TIMESTAMP, StringColumnSchema::class],
+            ['timestamp with time zone', ColumnType::TIMESTAMP, StringColumnSchema::class],
+            ['timestamp with local time zone', ColumnType::TIMESTAMP, StringColumnSchema::class],
         ];
     }
 

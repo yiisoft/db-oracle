@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use Throwable;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -13,7 +14,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 
 /**
@@ -110,7 +110,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             <<<SQL
             ALTER TABLE "customer" MODIFY "email" VARCHAR2(255)
             SQL,
-            $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING),
+            $qb->alterColumn('customer', 'email', ColumnType::STRING),
         );
 
         $db->close();
