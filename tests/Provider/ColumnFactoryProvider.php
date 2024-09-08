@@ -43,8 +43,11 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         $definitions = parent::definitions();
 
         $definitions['text'][0] = 'clob';
+        $definitions['text'][3]['getDbType'] = 'clob';
         $definitions['text NOT NULL'][0] = 'clob NOT NULL';
+        $definitions['text NOT NULL'][3]['getDbType'] = 'clob';
         $definitions['decimal(10,2)'][0] = 'number(10,2)';
+        $definitions['decimal(10,2)'][3]['getDbType'] = 'number';
 
         unset($definitions['bigint UNSIGNED']);
 

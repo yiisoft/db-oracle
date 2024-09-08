@@ -18,9 +18,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
-use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
@@ -77,11 +75,6 @@ final class Schema extends AbstractPdoSchema
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface
     {
         return new Column($type, $length);
-    }
-
-    public function getColumnFactory(): ColumnFactoryInterface
-    {
-        return new ColumnFactory();
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
@@ -431,8 +424,10 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
+        $columnFactory = $this->db->getColumnBuilderClass()::columnFactory();
+
         $dbType = $info['data_type'];
-        $column = $this->getColumnFactory()->fromDbType($dbType, [
+        $column = $columnFactory->fromDbType($dbType, [
             'scale' => $info['data_scale'],
             'precision' => $info['data_precision'],
         ]);
@@ -442,7 +437,6 @@ final class Schema extends AbstractPdoSchema
         $column->primaryKey((bool) $info['is_pk']);
         $column->autoIncrement($info['identity_column'] === 'YES');
         $column->size((int) $info['data_length']);
-        $column->dbType($dbType);
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;

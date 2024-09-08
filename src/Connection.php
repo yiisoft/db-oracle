@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -45,6 +46,11 @@ final class Connection extends AbstractPdoConnection
     public function createTransaction(): TransactionInterface
     {
         return new Transaction($this);
+    }
+
+    public function getColumnBuilderClass(): string
+    {
+        return ColumnBuilder::class;
     }
 
     /**
