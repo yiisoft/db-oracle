@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Constant\ColumnType;
 
 final class ColumnSchemaBuilderProvider extends \Yiisoft\Db\Tests\Provider\ColumnSchemaBuilderProvider
 {
@@ -19,7 +19,7 @@ final class ColumnSchemaBuilderProvider extends \Yiisoft\Db\Tests\Provider\Colum
 
         return [
             ...$types,
-            ['integer UNSIGNED', SchemaInterface::TYPE_INTEGER, null, [['unsigned']]],
+            ['integer UNSIGNED', ColumnType::INTEGER, null, [['unsigned']]],
         ];
     }
 
