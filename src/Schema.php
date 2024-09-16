@@ -424,7 +424,7 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
-        $columnFactory = $this->db->getColumnBuilderClass()::columnFactory();
+        $columnFactory = $this->db->getColumnFactory();
 
         $dbType = $info['data_type'];
         $column = $columnFactory->fromDbType($dbType, [
