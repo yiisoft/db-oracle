@@ -11,7 +11,6 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonConnectionTest;
