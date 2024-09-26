@@ -359,18 +359,41 @@ final class CommandTest extends CommonCommandTest
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
-        if ($schema->getTableSchema('{{test_insert_ex_string}}') !== null) {
-            $command->dropTable('{{test_insert_ex_string}}')->execute();
+        if ($schema->getTableSchema('{{test_insert_pk}}') !== null) {
+            $command->dropTable('{{test_insert_pk}}')->execute();
         }
 
         $command->createTable(
-            '{{test_insert_ex_string}}',
+            '{{test_insert_pk}}',
             ['id' => 'varchar(10) primary key', 'name' => 'varchar(10)'],
         )->execute();
 
-        $result = $command->insertWithReturningPks('{{test_insert_ex_string}}', ['id' => '1', 'name' => 'test']);
+        $result = $command->insertWithReturningPks('{{test_insert_pk}}', ['id' => '1', 'name' => 'test']);
 
         $this->assertSame(['id' => '1'], $result);
+
+        $db->close();
+    }
+
+    public function testInsertWithReturningPksWithPrimaryKeySignedDecimal(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_insert_pk}}') !== null) {
+            $command->dropTable('{{test_insert_pk}}')->execute();
+        }
+
+        $command->createTable(
+            '{{test_insert_pk}}',
+            ['id' => 'number(5,2) primary key', 'name' => 'varchar(10)'],
+        )->execute();
+
+        $result = $command->insertWithReturningPks('{{test_insert_pk}}', ['id' => '-123.45', 'name' => 'test']);
+
+        $this->assertSame(['id' => '-123.45'], $result);
 
         $db->close();
     }
