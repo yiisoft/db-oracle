@@ -39,9 +39,8 @@ use function trim;
  * @psalm-type ColumnInfoArray = array{
  *   column_name: string,
  *   data_type: string,
- *   data_precision: string|null,
  *   data_scale: string|null,
- *   data_length: string,
+ *   size: string,
  *   nullable: string,
  *   data_default: string|null,
  *   is_pk: string|null,
@@ -331,14 +330,9 @@ final class Schema extends AbstractPdoSchema
         SELECT
             A.COLUMN_NAME,
             A.DATA_TYPE,
-            A.DATA_PRECISION,
             A.DATA_SCALE,
             A.IDENTITY_COLUMN,
-            (
-            CASE A.CHAR_USED WHEN 'C' THEN A.CHAR_LENGTH
-                ELSE A.DATA_LENGTH
-            END
-            ) AS DATA_LENGTH,
+            (CASE WHEN A.CHAR_LENGTH > 0 THEN A.CHAR_LENGTH ELSE A.DATA_PRECISION END) AS "size",
             A.NULLABLE,
             A.DATA_DEFAULT,
             (
@@ -429,14 +423,14 @@ final class Schema extends AbstractPdoSchema
         $dbType = $info['data_type'];
         $column = $columnFactory->fromDbType($dbType, [
             'scale' => $info['data_scale'],
-            'precision' => $info['data_precision'],
+            'size' => $info['size'],
         ]);
+        /** @psalm-suppress DeprecatedMethod */
         $column->name($info['column_name']);
-        $column->allowNull($info['nullable'] === 'Y');
+        $column->notNull($info['nullable'] !== 'Y');
         $column->comment($info['column_comment']);
         $column->primaryKey((bool) $info['is_pk']);
         $column->autoIncrement($info['identity_column'] === 'YES');
-        $column->size((int) $info['data_length']);
         $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
         return $column;

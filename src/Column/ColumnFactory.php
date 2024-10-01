@@ -63,7 +63,7 @@ final class ColumnFactory extends AbstractColumnFactory
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
-        if ($dbType === 'interval day to second' && isset($info['precision']) && $info['precision'] > 0) {
+        if ($dbType === 'interval day to second' && isset($info['size']) && $info['size'] > 0) {
             return ColumnType::STRING;
         }
 
