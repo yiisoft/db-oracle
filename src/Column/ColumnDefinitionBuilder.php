@@ -10,6 +10,7 @@ use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 use function ceil;
 use function log10;
+use function strtoupper;
 
 final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 {
@@ -45,6 +46,20 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
     protected const TYPES_WITH_SCALE = [
         'number',
     ];
+
+    protected function buildOnDeleteClause(string $onDelete): string
+    {
+        return match ($onDelete = strtoupper($onDelete)) {
+            'CASCADE',
+            'SET NULL' => " ON DELETE $onDelete",
+            default => '',
+        };
+    }
+
+    protected function buildOnUpdateClause(string $onUpdate): string
+    {
+        return '';
+    }
 
     protected function getDbType(ColumnSchemaInterface $column): string
     {
