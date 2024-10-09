@@ -47,7 +47,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'number',
     ];
 
-    protected function buildOnDeleteClause(string $onDelete): string
+    protected function buildOnDelete(string $onDelete): string
     {
         return match ($onDelete = strtoupper($onDelete)) {
             'CASCADE',
@@ -56,7 +56,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         };
     }
 
-    protected function buildOnUpdateClause(string $onUpdate): string
+    protected function buildOnUpdate(string $onUpdate): string
     {
         return '';
     }
