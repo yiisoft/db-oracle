@@ -65,7 +65,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::FLOAT => 'binary_float',
             ColumnType::DOUBLE => 'binary_double',
             ColumnType::DECIMAL => 'number(' . ($size ?? 10) . ',' . ($column->getScale() ?? 0) . ')',
-            ColumnType::MONEY => 'number(' . ($size ?? 19) . ',' . ($column->getScale() ?? 0) . ')',
+            ColumnType::MONEY => 'number(' . ($size ?? 19) . ',' . ($column->getScale() ?? 4) . ')',
             ColumnType::CHAR => 'char',
             ColumnType::STRING => 'varchar2',
             ColumnType::TEXT => 'clob',
