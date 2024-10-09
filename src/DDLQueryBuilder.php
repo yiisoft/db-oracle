@@ -47,6 +47,7 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 
     public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
+        /** @psalm-suppress DeprecatedMethod */
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' MODIFY '

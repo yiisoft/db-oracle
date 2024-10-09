@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Oracle\Column\ColumnDefinitionBuilder;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -49,6 +50,8 @@ final class QueryBuilder extends AbstractQueryBuilder
         $ddlBuilder = new DDLQueryBuilder($this, $quoter, $schema);
         $dmlBuilder = new DMLQueryBuilder($this, $quoter, $schema);
         $dqlBuilder = new DQLQueryBuilder($this, $quoter);
-        parent::__construct($quoter, $schema, $ddlBuilder, $dmlBuilder, $dqlBuilder);
+        $columnDefinitionBuilder = new ColumnDefinitionBuilder($this);
+
+        parent::__construct($quoter, $schema, $ddlBuilder, $dmlBuilder, $dqlBuilder, $columnDefinitionBuilder);
     }
 }

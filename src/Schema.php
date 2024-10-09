@@ -18,7 +18,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
+use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
@@ -71,9 +73,15 @@ final class Schema extends AbstractPdoSchema
         parent::__construct($db, $schemaCache);
     }
 
+    /** @deprecated Use {@see ColumnBuilder} instead. Will be removed in 2.0. */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface
     {
         return new Column($type, $length);
+    }
+
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return new ColumnFactory();
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
@@ -418,7 +426,7 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
-        $columnFactory = $this->db->getColumnFactory();
+        $columnFactory = $this->db->getSchema()->getColumnFactory();
 
         $dbType = $info['data_type'];
         $column = $columnFactory->fromDbType($dbType, [

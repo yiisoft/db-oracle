@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 
 /**
@@ -669,5 +670,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
     {
         parent::testSelectScalar($columns, $expected);
+    }
+
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildColumnDefinition() */
+    public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
+    {
+        parent::testBuildColumnDefinition($expected, $column);
     }
 }
