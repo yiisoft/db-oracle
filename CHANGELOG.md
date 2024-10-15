@@ -6,15 +6,16 @@
   from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #255: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
-- Enh #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+- New #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
   for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
 - Enh #275: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Enh #277: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov)
-- Enh #276: Implement `ColumnFactory` class (@Tigrov)
+- New #276: Implement `ColumnFactory` class (@Tigrov)
 - Enh #279: Separate column type constants (@Tigrov)
-- Enh #280: Realize `ColumnBuilder` class (@Tigrov)
+- New #280: Realize `ColumnBuilder` class (@Tigrov)
 - Enh #281: Update according changes in `ColumnSchemaInterface` (@Tigrov)
+- New #282: Add `ColumnDefinitionBuilder` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
