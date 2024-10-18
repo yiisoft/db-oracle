@@ -14,14 +14,14 @@ use Yiisoft\Db\Connection\AbstractDsn;
 final class Dsn extends AbstractDsn
 {
     /**
-     * @psalm-param string[] $options
+     * @psalm-param array<string,string> $options
      */
     public function __construct(
-        private string $driver,
-        private string $host,
-        private string|null $databaseName = null,
-        private string $port = '1521',
-        private array $options = []
+        string $driver = 'oci',
+        string $host = '127.0.0.1',
+        string|null $databaseName = null,
+        string $port = '1521',
+        array $options = []
     ) {
         parent::__construct($driver, $host, $databaseName, $port, $options);
     }
@@ -43,20 +43,20 @@ final class Dsn extends AbstractDsn
      */
     public function asString(): string
     {
-        if (!empty($this->databaseName)) {
-            $dsn = "$this->driver:" . "dbname=$this->host:$this->port/$this->databaseName";
-        } else {
-            $dsn = "$this->driver:" . "dbname=$this->host:$this->port";
+        $driver = $this->getDriver();
+        $host = $this->getHost();
+        $databaseName = $this->getDatabaseName();
+        $port = $this->getPort();
+        $options = $this->getOptions();
+
+        $dsn = "$driver:dbname=$host:$port";
+
+        if (!empty($databaseName)) {
+            $dsn .= "/$databaseName";
         }
 
-        $parts = [];
-
-        foreach ($this->options as $key => $value) {
-            $parts[] = "$key=$value";
-        }
-
-        if (!empty($parts)) {
-            $dsn .= ';' . implode(';', $parts);
+        foreach ($options as $key => $value) {
+            $dsn .= ";$key=$value";
         }
 
         return $dsn;
