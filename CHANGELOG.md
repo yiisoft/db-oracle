@@ -18,6 +18,7 @@
 - New #282: Add `ColumnDefinitionBuilder` class (@Tigrov)
 - Bug #285: Fix `DMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #283: Refactor `Dsn` class (@Tigrov)
+- Enh #286: Use constructor to create columns and initialize properties (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
