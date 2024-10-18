@@ -37,17 +37,15 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             return '';
         }
 
-        $tableAndColumns = ' INTO ' . $this->quoter->quoteTableName($table);
+        $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
 
         if (count($columns) > 0) {
             $quotedColumnNames = array_map($this->quoter->quoteColumnName(...), $columns);
 
-            $tableAndColumns .= ' (' . implode(', ', $quotedColumnNames) . ')';
+            $query .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
 
-        $tableAndColumns .= ' VALUES ';
-
-        return 'INSERT ALL' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
+        return $query . "\nSELECT " . implode(" FROM DUAL UNION ALL\nSELECT ", $values) . ' FROM DUAL';
     }
 
     public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
