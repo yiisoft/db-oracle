@@ -87,7 +87,7 @@ final class CommandTest extends CommonCommandTest
 
         $command->createTable('test_batch_autoincrement', [
             'id' => PseudoType::PK,
-            'name' => ColumnType::STRING
+            'name' => ColumnType::STRING,
         ])->execute();
 
         $command->insertBatch('test_batch_autoincrement', [['name' => 'John'], ['name' => 'Emma']])->execute();
