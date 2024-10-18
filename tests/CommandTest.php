@@ -75,7 +75,7 @@ final class CommandTest extends CommonCommandTest
     }
 
     /** @link https://github.com/yiisoft/db-oracle/issues/284 */
-    public function testBatchInsertWithAutoincrement()
+    public function testBatchInsertWithAutoincrement(): void
     {
         $db = $this->getConnection();
         $command = $db->createCommand();
