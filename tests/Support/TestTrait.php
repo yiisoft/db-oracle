@@ -33,7 +33,7 @@ trait TestTrait
 
     protected static function getDb(): PdoConnectionInterface
     {
-        $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
+        $dsn = (new Dsn(databaseName: 'XE', options: ['charset' => 'AL32UTF8']))->asString();
 
         return new Connection(new Driver($dsn, 'system', 'root'), DbHelper::getSchemaCache());
     }
@@ -41,7 +41,7 @@ trait TestTrait
     protected function getDsn(): string
     {
         if ($this->dsn === '') {
-            $this->dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
+            $this->dsn = (new Dsn(databaseName: 'XE', options: ['charset' => 'AL32UTF8']))->asString();
         }
 
         return $this->dsn;
