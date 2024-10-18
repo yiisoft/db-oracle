@@ -31,7 +31,6 @@ final class ColumnBuilder extends \Yiisoft\Db\Schema\Column\ColumnBuilder
 
     public static function binary(int|null $size = null): ColumnSchemaInterface
     {
-        return (new BinaryColumnSchema(ColumnType::BINARY))
-            ->size($size);
+        return new BinaryColumnSchema(ColumnType::BINARY, size: $size);
     }
 }
