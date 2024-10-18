@@ -74,6 +74,35 @@ final class CommandTest extends CommonCommandTest
         parent::testBatchInsert($table, $values, $columns, $expected, $expectedParams, $insertedRow);
     }
 
+    /** @link https://github.com/yiisoft/db-oracle/issues/284 */
+    public function testBatchInsertWithAutoincrement(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        try {
+            $command->dropTable('test_batch_autoincrement')->execute();
+        } catch (Exception) {
+        }
+
+        $command->createTable('test_batch_autoincrement', [
+            'id' => PseudoType::PK,
+            'name' => ColumnType::STRING,
+        ])->execute();
+
+        $command->insertBatch('test_batch_autoincrement', [['name' => 'John'], ['name' => 'Emma']])->execute();
+
+        $this->assertSame(
+            [
+                ['id' => '1', 'name' => 'John'],
+                ['id' => '2', 'name' => 'Emma'],
+            ],
+            (new Query($db))->from('test_batch_autoincrement')->all()
+        );
+
+        $db->close();
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException

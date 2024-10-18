@@ -48,18 +48,9 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $batchInsert = parent::batchInsert();
 
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['simple']['expected']);
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['escape-danger-chars']['expected']);
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['customer3']['expected']);
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, bool2-null']['expected']);
-
-        $batchInsert['wrong']['expected'] = <<<SQL
-        INSERT ALL INTO {{%type}} ("float_col", "time") VALUES (:qp0, now()) INTO {{%type}} ("float_col", "time") VALUES (:qp1, now()) SELECT 1 FROM SYS.DUAL
-        SQL;
-
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['bool-false, time-now()']['expected']);
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['column table names are not checked']['expected']);
-        DbHelper::changeSqlForOracleBatchInsert($batchInsert['empty columns and non-exists table']['expected']);
+        foreach ($batchInsert as $key => $value) {
+            DbHelper::changeSqlForOracleBatchInsert($batchInsert[$key]['expected']);
+        }
 
         $batchInsert['bool-false, bool2-null']['expectedParams'][':qp0'] = '0';
         $batchInsert['bool-false, time-now()']['expectedParams'][':qp0'] = '0';

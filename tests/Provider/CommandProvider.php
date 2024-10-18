@@ -24,13 +24,11 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
     {
         $batchInsert = parent::batchInsert();
 
-        $batchInsert['multirow']['expected'] = <<<SQL
-        INSERT ALL INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp0, :qp1, :qp2, :qp3) INTO "type" ("int_col", "float_col", "char_col", "bool_col") VALUES (:qp4, :qp5, :qp6, :qp7) SELECT 1 FROM SYS.DUAL
-        SQL;
-        $batchInsert['multirow']['expectedParams'][':qp3'] = '1';
-        $batchInsert['multirow']['expectedParams'][':qp7'] = '0';
-
         $replaceParams = [
+            'multirow' => [
+                ':qp3' => '1',
+                ':qp7' => '0',
+            ],
             'issue11242' => [
                 ':qp3' => '1',
             ],
