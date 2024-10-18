@@ -18,7 +18,7 @@ final class Dsn extends AbstractDsn
      */
     public function __construct(
         string $driver = 'oci',
-        string $host = 'localhost',
+        string $host = '127.0.0.1',
         string|null $databaseName = null,
         string $port = '1521',
         array $options = []
