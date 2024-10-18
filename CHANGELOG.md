@@ -16,6 +16,7 @@
 - New #280: Realize `ColumnBuilder` class (@Tigrov)
 - Enh #281: Update according changes in `ColumnSchemaInterface` (@Tigrov)
 - New #282: Add `ColumnDefinitionBuilder` class (@Tigrov)
+- Bug #285: Fix `DMLQueryBuilder::insertBatch()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
