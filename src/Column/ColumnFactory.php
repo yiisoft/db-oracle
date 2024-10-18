@@ -52,9 +52,7 @@ final class ColumnFactory extends AbstractColumnFactory
         $dbType = strtolower($dbType);
 
         if ($dbType === 'number') {
-            $scale = isset($info['scale']) ? (int) $info['scale'] : null;
-
-            return match ($scale) {
+            return match ($info['scale'] ?? null) {
                 null => ColumnType::DOUBLE,
                 0 => ColumnType::INTEGER,
                 default => ColumnType::DECIMAL,
@@ -73,6 +71,7 @@ final class ColumnFactory extends AbstractColumnFactory
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
         if ($type === ColumnType::BINARY) {
+            unset($info['type']);
             return new BinaryColumnSchema($type, ...$info);
         }
 
