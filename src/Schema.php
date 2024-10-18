@@ -42,7 +42,7 @@ use function trim;
  *   column_name: string,
  *   data_type: string,
  *   data_scale: string|null,
- *   size: string,
+ *   size: string|null,
  *   nullable: string,
  *   data_default: string|null,
  *   is_pk: string|null,
@@ -430,8 +430,8 @@ final class Schema extends AbstractPdoSchema
 
         $dbType = $info['data_type'];
         $column = $columnFactory->fromDbType($dbType, [
-            'scale' => $info['data_scale'],
-            'size' => $info['size'],
+            'scale' => $info['data_scale'] !== null ? (int) $info['data_scale'] : null,
+            'size' => $info['size'] !== null ? (int) $info['size'] : null,
         ]);
         /** @psalm-suppress DeprecatedMethod */
         $column->name($info['column_name']);

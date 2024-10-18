@@ -73,7 +73,7 @@ final class ColumnFactory extends AbstractColumnFactory
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
         if ($type === ColumnType::BINARY) {
-            return (new BinaryColumnSchema($type))->load($info);
+            return new BinaryColumnSchema($type, ...$info);
         }
 
         return parent::fromType($type, $info);
