@@ -38,16 +38,18 @@ use function trim;
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
  *
- * @psalm-type ColumnInfoArray = array{
+ * @psalm-type ColumnArray = array{
  *   column_name: string,
  *   data_type: string,
  *   data_scale: string|null,
+ *   identity_column: string,
  *   size: string|null,
  *   nullable: string,
  *   data_default: string|null,
- *   is_pk: string|null,
- *   identity_column: string,
- *   column_comment: string|null
+ *   constraint_type: string|null,
+ *   column_comment: string|null,
+ *   schema: string,
+ *   table: string
  * }
  *
  * @psalm-type ConstraintArray = array<
@@ -334,6 +336,9 @@ final class Schema extends AbstractPdoSchema
      */
     protected function findColumns(TableSchemaInterface $table): bool
     {
+        $schemaName = $table->getSchemaName();
+        $tableName = $table->getName();
+
         $sql = <<<SQL
         SELECT
             A.COLUMN_NAME,
@@ -343,30 +348,45 @@ final class Schema extends AbstractPdoSchema
             (CASE WHEN A.CHAR_LENGTH > 0 THEN A.CHAR_LENGTH ELSE A.DATA_PRECISION END) AS "size",
             A.NULLABLE,
             A.DATA_DEFAULT,
-            (
-                SELECT COUNT(*)
-                FROM ALL_CONSTRAINTS AC
-                INNER JOIN ALL_CONS_COLUMNS ACC ON ACC.CONSTRAINT_NAME=AC.CONSTRAINT_NAME
-                WHERE
-                     AC.OWNER = A.OWNER
-                   AND AC.TABLE_NAME = B.OBJECT_NAME
-                   AND ACC.COLUMN_NAME = A.COLUMN_NAME
-                   AND AC.CONSTRAINT_TYPE = 'P'
-            ) AS IS_PK,
+            AC.CONSTRAINT_TYPE,
             COM.COMMENTS AS COLUMN_COMMENT
         FROM ALL_TAB_COLUMNS A
-            INNER JOIN ALL_OBJECTS B ON B.OWNER = A.OWNER AND LTRIM(B.OBJECT_NAME) = LTRIM(A.TABLE_NAME)
-            LEFT JOIN ALL_COL_COMMENTS COM ON (A.OWNER = COM.OWNER AND A.TABLE_NAME = COM.TABLE_NAME AND A.COLUMN_NAME = COM.COLUMN_NAME)
-        WHERE
-            A.OWNER = :schemaName
+        INNER JOIN ALL_OBJECTS B
+            ON B.OWNER = A.OWNER
+            AND B.OBJECT_NAME = A.TABLE_NAME
+        LEFT JOIN ALL_COL_COMMENTS COM
+            ON COM.OWNER = A.OWNER
+            AND COM.TABLE_NAME = A.TABLE_NAME
+            AND COM.COLUMN_NAME = A.COLUMN_NAME
+        LEFT JOIN ALL_CONSTRAINTS AC
+            ON AC.OWNER = A.OWNER
+            AND AC.TABLE_NAME = A.TABLE_NAME
+            AND (AC.CONSTRAINT_TYPE = 'P'
+                OR AC.CONSTRAINT_TYPE = 'U'
+                AND (
+                    SELECT COUNT(*)
+                    FROM ALL_CONS_COLUMNS UCC
+                    WHERE UCC.CONSTRAINT_NAME = AC.CONSTRAINT_NAME
+                        AND UCC.TABLE_NAME = AC.TABLE_NAME
+                        AND UCC.OWNER = AC.OWNER
+                ) = 1
+            )
+            AND AC.CONSTRAINT_NAME IN (
+                SELECT ACC.CONSTRAINT_NAME
+                FROM ALL_CONS_COLUMNS ACC
+                WHERE ACC.OWNER = A.OWNER
+                    AND ACC.TABLE_NAME = A.TABLE_NAME
+                    AND ACC.COLUMN_NAME = A.COLUMN_NAME
+            )
+        WHERE A.OWNER = :schemaName
+            AND A.TABLE_NAME = :tableName
             AND B.OBJECT_TYPE IN ('TABLE', 'VIEW', 'MATERIALIZED VIEW')
-            AND B.OBJECT_NAME = :tableName
         ORDER BY A.COLUMN_ID
         SQL;
 
         $columns = $this->db->createCommand($sql, [
-            ':tableName' => $table->getName(),
-            ':schemaName' => $table->getSchemaName(),
+            ':schemaName' => $schemaName,
+            ':tableName' => $tableName,
         ])->queryAll();
 
         if ($columns === []) {
@@ -375,9 +395,12 @@ final class Schema extends AbstractPdoSchema
 
         /** @psalm-var string[][] $info */
         foreach ($columns as $info) {
-            /** @psalm-var ColumnInfoArray $info */
             $info = array_change_key_case($info);
 
+            $info['schema'] = $schemaName;
+            $info['table'] = $tableName;
+
+            /** @psalm-var ColumnArray $info */
             $column = $this->loadColumnSchema($info);
 
             $table->column($info['column_name'], $column);
@@ -422,26 +445,24 @@ final class Schema extends AbstractPdoSchema
      *
      * @return ColumnSchemaInterface The column schema object.
      *
-     * @psalm-param ColumnInfoArray $info The column information.
+     * @psalm-param ColumnArray $info The column information.
      */
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
-        $columnFactory = $this->db->getSchema()->getColumnFactory();
-
-        $dbType = $info['data_type'];
-        $column = $columnFactory->fromDbType($dbType, [
+        $column = $this->getColumnFactory()->fromDbType($info['data_type'], [
+            'autoIncrement' => $info['identity_column'] === 'YES',
+            'comment' => $info['column_comment'],
+            'name' => $info['column_name'],
+            'notNull' => $info['nullable'] !== 'Y',
+            'primaryKey' => $info['constraint_type'] === 'P',
             'scale' => $info['data_scale'] !== null ? (int) $info['data_scale'] : null,
+            'schema' => $info['schema'],
             'size' => $info['size'] !== null ? (int) $info['size'] : null,
+            'table' => $info['table'],
+            'unique' => $info['constraint_type'] === 'U',
         ]);
-        /** @psalm-suppress DeprecatedMethod */
-        $column->name($info['column_name']);
-        $column->notNull($info['nullable'] !== 'Y');
-        $column->comment($info['column_comment']);
-        $column->primaryKey((bool) $info['is_pk']);
-        $column->autoIncrement($info['identity_column'] === 'YES');
-        $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
 
-        return $column;
+        return $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
     }
 
     /**

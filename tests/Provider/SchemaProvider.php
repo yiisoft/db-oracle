@@ -278,15 +278,6 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
         ];
     }
 
-    public static function columnsTypeChar(): array
-    {
-        return [
-            ['char_col', 'char', 100, 'CHAR'],
-            ['char_col2', 'string', 100, 'VARCHAR2'],
-            ['char_col3', 'string', 4000, 'VARCHAR2'],
-        ];
-    }
-
     public static function constraints(): array
     {
         $constraints = parent::constraints();
