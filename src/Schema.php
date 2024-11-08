@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Oracle;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -16,7 +15,6 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoSchema;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
@@ -30,10 +28,7 @@ use function array_reverse;
 use function implode;
 use function is_array;
 use function md5;
-use function preg_match;
 use function serialize;
-use function str_replace;
-use function trim;
 
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
