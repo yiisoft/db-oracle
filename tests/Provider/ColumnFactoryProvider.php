@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
@@ -52,5 +53,17 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         unset($definitions['bigint UNSIGNED']);
 
         return $definitions;
+    }
+
+    public static function defaultValueRaw(): array
+    {
+        $defaultValueRaw = parent::defaultValueRaw();
+
+        $defaultValueRaw[] = [ColumnType::STRING, 'NULL ', null];
+        $defaultValueRaw[] = [ColumnType::STRING, "'str'ing' ", "str'ing"];
+        $defaultValueRaw[] = [ColumnType::INTEGER, '-1 ', -1];
+        $defaultValueRaw[] = [ColumnType::TIMESTAMP, 'now() ', new Expression('now()')];
+
+        return $defaultValueRaw;
     }
 }

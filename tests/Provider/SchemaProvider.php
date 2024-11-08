@@ -169,7 +169,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'enumValues' => null,
                         'size' => null,
                         'scale' => 6,
-                        'defaultValue' => "to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')",
+                        'defaultValue' => new Expression("to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')"),
                     ],
                     'time_col' => [
                         'type' => 'time',
@@ -181,7 +181,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'enumValues' => null,
                         'size' => 0,
                         'scale' => 0,
-                        'defaultValue' => "INTERVAL '0 10:33:21' DAY(0) TO SECOND(0)",
+                        'defaultValue' => new Expression("INTERVAL '0 10:33:21' DAY(0) TO SECOND(0)"),
                     ],
                     'interval_day_col' => [
                         'type' => 'string',
@@ -193,7 +193,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'enumValues' => null,
                         'size' => 1,
                         'scale' => 0,
-                        'defaultValue' => "INTERVAL '2 04:56:12' DAY(1) TO SECOND(0)",
+                        'defaultValue' => new Expression("INTERVAL '2 04:56:12' DAY(1) TO SECOND(0)"),
                     ],
                     'bool_col' => [
                         'type' => 'char',
