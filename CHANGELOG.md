@@ -11,7 +11,7 @@
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
 - Enh #275: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Enh #277: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov)
-- New #276: Implement `ColumnFactory` class (@Tigrov)
+- New #276, #288: Implement `ColumnFactory` class (@Tigrov)
 - Enh #279: Separate column type constants (@Tigrov)
 - New #280: Realize `ColumnBuilder` class (@Tigrov)
 - Enh #281: Update according changes in `ColumnSchemaInterface` (@Tigrov)
@@ -19,6 +19,7 @@
 - Bug #285: Fix `DMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #283: Refactor `Dsn` class (@Tigrov)
 - Enh #286: Use constructor to create columns and initialize properties (@Tigrov)
+- Enh #288: Refactor `Schema::findColumns()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
