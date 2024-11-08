@@ -8,6 +8,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 /**
  * Implements a (Data Definition Language) SQL statements for Oracle Server.
@@ -45,14 +46,13 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         return $sql;
     }
 
-    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
     {
-        /** @psalm-suppress DeprecatedMethod */
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' MODIFY '
             . $this->quoter->quoteColumnName($column)
-            . ' ' . $this->queryBuilder->getColumnType($type);
+            . ' ' . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
