@@ -69,7 +69,7 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
         $db->close();
     }
 
-    public function testColumnSchemaInstance()
+    public function testColumnSchemaInstance(): void
     {
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
@@ -82,18 +82,18 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
     }
 
     /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::predefinedTypes */
-    public function testPredefinedType(string $className, string $type, string $phpType)
+    public function testPredefinedType(string $className, string $type, string $phpType): void
     {
         parent::testPredefinedType($className, $type, $phpType);
     }
 
     /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns */
-    public function testDbTypecastColumns(string $className, array $values)
+    public function testDbTypecastColumns(string $className, array $values): void
     {
         parent::testDbTypecastColumns($className, $values);
     }
 
-    public function testBinaryColumnSchema()
+    public function testBinaryColumnSchema(): void
     {
         $binaryCol = new BinaryColumnSchema();
         $binaryCol->dbType('BLOB');
@@ -103,5 +103,17 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
             Expression::class,
             $binaryCol->dbTypecast(new Param("\x10\x11\x12", PDO::PARAM_LOB)),
         );
+    }
+
+    public function testUniqueColumn(): void
+    {
+        $db = $this->getConnection(true);
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->getTableSchema('T_constraints_1')?->getColumn('C_unique')->isUnique());
+        $this->assertFalse($schema->getTableSchema('T_constraints_2')?->getColumn('C_index_2_1')->isUnique());
+        $this->assertFalse($schema->getTableSchema('T_constraints_2')?->getColumn('C_index_2_2')->isUnique());
+        $this->assertTrue($schema->getTableSchema('T_upsert')?->getColumn('email')->isUnique());
+        $this->assertFalse($schema->getTableSchema('T_upsert')?->getColumn('recovery_email')->isUnique());
     }
 }
