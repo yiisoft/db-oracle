@@ -310,11 +310,13 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['check(null)'][0] = 'varchar2(255)';
         $values["defaultValue('value')"][0] = "varchar2(255) DEFAULT 'value'";
         $values["defaultValue('')"][0] = "varchar2(255) DEFAULT ''";
-        $values['defaultValue(null)'][0] = 'varchar2(255)';
+        $values['defaultValue(null)'][0] = 'varchar2(255) DEFAULT NULL';
         $values['defaultValue($expression)'][0] = 'varchar2(255) DEFAULT expression';
+        $values['notNull()->defaultValue(null)'][0] = 'varchar2(255) NOT NULL';
         $values['notNull()'][0] = 'varchar2(255) NOT NULL';
+        $values['null()'][0] = 'varchar2(255) NULL';
         $values['integer()->primaryKey()'][0] = 'number(10) PRIMARY KEY';
-        $values["integer()->defaultValue('')"][0] = 'number(10)';
+        $values["integer()->defaultValue('')"][0] = 'number(10) DEFAULT NULL';
         $values['size(10)'][0] = 'varchar2(10)';
         $values['unique()'][0] = 'varchar2(255) UNIQUE';
         $values['unsigned()'][0] = 'number(10)';
