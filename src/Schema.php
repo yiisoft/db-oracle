@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Oracle;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -16,7 +15,6 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoSchema;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
@@ -30,10 +28,7 @@ use function array_reverse;
 use function implode;
 use function is_array;
 use function md5;
-use function preg_match;
 use function serialize;
-use function str_replace;
-use function trim;
 
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
@@ -449,9 +444,10 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumnSchema(array $info): ColumnSchemaInterface
     {
-        $column = $this->getColumnFactory()->fromDbType($info['data_type'], [
+        return $this->getColumnFactory()->fromDbType($info['data_type'], [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'comment' => $info['column_comment'],
+            'defaultValueRaw' => $info['data_default'],
             'name' => $info['column_name'],
             'notNull' => $info['nullable'] !== 'Y',
             'primaryKey' => $info['constraint_type'] === 'P',
@@ -461,39 +457,6 @@ final class Schema extends AbstractPdoSchema
             'table' => $info['table'],
             'unique' => $info['constraint_type'] === 'U',
         ]);
-
-        return $column->defaultValue($this->normalizeDefaultValue($info['data_default'], $column));
-    }
-
-    /**
-     * Converts column's default value according to {@see ColumnSchema::phpType} after retrieval from the database.
-     *
-     * @param string|null $defaultValue The default value retrieved from the database.
-     * @param ColumnSchemaInterface $column The column schema object.
-     *
-     * @return mixed The normalized default value.
-     */
-    private function normalizeDefaultValue(string|null $defaultValue, ColumnSchemaInterface $column): mixed
-    {
-        if ($defaultValue === null || $column->isPrimaryKey()) {
-            return null;
-        }
-
-        $defaultValue = trim($defaultValue);
-
-        if ($defaultValue === 'NULL') {
-            return null;
-        }
-
-        if ($column->getType() === ColumnType::TIMESTAMP && $defaultValue === 'CURRENT_TIMESTAMP') {
-            return new Expression($defaultValue);
-        }
-
-        if (preg_match("/^'(.*)'$/s", $defaultValue, $matches) === 1) {
-            $defaultValue = str_replace("''", "'", $matches[1]);
-        }
-
-        return $column->phpTypecast($defaultValue);
     }
 
     /**
