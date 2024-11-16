@@ -20,6 +20,7 @@
 - Enh #283: Refactor `Dsn` class (@Tigrov)
 - Enh #286: Use constructor to create columns and initialize properties (@Tigrov)
 - Enh #288: Refactor `Schema::findColumns()` method (@Tigrov)
+- Enh #289: Refactor `Schema::normalizeDefaultValue()` method and move it to `ColumnFactory` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

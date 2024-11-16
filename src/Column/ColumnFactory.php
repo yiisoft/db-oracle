@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 use function preg_replace;
+use function rtrim;
 use function strtolower;
 
 final class ColumnFactory extends AbstractColumnFactory
@@ -73,5 +75,10 @@ final class ColumnFactory extends AbstractColumnFactory
         }
 
         return parent::getColumnClass($type, $info);
+    }
+
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
+    {
+        return parent::normalizeNotNullDefaultValue(rtrim($defaultValue), $column);
     }
 }
