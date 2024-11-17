@@ -19,6 +19,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
     protected const GENERATE_UUID_EXPRESSION = 'sys_guid()';
 
     protected const TYPES_WITH_SIZE = [
+        'char',
+        'nchar',
+        'character',
+        'varchar',
         'varchar2',
         'nvarchar2',
         'number',
@@ -27,8 +31,6 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'interval day(0) to second',
         'raw',
         'urowid',
-        'char',
-        'nchar',
     ];
 
     protected const TYPES_WITH_SCALE = [
@@ -67,7 +69,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         $size = $column->getSize();
 
         /** @psalm-suppress DocblockTypeContradiction */
-        return match ($column->getType()) {
+        return $column->getDbType() ?? match ($column->getType()) {
             ColumnType::BOOLEAN => 'number(1)',
             ColumnType::BIT => match (true) {
                 $size === null => 'number(38)',
@@ -83,7 +85,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::DECIMAL => 'number(' . ($size ?? 10) . ',' . ($column->getScale() ?? 0) . ')',
             ColumnType::MONEY => 'number(' . ($size ?? 19) . ',' . ($column->getScale() ?? 4) . ')',
             ColumnType::CHAR => 'char',
-            ColumnType::STRING => 'varchar2',
+            ColumnType::STRING => 'varchar2(' . ($size ?? 255) . ')',
             ColumnType::TEXT => 'clob',
             ColumnType::BINARY => 'blob',
             ColumnType::UUID => 'raw(16)',
@@ -91,9 +93,9 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::TIMESTAMP => 'timestamp',
             ColumnType::DATE => 'date',
             ColumnType::TIME => 'interval day(0) to second',
-            ColumnType::ARRAY => 'json',
-            ColumnType::STRUCTURED => 'json',
-            ColumnType::JSON => 'json',
+            ColumnType::ARRAY => 'clob',
+            ColumnType::STRUCTURED => 'clob',
+            ColumnType::JSON => 'clob',
             default => 'varchar2',
         };
     }

@@ -25,6 +25,8 @@ final class ColumnFactory extends AbstractColumnFactory
     protected const TYPE_MAP = [
         'char' => ColumnType::CHAR,
         'nchar' => ColumnType::CHAR,
+        'character' => ColumnType::CHAR,
+        'varchar' => ColumnType::STRING,
         'varchar2' => ColumnType::STRING,
         'nvarchar2' => ColumnType::STRING,
         'clob' => ColumnType::TEXT,
