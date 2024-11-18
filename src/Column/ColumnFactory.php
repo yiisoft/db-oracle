@@ -9,6 +9,7 @@ use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 use function preg_replace;
+use function rtrim;
 use function strtolower;
 
 final class ColumnFactory extends AbstractColumnFactory
@@ -19,12 +20,13 @@ final class ColumnFactory extends AbstractColumnFactory
      * @link https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html
      *
      * @var string[]
-     *
-     * @psalm-suppress MissingClassConstType
+     * @psalm-var array<string, ColumnType::*>
      */
-    private const TYPE_MAP = [
+    protected const TYPE_MAP = [
         'char' => ColumnType::CHAR,
         'nchar' => ColumnType::CHAR,
+        'character' => ColumnType::CHAR,
+        'varchar' => ColumnType::STRING,
         'varchar2' => ColumnType::STRING,
         'nvarchar2' => ColumnType::STRING,
         'clob' => ColumnType::TEXT,
@@ -65,21 +67,20 @@ final class ColumnFactory extends AbstractColumnFactory
             return ColumnType::STRING;
         }
 
-        return self::TYPE_MAP[$dbType] ?? ColumnType::STRING;
+        return parent::getType($dbType, $info);
     }
 
-    public function fromType(string $type, array $info = []): ColumnSchemaInterface
+    protected function getColumnClass(string $type, array $info = []): string
     {
         if ($type === ColumnType::BINARY) {
-            unset($info['type']);
-            return new BinaryColumnSchema($type, ...$info);
+            return BinaryColumnSchema::class;
         }
 
-        return parent::fromType($type, $info);
+        return parent::getColumnClass($type, $info);
     }
 
-    protected function isDbType(string $dbType): bool
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
     {
-        return isset(self::TYPE_MAP[$dbType]);
+        return parent::normalizeNotNullDefaultValue(rtrim($defaultValue), $column);
     }
 }

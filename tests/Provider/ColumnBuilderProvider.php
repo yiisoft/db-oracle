@@ -12,16 +12,6 @@ class ColumnBuilderProvider extends \Yiisoft\Db\Tests\Provider\ColumnBuilderProv
     {
         $values = parent::buildingMethods();
 
-        $values['primaryKey()'][4]['getSize'] = 10;
-        $values['primaryKey(false)'][4]['getSize'] = 10;
-        $values['smallPrimaryKey()'][4]['getSize'] = 5;
-        $values['smallPrimaryKey(false)'][4]['getSize'] = 5;
-        $values['bigPrimaryKey()'][4]['getSize'] = 20;
-        $values['bigPrimaryKey(false)'][4]['getSize'] = 20;
-        $values['tinyint()'][4]['getSize'] = 3;
-        $values['smallint()'][4]['getSize'] = 5;
-        $values['integer()'][4]['getSize'] = 10;
-        $values['bigint()'][4]['getSize'] = 20;
         $values['binary()'][2] = BinaryColumnSchema::class;
         $values['binary(8)'][2] = BinaryColumnSchema::class;
 
