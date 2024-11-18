@@ -36,7 +36,7 @@ trait TestTrait
     {
         $dsn = (new Dsn(
             host: self::getHost(),
-            databaseName: self::getDatabaseName(),
+            databaseName: self::getSid(),
             port: self::getPort(),
             options: ['charset' => 'AL32UTF8'],
         ))->asString();
@@ -49,7 +49,7 @@ trait TestTrait
         if ($this->dsn === '') {
             $this->dsn = (new Dsn(
                 host: self::getHost(),
-                databaseName: self::getDatabaseName(),
+                databaseName: self::getSid(),
                 port: self::getPort(),
                 options: ['charset' => 'AL32UTF8'],
             ))->asString();
@@ -73,9 +73,9 @@ trait TestTrait
         return new Driver($this->getDsn(), self::getUsername(), self::getPassword());
     }
 
-    private static function getDatabaseName(): string
+    private static function getSid(): string
     {
-        return getenv('YII_ORACLE_DATABASE') ?: 'XE';
+        return getenv('YII_ORACLE_SID');
     }
 
     private static function getHost(): string
@@ -85,7 +85,7 @@ trait TestTrait
 
     private static function getPort(): string
     {
-        return getenv('YII_ORACLE_PORT') ?: '1521';
+        return getenv('YII_ORACLE_PORT');
     }
 
     private static function getUsername(): string
