@@ -317,6 +317,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values["defaultValue('')"][0] = "varchar2(255) DEFAULT ''";
         $values['defaultValue(null)'][0] = 'varchar2(255) DEFAULT NULL';
         $values['defaultValue($expression)'][0] = 'number(10) DEFAULT (1 + 2)';
+        $values['defaultValue($emptyExpression)'][0] = 'number(10)';
         $values['notNull()'][0] = 'varchar2(255) NOT NULL';
         $values['null()'][0] = 'varchar2(255) NULL';
         $values['integer()->primaryKey()'][0] = 'number(10) PRIMARY KEY';
