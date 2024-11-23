@@ -11,6 +11,8 @@ use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function bin2hex;
+
 /**
  * Implements the Oracle Server specific query builder.
  */
@@ -53,5 +55,10 @@ final class QueryBuilder extends AbstractQueryBuilder
         $columnDefinitionBuilder = new ColumnDefinitionBuilder($this);
 
         parent::__construct($quoter, $schema, $ddlBuilder, $dmlBuilder, $dqlBuilder, $columnDefinitionBuilder);
+    }
+
+    protected function prepareBinary(string $binary): string
+    {
+        return "HEXTORAW('" . bin2hex($binary) . "')";
     }
 }

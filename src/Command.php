@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
@@ -64,7 +65,7 @@ final class Command extends AbstractPdoCommand
         $this->setSql($sql)->bindValues($params);
         $this->prepare(false);
 
-        /** @psalm-var array<string, array{column: string, value: mixed, dataType: int, size: int}> $returnParams */
+        /** @psalm-var array<string, array{column: string, value: mixed, dataType: DataType::*, size: int}> $returnParams */
         foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
