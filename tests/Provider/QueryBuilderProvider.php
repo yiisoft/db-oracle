@@ -317,7 +317,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values["defaultValue('')"][0] = "varchar2(255) DEFAULT ''";
         $values['defaultValue(null)'][0] = 'varchar2(255) DEFAULT NULL';
         $values['defaultValue($expression)'][0] = 'number(10) DEFAULT (1 + 2)';
-        $values['notNull()->defaultValue(null)'][0] = 'varchar2(255) NOT NULL';
+        $values['defaultValue($emptyExpression)'][0] = 'number(10)';
         $values['notNull()'][0] = 'varchar2(255) NOT NULL';
         $values['null()'][0] = 'varchar2(255) NULL';
         $values['integer()->primaryKey()'][0] = 'number(10) PRIMARY KEY';
@@ -336,5 +336,24 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ['number(10) REFERENCES "ref_table" ("id")', ColumnBuilder::integer()->reference($referenceRestrict)],
             ['number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL', ColumnBuilder::integer()->reference($referenceSetNull)],
         ];
+    }
+
+    public static function prepareParam(): array
+    {
+        $values = parent::prepareParam();
+
+        $values['binary'][0] = "HEXTORAW('737472696e67')";
+
+        return $values;
+    }
+
+    public static function prepareValue(): array
+    {
+        $values = parent::prepareValue();
+
+        $values['binary'][0] = "HEXTORAW('737472696e67')";
+        $values['paramBinary'][0] = "HEXTORAW('737472696e67')";
+
+        return $values;
     }
 }

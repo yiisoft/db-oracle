@@ -43,7 +43,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
              * Different pdo_oci8 versions may or may not implement `PDO::quote()`, so {@see Quoter::quoteValue()} may or
              * may not quote `\`.
              */
-            $this->escapingReplacements['\\'] = substr((string) $this->queryBuilder->quoter()->quoteValue('\\'), 1, -1);
+            $this->escapingReplacements['\\'] = substr($this->queryBuilder->quoter()->quoteValue('\\'), 1, -1);
         }
 
         return parent::build($expression, $params);
