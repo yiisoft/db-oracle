@@ -53,7 +53,7 @@ jobs:
         ports:
           - 1521:1521
         env:
-          ORACLE_DATABASE : yiitest
+          ORACLE_DATABASE: FREEPDB1
           ORACLE_PASSWORD : root
         options: >-
           --name=oci
@@ -97,6 +97,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
         env:
           YII_ORACLE_SID: XE
+          YII_ORACLE_DATABASE: FREEPDB1
           YII_ORACLE_HOST: localhost
           YII_ORACLE_PORT: 1521
           YII_ORACLE_USER: system

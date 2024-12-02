@@ -75,26 +75,31 @@ trait TestTrait
 
     private static function getSid(): string
     {
-        return getenv('YII_ORACLE_SID');
+        return getenv('YII_ORACLE_SID') ?? '';
+    }
+
+    private static function getDatabaseName(): string
+    {
+        return getenv('YII_ORACLE_DATABASE') ?? '';
     }
 
     private static function getHost(): string
     {
-        return getenv('YII_ORACLE_HOST');
+        return getenv('YII_ORACLE_HOST') ?? '';
     }
 
     private static function getPort(): string
     {
-        return getenv('YII_ORACLE_PORT');
+        return getenv('YII_ORACLE_PORT') ?? '';
     }
 
     private static function getUsername(): string
     {
-        return getenv('YII_ORACLE_USER');
+        return getenv('YII_ORACLE_USER') ?? '';
     }
 
     private static function getPassword(): string
     {
-        return getenv('YII_ORACLE_PASSWORD');
+        return getenv('YII_ORACLE_PASSWORD') ?? '';
     }
 }

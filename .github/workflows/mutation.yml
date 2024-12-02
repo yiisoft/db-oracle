@@ -42,7 +42,7 @@ jobs:
         ports:
           - 1521:1521
         env:
-          ORACLE_DATABASE : yiitest
+          ORACLE_DATABASE: FREEPDB1
           ORACLE_PASSWORD : root
         options: >-
           --name=oci
@@ -85,6 +85,7 @@ jobs:
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           YII_ORACLE_SID: XE
+          YII_ORACLE_DATABASE: FREEPDB1
           YII_ORACLE_HOST: localhost
           YII_ORACLE_PORT: 1521
           YII_ORACLE_USER: system
