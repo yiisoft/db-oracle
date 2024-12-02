@@ -42,7 +42,6 @@ jobs:
         ports:
           - 1521:1521
         env:
-          ORACLE_DATABASE: FREEPDB1
           ORACLE_PASSWORD : root
         options: >-
           --name=oci
