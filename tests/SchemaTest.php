@@ -92,7 +92,7 @@ final class SchemaTest extends CommonSchemaTest
 
         $schema = $db->getSchema();
 
-        if (version_compare($db->getServerVersion(), '12', '>')) {
+        if (version_compare($db->getServerInfo()->getVersion(), '12', '>')) {
             $this->assertContains('SYSBACKUP', $schema->getSchemaNames());
         } else {
             $this->assertEmpty($schema->getSchemaNames());
