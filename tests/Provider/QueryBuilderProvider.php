@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Exception;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
@@ -42,6 +43,13 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         SQL;
 
         return $addForeingKey;
+    }
+
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE "foo1" MODIFY "bar" varchar2(255)'],
+        ];
     }
 
     public static function batchInsert(): array
