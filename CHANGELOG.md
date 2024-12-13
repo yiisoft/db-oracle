@@ -23,6 +23,7 @@
 - Enh #289: Refactor `Schema::normalizeDefaultValue()` method and move it to `ColumnFactory` class (@Tigrov)
 - New #292: Override `QueryBuilder::prepareBinary()` method (@Tigrov)
 - Chg #294: Update `QueryBuilder` constructor (@Tigrov)
+- Enh #293: Use `ColumnDefinitionBuilder` to generate table column SQL representation (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
