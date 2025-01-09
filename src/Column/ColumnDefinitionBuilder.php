@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function ceil;
 use function log10;
@@ -35,7 +35,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'number',
     ];
 
-    public function build(ColumnSchemaInterface $column): string
+    public function build(ColumnInterface $column): string
     {
         return $this->buildType($column)
             . $this->buildAutoIncrement($column)
@@ -62,7 +62,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         return '';
     }
 
-    protected function getDbType(ColumnSchemaInterface $column): string
+    protected function getDbType(ColumnInterface $column): string
     {
         $size = $column->getSize();
 

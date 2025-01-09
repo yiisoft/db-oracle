@@ -7,20 +7,20 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
+use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
-use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
-use Yiisoft\Db\Tests\Common\CommonColumnSchemaTest;
+use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
+use Yiisoft\Db\Tests\Common\CommonColumnTest;
 
 use function str_repeat;
 
 /**
  * @group oracle
  */
-final class ColumnSchemaTest extends CommonColumnSchemaTest
+final class ColumnTest extends CommonColumnTest
 {
     use TestTrait;
 
@@ -69,33 +69,33 @@ final class ColumnSchemaTest extends CommonColumnSchemaTest
         $db->close();
     }
 
-    public function testColumnSchemaInstance(): void
+    public function testColumnInstance(): void
     {
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
 
-        $this->assertInstanceOf(IntegerColumnSchema::class, $tableSchema->getColumn('int_col'));
-        $this->assertInstanceOf(StringColumnSchema::class, $tableSchema->getColumn('char_col'));
-        $this->assertInstanceOf(DoubleColumnSchema::class, $tableSchema->getColumn('float_col'));
-        $this->assertInstanceOf(BinaryColumnSchema::class, $tableSchema->getColumn('blob_col'));
+        $this->assertInstanceOf(IntegerColumn::class, $tableSchema->getColumn('int_col'));
+        $this->assertInstanceOf(StringColumn::class, $tableSchema->getColumn('char_col'));
+        $this->assertInstanceOf(DoubleColumn::class, $tableSchema->getColumn('float_col'));
+        $this->assertInstanceOf(BinaryColumn::class, $tableSchema->getColumn('blob_col'));
     }
 
-    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::predefinedTypes */
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::predefinedTypes */
     public function testPredefinedType(string $className, string $type, string $phpType): void
     {
         parent::testPredefinedType($className, $type, $phpType);
     }
 
-    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns */
+    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::dbTypecastColumns */
     public function testDbTypecastColumns(string $className, array $values): void
     {
         parent::testDbTypecastColumns($className, $values);
     }
 
-    public function testBinaryColumnSchema(): void
+    public function testBinaryColumn(): void
     {
-        $binaryCol = new BinaryColumnSchema();
+        $binaryCol = new BinaryColumn();
         $binaryCol->dbType('BLOB');
 
         $this->assertInstanceOf(Expression::class, $binaryCol->dbTypecast("\x10\x11\x12"));

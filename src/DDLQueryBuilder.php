@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Implements a (Data Definition Language) SQL statements for Oracle Server.
@@ -45,7 +45,7 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         return $sql;
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)

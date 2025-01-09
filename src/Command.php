@@ -37,7 +37,7 @@ final class Command extends AbstractPdoCommand
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
 
-        $columnSchemas = $tableSchema?->getColumns() ?? [];
+        $tableColumns = $tableSchema?->getColumns() ?? [];
         $returnParams = [];
         $returning = [];
 
@@ -49,13 +49,13 @@ final class Command extends AbstractPdoCommand
                 'value' => '',
             ];
 
-            if (!isset($columnSchemas[$name]) || $columnSchemas[$name]->getPhpType() !== PhpType::INT) {
+            if (!isset($tableColumns[$name]) || $tableColumns[$name]->getPhpType() !== PhpType::INT) {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
             } else {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
             }
 
-            $returnParams[$phName]['size'] = ($columnSchemas[$name]?->getSize() ?? 3998) + 2;
+            $returnParams[$phName]['size'] = ($tableColumns[$name]?->getSize() ?? 3998) + 2;
 
             $returning[] = $this->db->getQuoter()->quoteColumnName($name);
         }

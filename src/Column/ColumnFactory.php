@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function preg_replace;
 use function rtrim;
@@ -73,13 +73,13 @@ final class ColumnFactory extends AbstractColumnFactory
     protected function getColumnClass(string $type, array $info = []): string
     {
         if ($type === ColumnType::BINARY) {
-            return BinaryColumnSchema::class;
+            return BinaryColumn::class;
         }
 
         return parent::getColumnClass($type, $info);
     }
 
-    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed
     {
         return parent::normalizeNotNullDefaultValue(rtrim($defaultValue), $column);
     }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
-use Yiisoft\Db\Oracle\Column\BinaryColumnSchema;
+use Yiisoft\Db\Oracle\Column\BinaryColumn;
 
-class ColumnSchemaProvider extends \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider
+class ColumnProvider extends \Yiisoft\Db\Tests\Provider\ColumnProvider
 {
     public static function predefinedTypes(): array
     {
         $values = parent::predefinedTypes();
-        $values['binary'][0] = BinaryColumnSchema::class;
+        $values['binary'][0] = BinaryColumn::class;
 
         return $values;
     }
@@ -19,7 +19,7 @@ class ColumnSchemaProvider extends \Yiisoft\Db\Tests\Provider\ColumnSchemaProvid
     public static function dbTypecastColumns(): array
     {
         $values = parent::dbTypecastColumns();
-        $values['binary'][0] = BinaryColumnSchema::class;
+        $values['binary'][0] = BinaryColumn::class;
 
         return $values;
     }
