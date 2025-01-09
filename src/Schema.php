@@ -18,7 +18,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_change_key_case;
@@ -389,7 +389,7 @@ final class Schema extends AbstractPdoSchema
             $info['table'] = $tableName;
 
             /** @psalm-var ColumnArray $info */
-            $column = $this->loadColumnSchema($info);
+            $column = $this->loadColumn($info);
 
             $table->column($info['column_name'], $column);
         }
@@ -427,15 +427,15 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Loads the column information into a {@see ColumnSchemaInterface} object.
+     * Loads the column information into a {@see ColumnInterface} object.
      *
      * @param array $info The column information.
      *
-     * @return ColumnSchemaInterface The column schema object.
+     * @return ColumnInterface The column object.
      *
      * @psalm-param ColumnArray $info The column information.
      */
-    private function loadColumnSchema(array $info): ColumnSchemaInterface
+    private function loadColumn(array $info): ColumnInterface
     {
         return $this->getColumnFactory()->fromDbType($info['data_type'], [
             'autoIncrement' => $info['identity_column'] === 'YES',

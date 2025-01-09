@@ -6,11 +6,11 @@ namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schema\Column\BinaryColumnSchema as BaseBinaryColumnSchema;
+use Yiisoft\Db\Schema\Column\BinaryColumn as BaseBinaryColumn;
 
 use function is_string;
 
-final class BinaryColumnSchema extends BaseBinaryColumnSchema
+final class BinaryColumn extends BaseBinaryColumn
 {
     public function dbTypecast(mixed $value): mixed
     {

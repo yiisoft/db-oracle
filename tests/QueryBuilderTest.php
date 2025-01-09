@@ -15,7 +15,7 @@ use Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 
 /**
@@ -104,7 +104,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
-    public function testAlterColumn(string|ColumnSchemaInterface $type, string $expected): void
+    public function testAlterColumn(string|ColumnInterface $type, string $expected): void
     {
         parent::testAlterColumn($type, $expected);
     }
@@ -665,7 +665,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
-    public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
+    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
     {
         parent::testBuildColumnDefinition($expected, $column);
     }
