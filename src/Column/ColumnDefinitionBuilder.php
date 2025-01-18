@@ -51,11 +51,6 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             . $this->buildExtra($column);
     }
 
-    protected function isAllowSize(string $dbType): bool
-    {
-        return in_array(strtolower(preg_replace('/\([^)]+\)/', '', $dbType)), self::TYPES_WITH_SIZE, true);
-    }
-
     protected function buildOnDelete(string $onDelete): string
     {
         return match ($onDelete = strtoupper($onDelete)) {
@@ -109,5 +104,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
     protected function getDefaultUuidExpression(): string
     {
         return 'sys_guid()';
+    }
+
+    protected function isAllowSize(string $dbType): bool
+    {
+        return in_array(strtolower(preg_replace('/\([^)]+\)/', '', $dbType)), self::TYPES_WITH_SIZE, true);
     }
 }
