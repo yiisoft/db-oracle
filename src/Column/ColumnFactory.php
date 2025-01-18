@@ -49,6 +49,11 @@ final class ColumnFactory extends AbstractColumnFactory
         'long' => ColumnType::TEXT,
     ];
 
+    protected function columnDefinitionParser(): ColumnDefinitionParser
+    {
+        return new ColumnDefinitionParser();
+    }
+
     protected function getType(string $dbType, array $info = []): string
     {
         $dbType = strtolower($dbType);

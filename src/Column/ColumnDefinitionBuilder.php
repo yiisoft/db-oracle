@@ -9,7 +9,10 @@ use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function ceil;
+use function in_array;
 use function log10;
+use function preg_replace;
+use function strtolower;
 use function strtoupper;
 
 final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
@@ -26,7 +29,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'number',
         'float',
         'timestamp',
-        'interval day(0) to second',
+        'interval day to second',
         'raw',
         'urowid',
     ];
@@ -46,6 +49,11 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             . $this->buildCheck($column)
             . $this->buildReferences($column)
             . $this->buildExtra($column);
+    }
+
+    protected function isAllowSize(string $dbType): bool
+    {
+        return in_array(strtolower(preg_replace('/\([^)]+\)/', '', $dbType)), self::TYPES_WITH_SIZE, true);
     }
 
     protected function buildOnDelete(string $onDelete): string
