@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function in_array;
 use function preg_replace;
 use function rtrim;
 use function strtolower;
@@ -68,8 +69,18 @@ final class ColumnFactory extends AbstractColumnFactory
 
         $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
 
-        if ($dbType === 'interval day to second' && isset($info['size']) && $info['size'] > 0) {
-            return ColumnType::STRING;
+        if (in_array($dbType, [
+            'timestamp',
+            'timestamp with time zone',
+            'timestamp with local time zone',
+            'interval day to second',
+            'interval year to month',
+        ], true)) {
+            [$info['size'], $info['scale']] = [$info['scale'] ?? null, $info['size'] ?? null];
+
+            if ($dbType === 'interval day to second' && $info['scale'] > 0) {
+                return ColumnType::STRING;
+            }
         }
 
         return parent::getType($dbType, $info);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use function preg_match;
+use function preg_replace;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -16,9 +17,10 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
 {
     private const TYPE_PATTERN = '/^('
         . 'timestamp\s*(?:\((\d+)\))? with(?: local)? time zone'
-        . '|interval year\s*(?:\(\d+\))? to month'
+        . '|interval year\s*(?:\((\d+)\))? to month'
         . ')|('
-        . 'interval day\s*(?:\(\d+\))? to second'
+        . 'interval day\s*(?:\((\d+)\))? to second'
+        . '|long raw'
         . '|\w*'
         . ')\s*(?:\(([^)]+)\))?\s*'
         . '/i';
@@ -27,10 +29,10 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
     {
         preg_match(self::TYPE_PATTERN, $definition, $matches);
 
-        $type = strtolower($matches[3] ?? $matches[1]);
+        $type = strtolower(preg_replace('/\s*\(\d+\)/', '', $matches[4] ?? $matches[1]));
         $info = ['type' => $type];
 
-        $typeDetails = $matches[4] ?? $matches[2] ?? '';
+        $typeDetails = $matches[6] ?? $matches[2] ?? '';
 
         if ($typeDetails !== '') {
             if ($type === 'enum') {
@@ -38,6 +40,12 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
             } else {
                 $info += $this->sizeInfo($typeDetails);
             }
+        }
+
+        $scale = $matches[5] ?? $matches[3] ?? '';
+
+        if ($scale !== '') {
+            $info += ['scale' => (int) $scale];
         }
 
         $extra = substr($definition, strlen($matches[0]));
