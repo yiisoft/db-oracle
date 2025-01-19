@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;

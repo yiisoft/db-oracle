@@ -15,7 +15,7 @@
 - Enh #279: Separate column type constants (@Tigrov)
 - New #280, #291: Realize `ColumnBuilder` class (@Tigrov)
 - Enh #281: Update according changes in `ColumnSchemaInterface` (@Tigrov)
-- New #282, #291: Add `ColumnDefinitionBuilder` class (@Tigrov)
+- New #282, #291, #299: Add `ColumnDefinitionBuilder` class (@Tigrov)
 - Bug #285: Fix `DMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #283: Refactor `Dsn` class (@Tigrov)
 - Enh #286: Use constructor to create columns and initialize properties (@Tigrov)
@@ -27,6 +27,7 @@
 - Enh #296: Remove `ColumnInterface` (@Tigrov)
 - Enh #298: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
 - Enh #298: Refactor `DMLQueryBuilder::prepareInsertValues()` method (@Tigrov)
+- Enh #299: Add `ColumnDefinitionParser` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
