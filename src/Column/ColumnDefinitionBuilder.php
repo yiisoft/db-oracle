@@ -9,10 +9,7 @@ use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function ceil;
-use function in_array;
 use function log10;
-use function preg_replace;
-use function strtolower;
 use function strtoupper;
 
 final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
