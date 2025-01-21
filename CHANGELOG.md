@@ -28,6 +28,7 @@
 - Enh #298: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
 - Enh #298: Refactor `DMLQueryBuilder::prepareInsertValues()` method (@Tigrov)
 - Enh #299: Add `ColumnDefinitionParser` class (@Tigrov)
+- Enh #299: Convert database types to lower case (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
