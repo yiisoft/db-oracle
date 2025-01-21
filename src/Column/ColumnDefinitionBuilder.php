@@ -26,7 +26,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'number',
         'float',
         'timestamp',
-        'interval day to second',
+        'interval day(0) to second',
         'raw',
         'urowid',
     ];
@@ -94,7 +94,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                 ColumnType::DATETIME => 'timestamp',
                 ColumnType::TIMESTAMP => 'timestamp',
                 ColumnType::DATE => 'date',
-                ColumnType::TIME => 'interval day(0) to second' . ($size !== null ? "($size)" : ''),
+                ColumnType::TIME => 'interval day(0) to second',
                 ColumnType::ARRAY => 'clob',
                 ColumnType::STRUCTURED => 'clob',
                 ColumnType::JSON => 'clob',

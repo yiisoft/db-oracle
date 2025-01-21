@@ -96,7 +96,7 @@ final class ColumnTest extends CommonColumnTest
     public function testBinaryColumn(): void
     {
         $binaryCol = new BinaryColumn();
-        $binaryCol->dbType('BLOB');
+        $binaryCol->dbType('blob');
 
         $this->assertInstanceOf(Expression::class, $binaryCol->dbTypecast("\x10\x11\x12"));
         $this->assertInstanceOf(

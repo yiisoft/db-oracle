@@ -27,7 +27,9 @@ use function array_reverse;
 use function implode;
 use function is_array;
 use function md5;
+use function preg_replace;
 use function serialize;
+use function strtolower;
 
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
@@ -437,7 +439,18 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumn(array $info): ColumnInterface
     {
-        return $this->getColumnFactory()->fromDbType($info['data_type'], [
+        $dbType = strtolower(preg_replace('/\([^)]+\)/', '', $info['data_type']));
+
+        match ($dbType) {
+            'timestamp',
+            'timestamp with time zone',
+            'timestamp with local time zone',
+            'interval day to second',
+            'interval year to month' => [$info['size'], $info['data_scale']] = [$info['data_scale'], $info['size']],
+            default => null,
+        };
+
+        return $this->getColumnFactory()->fromDbType($dbType, [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'comment' => $info['column_comment'],
             'defaultValueRaw' => $info['data_default'],

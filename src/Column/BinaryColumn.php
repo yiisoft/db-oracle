@@ -14,7 +14,7 @@ final class BinaryColumn extends BaseBinaryColumn
 {
     public function dbTypecast(mixed $value): mixed
     {
-        if ($this->getDbType() === 'BLOB') {
+        if ($this->getDbType() === 'blob') {
             if ($value instanceof ParamInterface && is_string($value->getValue())) {
                 /** @var string */
                 $value = $value->getValue();
