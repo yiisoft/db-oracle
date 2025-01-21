@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Constant\ColumnType;
@@ -13,9 +14,12 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Dsn;
 use Yiisoft\Db\Oracle\Driver;
+use Yiisoft\Db\Oracle\IndexType;
+use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
@@ -635,5 +639,44 @@ final class CommandTest extends CommonCommandTest
 
         $this->assertSame('oci:dbname=localhost:1521', $db->getDriver()->getDsn());
         $this->assertSame(['YIITEST'], $command->showDatabases());
+    }
+
+    #[DataProviderExternal(CommandProvider::class, 'createIndex')]
+    public function testCreateIndex(array $columns, array $indexColumns, string|null $indexType, string|null $indexMethod): void
+    {
+        parent::testCreateIndex($columns, $indexColumns, $indexType, $indexMethod);
+    }
+
+    public function testCreateSearchIndex()
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        $tableName = 'test_create_index';
+        $indexName = 'test_index_name';
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $command->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, ['col1' => ColumnBuilder::text()])->execute();
+        $command->createIndex($tableName, $indexName, ['col1'], IndexType::SEARCH)->execute();
+
+        $this->assertCount(2, $schema->getTableIndexes($tableName));
+
+        $index = $schema->getTableIndexes($tableName)[0];
+
+        $this->assertSame(['col1'], $index->getColumnNames());
+        $this->assertFalse($index->isUnique());
+        $this->assertFalse($index->isPrimary());
+
+        $sysIndex = $schema->getTableIndexes($tableName)[1];
+        $this->assertSame([], $sysIndex->getColumnNames());
+        $this->assertTrue($sysIndex->isUnique());
+        $this->assertFalse($sysIndex->isPrimary());
+
+        $db->close();
     }
 }
