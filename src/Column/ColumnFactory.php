@@ -8,9 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
-use function preg_replace;
 use function rtrim;
-use function strtolower;
 
 final class ColumnFactory extends AbstractColumnFactory
 {
@@ -40,19 +38,23 @@ final class ColumnFactory extends AbstractColumnFactory
         'binary_double' => ColumnType::DOUBLE, // 64 bit
         'float' => ColumnType::DOUBLE, // 126 bit
         'date' => ColumnType::DATE,
-        'interval day to second' => ColumnType::TIME,
         'timestamp' => ColumnType::TIMESTAMP,
         'timestamp with time zone' => ColumnType::TIMESTAMP,
         'timestamp with local time zone' => ColumnType::TIMESTAMP,
+        'interval day to second' => ColumnType::STRING,
+        'interval year to month' => ColumnType::STRING,
 
         /** Deprecated */
         'long' => ColumnType::TEXT,
     ];
 
+    protected function columnDefinitionParser(): ColumnDefinitionParser
+    {
+        return new ColumnDefinitionParser();
+    }
+
     protected function getType(string $dbType, array $info = []): string
     {
-        $dbType = strtolower($dbType);
-
         if ($dbType === 'number') {
             return match ($info['scale'] ?? null) {
                 null => ColumnType::DOUBLE,
@@ -61,10 +63,8 @@ final class ColumnFactory extends AbstractColumnFactory
             };
         }
 
-        $dbType = preg_replace('/\([^)]+\)/', '', $dbType);
-
-        if ($dbType === 'interval day to second' && isset($info['size']) && $info['size'] > 0) {
-            return ColumnType::STRING;
+        if ($dbType === 'interval day to second' && isset($info['scale']) && $info['scale'] === 0) {
+            return ColumnType::TIME;
         }
 
         return parent::getType($dbType, $info);

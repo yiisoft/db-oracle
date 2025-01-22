@@ -64,37 +64,46 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 
     protected function getDbType(ColumnInterface $column): string
     {
+        $dbType = $column->getDbType();
         $size = $column->getSize();
+        $scale = $column->getScale();
 
         /** @psalm-suppress DocblockTypeContradiction */
-        return $column->getDbType() ?? match ($column->getType()) {
-            ColumnType::BOOLEAN => 'number(1)',
-            ColumnType::BIT => match (true) {
-                $size === null => 'number(38)',
-                $size <= 126 => 'number(' . ceil(log10(2 ** $size)) . ')',
-                default => 'raw(' . ceil($size / 8) . ')',
+        return match ($dbType) {
+            default => $dbType,
+            null => match ($column->getType()) {
+                ColumnType::BOOLEAN => 'number(1)',
+                ColumnType::BIT => match (true) {
+                    $size === null => 'number(38)',
+                    $size <= 126 => 'number(' . ceil(log10(2 ** $size)) . ')',
+                    default => 'raw(' . ceil($size / 8) . ')',
+                },
+                ColumnType::TINYINT => 'number(' . ($size ?? 3) . ')',
+                ColumnType::SMALLINT => 'number(' . ($size ?? 5) . ')',
+                ColumnType::INTEGER => 'number(' . ($size ?? 10) . ')',
+                ColumnType::BIGINT => 'number(' . ($size ?? 20) . ')',
+                ColumnType::FLOAT => 'binary_float',
+                ColumnType::DOUBLE => 'binary_double',
+                ColumnType::DECIMAL => 'number(' . ($size ?? 10) . ',' . ($scale ?? 0) . ')',
+                ColumnType::MONEY => 'number(' . ($size ?? 19) . ',' . ($scale ?? 4) . ')',
+                ColumnType::CHAR => 'char',
+                ColumnType::STRING => 'varchar2(' . ($size ?? 255) . ')',
+                ColumnType::TEXT => 'clob',
+                ColumnType::BINARY => 'blob',
+                ColumnType::UUID => 'raw(16)',
+                ColumnType::DATETIME => 'timestamp',
+                ColumnType::TIMESTAMP => 'timestamp',
+                ColumnType::DATE => 'date',
+                ColumnType::TIME => 'interval day(0) to second',
+                ColumnType::ARRAY => 'clob',
+                ColumnType::STRUCTURED => 'clob',
+                ColumnType::JSON => 'clob',
+                default => 'varchar2',
             },
-            ColumnType::TINYINT => 'number(' . ($size ?? 3) . ')',
-            ColumnType::SMALLINT => 'number(' . ($size ?? 5) . ')',
-            ColumnType::INTEGER => 'number(' . ($size ?? 10) . ')',
-            ColumnType::BIGINT => 'number(' . ($size ?? 20) . ')',
-            ColumnType::FLOAT => 'binary_float',
-            ColumnType::DOUBLE => 'binary_double',
-            ColumnType::DECIMAL => 'number(' . ($size ?? 10) . ',' . ($column->getScale() ?? 0) . ')',
-            ColumnType::MONEY => 'number(' . ($size ?? 19) . ',' . ($column->getScale() ?? 4) . ')',
-            ColumnType::CHAR => 'char',
-            ColumnType::STRING => 'varchar2(' . ($size ?? 255) . ')',
-            ColumnType::TEXT => 'clob',
-            ColumnType::BINARY => 'blob',
-            ColumnType::UUID => 'raw(16)',
-            ColumnType::DATETIME => 'timestamp',
-            ColumnType::TIMESTAMP => 'timestamp',
-            ColumnType::DATE => 'date',
-            ColumnType::TIME => 'interval day(0) to second',
-            ColumnType::ARRAY => 'clob',
-            ColumnType::STRUCTURED => 'clob',
-            ColumnType::JSON => 'clob',
-            default => 'varchar2',
+            'timestamp with time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
+            'timestamp with local time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with local time zone',
+            'interval day to second' => 'interval day' . ($scale !== null ? "($scale)" : '') . ' to second' . ($size !== null ? "($size)" : ''),
+            'interval year to month' => 'interval year' . ($scale !== null ? "($scale)" : '') . ' to month',
         };
     }
 

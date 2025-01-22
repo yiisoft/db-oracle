@@ -344,6 +344,10 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
             ['number(10) REFERENCES "ref_table" ("id")', ColumnBuilder::integer()->reference($referenceRestrict)],
             ['number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL', ColumnBuilder::integer()->reference($referenceSetNull)],
+            ['timestamp(3) with time zone', 'timestamp (3) with time zone'],
+            ['timestamp with local time zone', 'timestamp with local time zone'],
+            ['interval day(5) to second(6)', 'interval day(5) to second (6)'],
+            ['interval year(8) to month', 'interval year(8) to month'],
         ];
     }
 

@@ -32,10 +32,12 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
             ['binary_double', ColumnType::DOUBLE, DoubleColumn::class],
             ['float', ColumnType::DOUBLE, DoubleColumn::class],
             ['date', ColumnType::DATE, StringColumn::class],
-            ['interval day(0) to second', ColumnType::TIME, StringColumn::class],
             ['timestamp', ColumnType::TIMESTAMP, StringColumn::class],
             ['timestamp with time zone', ColumnType::TIMESTAMP, StringColumn::class],
             ['timestamp with local time zone', ColumnType::TIMESTAMP, StringColumn::class],
+            ['timestamp with local time zone', ColumnType::TIMESTAMP, StringColumn::class],
+            ['interval day to second', ColumnType::STRING, StringColumn::class],
+            ['interval year to month', ColumnType::STRING, StringColumn::class],
         ];
     }
 
@@ -52,7 +54,15 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
 
         unset($definitions['bigint UNSIGNED']);
 
-        return $definitions;
+        return [
+            ...$definitions,
+            ['interval day to second', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval day to second']],
+            ['interval day(0) to second', ColumnType::TIME, StringColumn::class, ['getDbType' => 'interval day to second', 'getScale' => 0]],
+            ['interval day (0) to second(6)', ColumnType::TIME, StringColumn::class, ['getDbType' => 'interval day to second', 'getScale' => 0, 'getSize' => 6]],
+            ['interval day to second (0)', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval day to second', 'getSize' => 0]],
+            ['interval year to month', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval year to month']],
+            ['interval year (2) to month', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval year to month', 'getScale' => 2]],
+        ];
     }
 
     public static function defaultValueRaw(): array
