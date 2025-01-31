@@ -22,6 +22,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_change_key_case;
+use function array_column;
 use function array_map;
 use function array_reverse;
 use function implode;
@@ -264,7 +265,7 @@ final class Schema extends AbstractPdoSchema
          * @psalm-var array[] $index
          */
         foreach ($indexes as $name => $index) {
-            $columnNames = DbArrayHelper::getColumn($index, 'column_name');
+            $columnNames = array_column($index, 'column_name');
 
             if ($columnNames[0] === null) {
                 $columnNames[0] = '';
@@ -677,27 +678,27 @@ final class Schema extends AbstractPdoSchema
                     case 'P':
                         $result[self::PRIMARY_KEY] = (new Constraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(array_column($constraint, 'column_name'));
                         break;
                     case 'R':
                         $result[self::FOREIGN_KEYS][] = (new ForeignKeyConstraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(array_column($constraint, 'column_name'))
                             ->foreignSchemaName($constraint[0]['foreign_table_schema'])
                             ->foreignTableName($constraint[0]['foreign_table_name'])
-                            ->foreignColumnNames(DbArrayHelper::getColumn($constraint, 'foreign_column_name'))
+                            ->foreignColumnNames(array_column($constraint, 'foreign_column_name'))
                             ->onDelete($constraint[0]['on_delete'])
                             ->onUpdate(null);
                         break;
                     case 'U':
                         $result[self::UNIQUES][] = (new Constraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(array_column($constraint, 'column_name'));
                         break;
                     case 'C':
                         $result[self::CHECKS][] = (new CheckConstraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(array_column($constraint, 'column_name'))
                             ->expression($constraint[0]['check_expr']);
                         break;
                 }
