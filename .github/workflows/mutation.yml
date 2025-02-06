@@ -42,7 +42,7 @@ jobs:
         ports:
           - 1521:1521
         env:
-          ORACLE_DATABASE : yiitest
+          ORACLE_DATABASE: YIITEST
           ORACLE_PASSWORD : root
         options: >-
           --name=oci
@@ -84,3 +84,9 @@ jobs:
           vendor/bin/roave-infection-static-analysis-plugin --threads=2 --ignore-msi-with-no-mutations --only-covered
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          YII_ORACLE_SID: XE
+          YII_ORACLE_DATABASE: YIITEST
+          YII_ORACLE_HOST: localhost
+          YII_ORACLE_PORT: 1521
+          YII_ORACLE_USER: system
+          YII_ORACLE_PASSWORD: root
