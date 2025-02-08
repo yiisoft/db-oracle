@@ -30,6 +30,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 use function is_resource;
 use function str_pad;
 use function stream_get_contents;
+use function version_compare;
 
 /**
  * @group oracle
@@ -650,6 +651,10 @@ final class CommandTest extends CommonCommandTest
     public function testCreateSearchIndex()
     {
         $db = $this->getConnection();
+
+        if (version_compare($db->getServerInfo()->getVersion(), '21', '<')) {
+            $this->markTestSkipped('Search index is supported since Oracle 21');
+        }
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
