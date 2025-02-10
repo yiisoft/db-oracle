@@ -267,8 +267,8 @@ final class Schema extends AbstractPdoSchema
         foreach ($indexes as $name => $index) {
             $columnNames = array_column($index, 'column_name');
 
-            if ($columnNames[0] === null) {
-                $columnNames[0] = '';
+            if ($columnNames === [null]) {
+                $columnNames = [];
             }
 
             $result[] = (new IndexConstraint())

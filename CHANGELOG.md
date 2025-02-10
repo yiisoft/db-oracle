@@ -30,6 +30,7 @@
 - Enh #299: Add `ColumnDefinitionParser` class (@Tigrov)
 - Enh #299: Convert database types to lower case (@Tigrov)
 - Enh #300: Replace `DbArrayHelper::getColumn()` with `array_column()` (@Tigrov)
+- New #301: Add `IndexType` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
