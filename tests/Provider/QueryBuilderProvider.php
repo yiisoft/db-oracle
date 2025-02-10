@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use Exception;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
@@ -243,10 +244,12 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $referenceRestrict = new ForeignKeyConstraint();
         $referenceRestrict->foreignColumnNames(['id']);
         $referenceRestrict->foreignTableName('ref_table');
-        $referenceRestrict->onDelete('restrict');
+        $referenceRestrict->onDelete(ReferentialAction::RESTRICT);
+        $referenceRestrict->onUpdate(ReferentialAction::RESTRICT);
 
         $referenceSetNull = clone $referenceRestrict;
-        $referenceSetNull->onDelete('set null');
+        $referenceSetNull->onDelete(ReferentialAction::SET_NULL);
+        $referenceRestrict->onUpdate(ReferentialAction::SET_NULL);
 
         $values = parent::buildColumnDefinition();
 

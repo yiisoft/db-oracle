@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -51,8 +52,8 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
     protected function buildOnDelete(string $onDelete): string
     {
         return match ($onDelete = strtoupper($onDelete)) {
-            'CASCADE',
-            'SET NULL' => " ON DELETE $onDelete",
+            ReferentialAction::CASCADE,
+            ReferentialAction::SET_NULL => " ON DELETE $onDelete",
             default => '',
         };
     }
