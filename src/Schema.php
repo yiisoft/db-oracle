@@ -58,8 +58,7 @@ use function strtolower;
  *     foreign_table_schema: string|null,
  *     foreign_table_name: string|null,
  *     foreign_column_name: string|null,
- *     on_update: string,
- *     on_delete: string,
+ *     on_delete: ReferentialAction::*,
  *     check_expr: string
  *   }
  * >
