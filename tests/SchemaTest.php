@@ -30,9 +30,9 @@ final class SchemaTest extends CommonSchemaTest
     /**
      * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::columns
      */
-    public function testColumnSchema(array $columns, string $tableName = 'type'): void
+    public function testColumns(array $columns, string $tableName = 'type'): void
     {
-        parent::testColumnSchema($columns, $tableName);
+        parent::testColumns($columns, $tableName);
     }
 
     /**

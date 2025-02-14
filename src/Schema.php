@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -17,18 +18,20 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_change_key_case;
+use function array_column;
 use function array_map;
 use function array_reverse;
 use function implode;
 use function is_array;
 use function md5;
+use function preg_replace;
 use function serialize;
+use function strtolower;
 
 /**
  * Implements the Oracle Server specific schema, supporting Oracle Server 11C and above.
@@ -56,8 +59,7 @@ use function serialize;
  *     foreign_table_schema: string|null,
  *     foreign_table_name: string|null,
  *     foreign_column_name: string|null,
- *     on_update: string,
- *     on_delete: string,
+ *     on_delete: ReferentialAction::*,
  *     check_expr: string
  *   }
  * >
@@ -68,12 +70,6 @@ final class Schema extends AbstractPdoSchema
     {
         $this->defaultSchema = $defaultSchema;
         parent::__construct($db, $schemaCache);
-    }
-
-    /** @deprecated Use {@see ColumnBuilder} instead. Will be removed in 2.0. */
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface
-    {
-        return new Column($type, $length);
     }
 
     public function getColumnFactory(): ColumnFactoryInterface
@@ -269,10 +265,10 @@ final class Schema extends AbstractPdoSchema
          * @psalm-var array[] $index
          */
         foreach ($indexes as $name => $index) {
-            $columnNames = DbArrayHelper::getColumn($index, 'column_name');
+            $columnNames = array_column($index, 'column_name');
 
-            if ($columnNames[0] === null) {
-                $columnNames[0] = '';
+            if ($columnNames === [null]) {
+                $columnNames = [];
             }
 
             $result[] = (new IndexConstraint())
@@ -396,7 +392,7 @@ final class Schema extends AbstractPdoSchema
             $info['table'] = $tableName;
 
             /** @psalm-var ColumnArray $info */
-            $column = $this->loadColumnSchema($info);
+            $column = $this->loadColumn($info);
 
             $table->column($info['column_name'], $column);
         }
@@ -434,17 +430,28 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Loads the column information into a {@see ColumnSchemaInterface} object.
+     * Loads the column information into a {@see ColumnInterface} object.
      *
      * @param array $info The column information.
      *
-     * @return ColumnSchemaInterface The column schema object.
+     * @return ColumnInterface The column object.
      *
      * @psalm-param ColumnArray $info The column information.
      */
-    private function loadColumnSchema(array $info): ColumnSchemaInterface
+    private function loadColumn(array $info): ColumnInterface
     {
-        return $this->getColumnFactory()->fromDbType($info['data_type'], [
+        $dbType = strtolower(preg_replace('/\([^)]+\)/', '', $info['data_type']));
+
+        match ($dbType) {
+            'timestamp',
+            'timestamp with time zone',
+            'timestamp with local time zone',
+            'interval day to second',
+            'interval year to month' => [$info['size'], $info['data_scale']] = [$info['data_scale'], $info['size']],
+            default => null,
+        };
+
+        return $this->getColumnFactory()->fromDbType($dbType, [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'comment' => $info['column_comment'],
             'defaultValueRaw' => $info['data_default'],
@@ -671,27 +678,27 @@ final class Schema extends AbstractPdoSchema
                     case 'P':
                         $result[self::PRIMARY_KEY] = (new Constraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(array_column($constraint, 'column_name'));
                         break;
                     case 'R':
                         $result[self::FOREIGN_KEYS][] = (new ForeignKeyConstraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(array_column($constraint, 'column_name'))
                             ->foreignSchemaName($constraint[0]['foreign_table_schema'])
                             ->foreignTableName($constraint[0]['foreign_table_name'])
-                            ->foreignColumnNames(DbArrayHelper::getColumn($constraint, 'foreign_column_name'))
+                            ->foreignColumnNames(array_column($constraint, 'foreign_column_name'))
                             ->onDelete($constraint[0]['on_delete'])
                             ->onUpdate(null);
                         break;
                     case 'U':
                         $result[self::UNIQUES][] = (new Constraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'));
+                            ->columnNames(array_column($constraint, 'column_name'));
                         break;
                     case 'C':
                         $result[self::CHECKS][] = (new CheckConstraint())
                             ->name($name)
-                            ->columnNames(DbArrayHelper::getColumn($constraint, 'column_name'))
+                            ->columnNames(array_column($constraint, 'column_name'))
                             ->expression($constraint[0]['check_expr']);
                         break;
                 }

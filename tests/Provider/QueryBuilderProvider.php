@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Exception;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
@@ -42,6 +44,13 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         SQL;
 
         return $addForeingKey;
+    }
+
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE "foo1" MODIFY "bar" varchar2(255)'],
+        ];
     }
 
     public static function batchInsert(): array
@@ -235,10 +244,12 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $referenceRestrict = new ForeignKeyConstraint();
         $referenceRestrict->foreignColumnNames(['id']);
         $referenceRestrict->foreignTableName('ref_table');
-        $referenceRestrict->onDelete('restrict');
+        $referenceRestrict->onDelete(ReferentialAction::RESTRICT);
+        $referenceRestrict->onUpdate(ReferentialAction::RESTRICT);
 
         $referenceSetNull = clone $referenceRestrict;
-        $referenceSetNull->onDelete('set null');
+        $referenceSetNull->onDelete(ReferentialAction::SET_NULL);
+        $referenceRestrict->onUpdate(ReferentialAction::SET_NULL);
 
         $values = parent::buildColumnDefinition();
 
@@ -321,6 +332,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['notNull()'][0] = 'varchar2(255) NOT NULL';
         $values['null()'][0] = 'varchar2(255) NULL';
         $values['integer()->primaryKey()'][0] = 'number(10) PRIMARY KEY';
+        $values['string()->primaryKey()'][0] = 'varchar2(255) PRIMARY KEY';
         $values["integer()->defaultValue('')"][0] = 'number(10) DEFAULT NULL';
         $values['size(10)'][0] = 'varchar2(10)';
         $values['unique()'][0] = 'varchar2(255) UNIQUE';
@@ -335,6 +347,10 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
             ['number(10) REFERENCES "ref_table" ("id")', ColumnBuilder::integer()->reference($referenceRestrict)],
             ['number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL', ColumnBuilder::integer()->reference($referenceSetNull)],
+            ['timestamp(3) with time zone', 'timestamp (3) with time zone'],
+            ['timestamp with local time zone', 'timestamp with local time zone'],
+            ['interval day(5) to second(6)', 'interval day(5) to second (6)'],
+            ['interval year(8) to month', 'interval year(8) to month'],
         ];
     }
 

@@ -17,7 +17,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 [
                     'int_col' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => false,
                         'notNull' => true,
@@ -29,7 +29,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'int_col2' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -41,7 +41,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'tinyint_col' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -53,7 +53,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'smallint_col' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -65,7 +65,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'char_col' => [
                         'type' => 'char',
-                        'dbType' => 'CHAR',
+                        'dbType' => 'char',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => true,
@@ -77,7 +77,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'char_col2' => [
                         'type' => 'string',
-                        'dbType' => 'VARCHAR2',
+                        'dbType' => 'varchar2',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -89,7 +89,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'char_col3' => [
                         'type' => 'string',
-                        'dbType' => 'VARCHAR2',
+                        'dbType' => 'varchar2',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -101,7 +101,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'nvarchar_col' => [
                         'type' => 'string',
-                        'dbType' => 'NVARCHAR2',
+                        'dbType' => 'nvarchar2',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -113,7 +113,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'float_col' => [
                         'type' => 'double',
-                        'dbType' => 'FLOAT',
+                        'dbType' => 'float',
                         'phpType' => 'float',
                         'primaryKey' => false,
                         'notNull' => true,
@@ -125,7 +125,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'float_col2' => [
                         'type' => 'double',
-                        'dbType' => 'FLOAT',
+                        'dbType' => 'float',
                         'phpType' => 'float',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -137,7 +137,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'blob_col' => [
                         'type' => 'binary',
-                        'dbType' => 'BLOB',
+                        'dbType' => 'blob',
                         'phpType' => 'mixed',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -149,7 +149,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'numeric_col' => [
                         'type' => 'decimal',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'float',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -161,19 +161,19 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'timestamp_col' => [
                         'type' => 'timestamp',
-                        'dbType' => 'TIMESTAMP(6)',
+                        'dbType' => 'timestamp',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => true,
                         'autoIncrement' => false,
                         'enumValues' => null,
-                        'size' => null,
-                        'scale' => 6,
+                        'size' => 6,
+                        'scale' => null,
                         'defaultValue' => new Expression("to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')"),
                     ],
                     'time_col' => [
                         'type' => 'time',
-                        'dbType' => 'INTERVAL DAY(0) TO SECOND(0)',
+                        'dbType' => 'interval day to second',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -185,19 +185,19 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'interval_day_col' => [
                         'type' => 'string',
-                        'dbType' => 'INTERVAL DAY(1) TO SECOND(0)',
+                        'dbType' => 'interval day to second',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
                         'autoIncrement' => false,
                         'enumValues' => null,
-                        'size' => 1,
-                        'scale' => 0,
+                        'size' => 0,
+                        'scale' => 1,
                         'defaultValue' => new Expression("INTERVAL '2 04:56:12' DAY(1) TO SECOND(0)"),
                     ],
                     'bool_col' => [
                         'type' => 'char',
-                        'dbType' => 'CHAR',
+                        'dbType' => 'char',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => true,
@@ -209,7 +209,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'bool_col2' => [
                         'type' => 'char',
-                        'dbType' => 'CHAR',
+                        'dbType' => 'char',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => false,
@@ -221,19 +221,19 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'ts_default' => [
                         'type' => 'timestamp',
-                        'dbType' => 'TIMESTAMP(6)',
+                        'dbType' => 'timestamp',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => true,
                         'autoIncrement' => false,
                         'enumValues' => null,
-                        'size' => null,
-                        'scale' => 6,
+                        'size' => 6,
+                        'scale' => null,
                         'defaultValue' => new Expression('CURRENT_TIMESTAMP'),
                     ],
                     'bit_col' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => false,
                         'notNull' => true,
@@ -250,7 +250,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 [
                     'id' => [
                         'type' => 'integer',
-                        'dbType' => 'NUMBER',
+                        'dbType' => 'number',
                         'phpType' => 'int',
                         'primaryKey' => true,
                         'notNull' => true,
@@ -262,7 +262,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ],
                     'type' => [
                         'type' => 'string',
-                        'dbType' => 'VARCHAR2',
+                        'dbType' => 'varchar2',
                         'phpType' => 'string',
                         'primaryKey' => false,
                         'notNull' => true,

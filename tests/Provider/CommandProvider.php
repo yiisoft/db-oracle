@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use JsonException;
 use PDO;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Oracle\Column\ColumnBuilder;
+use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
@@ -90,6 +92,15 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
                 new Param(serialize(['string' => 'string', 'integer' => 1234]), PDO::PARAM_LOB),
             ],
             ['simple string', 'simple string'],
+        ];
+    }
+
+    public static function createIndex(): array
+    {
+        return [
+            ...parent::createIndex(),
+            [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::UNIQUE, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::BITMAP, null],
         ];
     }
 }
