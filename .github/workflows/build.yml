@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Initialize Database.
-        run: docker exec -i oci "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
+        run: docker exec -i oci bash -c "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
 
       - name: Checkout.
         uses: actions/checkout@v3
