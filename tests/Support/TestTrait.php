@@ -16,6 +16,8 @@ trait TestTrait
 {
     private string $dsn = 'oci:dbname=localhost/XE;';
 
+    private string $fixture = 'oci.sql';
+
     /**
      * @throws InvalidConfigException
      * @throws Exception
@@ -25,7 +27,7 @@ trait TestTrait
         $db = new Connection(new Driver($this->getDsn(), 'system', 'root'), DbHelper::getSchemaCache());
 
         if ($fixture) {
-            DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
+            DbHelper::loadFixture($db, __DIR__ . "/Fixture/$this->fixture");
         }
 
         return $db;

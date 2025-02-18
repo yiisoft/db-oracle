@@ -7,7 +7,10 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Schema\Column\ArrayColumn;
+use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 
 final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider
@@ -46,22 +49,22 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         $definitions = parent::definitions();
 
         $definitions['text'][0] = 'clob';
-        $definitions['text'][3]['getDbType'] = 'clob';
+        $definitions['text'][1]->dbType('clob');
         $definitions['text NOT NULL'][0] = 'clob NOT NULL';
-        $definitions['text NOT NULL'][3]['getDbType'] = 'clob';
+        $definitions['text NOT NULL'][1]->dbType('clob');
         $definitions['decimal(10,2)'][0] = 'number(10,2)';
-        $definitions['decimal(10,2)'][3]['getDbType'] = 'number';
-
-        unset($definitions['bigint UNSIGNED']);
+        $definitions['decimal(10,2)'][1]->dbType('number');
+        $definitions['bigint UNSIGNED'][1] = new BigIntColumn(unsigned: true);
+        $definitions['integer[]'] = ['number(10,0)[]', new ArrayColumn(dbType: 'number', size: 10, column: new IntegerColumn(dbType: 'number', size: 10))];
 
         return [
             ...$definitions,
-            ['interval day to second', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval day to second']],
-            ['interval day(0) to second', ColumnType::TIME, StringColumn::class, ['getDbType' => 'interval day to second', 'getScale' => 0]],
-            ['interval day (0) to second(6)', ColumnType::TIME, StringColumn::class, ['getDbType' => 'interval day to second', 'getScale' => 0, 'getSize' => 6]],
-            ['interval day to second (0)', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval day to second', 'getSize' => 0]],
-            ['interval year to month', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval year to month']],
-            ['interval year (2) to month', ColumnType::STRING, StringColumn::class, ['getDbType' => 'interval year to month', 'getScale' => 2]],
+            ['interval day to second', new StringColumn(dbType: 'interval day to second')],
+            ['interval day(0) to second', new StringColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0)],
+            ['interval day (0) to second(6)', new StringColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0, size: 6)],
+            ['interval day to second (0)', new StringColumn(dbType: 'interval day to second', size: 0)],
+            ['interval year to month', new StringColumn(dbType: 'interval year to month')],
+            ['interval year (2) to month', new StringColumn(dbType: 'interval year to month', scale: 2)],
         ];
     }
 

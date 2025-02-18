@@ -22,7 +22,7 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
         . 'interval day\s*(?:\((\d+)\))? to second'
         . '|long raw'
         . '|\w*'
-        . ')\s*(?:\(([^)]+)\))?\s*'
+        . ')\s*(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*'
         . '/i';
 
     public function parse(string $definition): array
@@ -46,6 +46,11 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
 
         if ($scale !== '') {
             $info += ['scale' => (int) $scale];
+        }
+
+        if (isset($matches[7])) {
+            /** @psalm-var positive-int */
+            $info['dimension'] = substr_count($matches[7], '[');
         }
 
         $extra = substr($definition, strlen($matches[0]));

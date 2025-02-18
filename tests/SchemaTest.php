@@ -32,6 +32,27 @@ final class SchemaTest extends CommonSchemaTest
      */
     public function testColumns(array $columns, string $tableName = 'type'): void
     {
+        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
+
+        if ($version21) {
+            $this->fixture = 'oci21.sql';
+
+            if ($tableName === 'type') {
+                $columns['json_col'] = [
+                    'type' => 'json',
+                    'dbType' => 'json',
+                    'phpType' => 'mixed',
+                    'primaryKey' => false,
+                    'notNull' => false,
+                    'autoIncrement' => false,
+                    'enumValues' => null,
+                    'size' => null,
+                    'scale' => null,
+                    'defaultValue' => ['a' => 1],
+                ];
+            }
+        }
+
         parent::testColumns($columns, $tableName);
     }
 
@@ -257,21 +278,6 @@ final class SchemaTest extends CommonSchemaTest
         );
 
         parent::testWorkWithDefaultValueConstraint();
-    }
-
-    public function withIndexDataProvider(): array
-    {
-        /*
-         * Bitmap indexes are not available for standard edition.
-        return array_merge(parent::withIndexDataProvider(), [
-            [
-                'indexType' => SchemaInterface::BITMAP,
-                'indexMethod' => null,
-                'columnType' => 'varchar(16)',
-            ],
-        ]);
-        */
-        return parent::withIndexDataProvider();
     }
 
     public function testNotConnectionPDO(): void

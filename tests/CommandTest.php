@@ -76,6 +76,12 @@ final class CommandTest extends CommonCommandTest
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
+        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
+
+        if ($version21) {
+            $this->fixture = 'oci21.sql';
+        }
+
         parent::testBatchInsert($table, $values, $columns, $expected, $expectedParams, $insertedRow);
     }
 

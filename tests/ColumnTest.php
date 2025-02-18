@@ -10,41 +10,53 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
-use Yiisoft\Db\Tests\Common\CommonColumnTest;
+use Yiisoft\Db\Tests\AbstractColumnTest;
 
 use function str_repeat;
+use function version_compare;
 
 /**
  * @group oracle
  */
-final class ColumnTest extends CommonColumnTest
+final class ColumnTest extends AbstractColumnTest
 {
     use TestTrait;
 
     public function testPhpTypeCast(): void
     {
+        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
+
+        if ($version21) {
+            $this->fixture = 'oci21.sql';
+        }
+
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
 
-        $command->insert(
-            'type',
-            [
-                'int_col' => 1,
-                'char_col' => str_repeat('x', 100),
-                'char_col3' => null,
-                'float_col' => 1.234,
-                'blob_col' => "\x10\x11\x12",
-                'timestamp_col' => new Expression("TIMESTAMP '2023-07-11 14:50:23'"),
-                'bool_col' => false,
-                'bit_col' => 0b0110_0110, // 102
-            ]
-        );
+        $insert = [
+            'int_col' => 1,
+            'char_col' => str_repeat('x', 100),
+            'char_col3' => null,
+            'float_col' => 1.234,
+            'blob_col' => "\x10\x11\x12",
+            'timestamp_col' => new Expression("TIMESTAMP '2023-07-11 14:50:23'"),
+            'bool_col' => false,
+            'bit_col' => 0b0110_0110, // 102
+        ];
+
+        if ($version21) {
+            $insert['json_col'] = [['a' => 1, 'b' => null, 'c' => [1, 3, 5]]];
+        }
+
+        $command->insert('type', $insert);
         $command->execute();
         $query = (new Query($db))->from('type')->one();
 
@@ -66,11 +78,22 @@ final class ColumnTest extends CommonColumnTest
         $this->assertEquals(false, $boolColPhpType);
         $this->assertSame(0b0110_0110, $bitColPhpType);
 
+        if ($version21) {
+            $jsonColPhpType = $tableSchema->getColumn('json_col')?->phpTypecast($query['json_col']);
+            $this->assertSame([['a' => 1, 'b' => null, 'c' => [1, 3, 5]]], $jsonColPhpType);
+        }
+
         $db->close();
     }
 
     public function testColumnInstance(): void
     {
+        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
+
+        if ($version21) {
+            $this->fixture = 'oci21.sql';
+        }
+
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
@@ -79,6 +102,10 @@ final class ColumnTest extends CommonColumnTest
         $this->assertInstanceOf(StringColumn::class, $tableSchema->getColumn('char_col'));
         $this->assertInstanceOf(DoubleColumn::class, $tableSchema->getColumn('float_col'));
         $this->assertInstanceOf(BinaryColumn::class, $tableSchema->getColumn('blob_col'));
+
+        if ($version21) {
+            $this->assertInstanceOf(JsonColumn::class, $tableSchema->getColumn('json_col'));
+        }
     }
 
     /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::predefinedTypes */
@@ -88,9 +115,9 @@ final class ColumnTest extends CommonColumnTest
     }
 
     /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::dbTypecastColumns */
-    public function testDbTypecastColumns(string $className, array $values): void
+    public function testDbTypecastColumns(ColumnInterface $column, array $values): void
     {
-        parent::testDbTypecastColumns($className, $values);
+        parent::testDbTypecastColumns($column, $values);
     }
 
     public function testBinaryColumn(): void

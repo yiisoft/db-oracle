@@ -43,6 +43,7 @@ final class ColumnFactory extends AbstractColumnFactory
         'timestamp with local time zone' => ColumnType::TIMESTAMP,
         'interval day to second' => ColumnType::STRING,
         'interval year to month' => ColumnType::STRING,
+        'json' => ColumnType::JSON,
 
         /** Deprecated */
         'long' => ColumnType::TEXT,
