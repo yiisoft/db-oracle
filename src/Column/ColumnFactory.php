@@ -9,6 +9,7 @@ use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function rtrim;
+use function strcasecmp;
 
 final class ColumnFactory extends AbstractColumnFactory
 {
@@ -62,6 +63,10 @@ final class ColumnFactory extends AbstractColumnFactory
                 0 => ColumnType::INTEGER,
                 default => ColumnType::DECIMAL,
             };
+        }
+
+        if (isset($info['check'], $info['name']) && strcasecmp($info['check'], '"' . $info['name'] .'" is json') === 0) {
+            return ColumnType::JSON;
         }
 
         if ($dbType === 'interval day to second' && isset($info['scale']) && $info['scale'] === 0) {

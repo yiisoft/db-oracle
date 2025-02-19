@@ -34,23 +34,11 @@ final class SchemaTest extends CommonSchemaTest
     {
         $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
 
-        if ($version21) {
+        if ($version21 && $tableName === 'type') {
             $this->fixture = 'oci21.sql';
 
-            if ($tableName === 'type') {
-                $columns['json_col'] = [
-                    'type' => 'json',
-                    'dbType' => 'json',
-                    'phpType' => 'mixed',
-                    'primaryKey' => false,
-                    'notNull' => false,
-                    'autoIncrement' => false,
-                    'enumValues' => null,
-                    'size' => null,
-                    'scale' => null,
-                    'defaultValue' => ['a' => 1],
-                ];
-            }
+            $columns['json_col']['dbType'] = 'json';
+            $columns['json_col']['check'] = null;
         }
 
         parent::testColumns($columns, $tableName);

@@ -29,9 +29,7 @@ final class ColumnTest extends AbstractColumnTest
 
     public function testPhpTypeCast(): void
     {
-        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
-
-        if ($version21) {
+        if (version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
@@ -41,7 +39,7 @@ final class ColumnTest extends AbstractColumnTest
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
 
-        $insert = [
+        $command->insert('type', [
             'int_col' => 1,
             'char_col' => str_repeat('x', 100),
             'char_col3' => null,
@@ -50,13 +48,8 @@ final class ColumnTest extends AbstractColumnTest
             'timestamp_col' => new Expression("TIMESTAMP '2023-07-11 14:50:23'"),
             'bool_col' => false,
             'bit_col' => 0b0110_0110, // 102
-        ];
-
-        if ($version21) {
-            $insert['json_col'] = [['a' => 1, 'b' => null, 'c' => [1, 3, 5]]];
-        }
-
-        $command->insert('type', $insert);
+            'json_col' => [['a' => 1, 'b' => null, 'c' => [1, 3, 5]]],
+        ]);
         $command->execute();
         $query = (new Query($db))->from('type')->one();
 
@@ -69,6 +62,7 @@ final class ColumnTest extends AbstractColumnTest
         $blobColPhpType = $tableSchema->getColumn('blob_col')?->phpTypecast($query['blob_col']);
         $boolColPhpType = $tableSchema->getColumn('bool_col')?->phpTypecast($query['bool_col']);
         $bitColPhpType = $tableSchema->getColumn('bit_col')?->phpTypecast($query['bit_col']);
+        $jsonColPhpType = $tableSchema->getColumn('json_col')?->phpTypecast($query['json_col']);
 
         $this->assertSame(1, $intColPhpType);
         $this->assertSame(str_repeat('x', 100), $charColPhpType);
@@ -77,20 +71,14 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertSame("\x10\x11\x12", stream_get_contents($blobColPhpType));
         $this->assertEquals(false, $boolColPhpType);
         $this->assertSame(0b0110_0110, $bitColPhpType);
-
-        if ($version21) {
-            $jsonColPhpType = $tableSchema->getColumn('json_col')?->phpTypecast($query['json_col']);
-            $this->assertSame([['a' => 1, 'b' => null, 'c' => [1, 3, 5]]], $jsonColPhpType);
-        }
+        $this->assertSame([['a' => 1, 'b' => null, 'c' => [1, 3, 5]]], $jsonColPhpType);
 
         $db->close();
     }
 
     public function testColumnInstance(): void
     {
-        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
-
-        if ($version21) {
+        if (version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
@@ -102,10 +90,7 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertInstanceOf(StringColumn::class, $tableSchema->getColumn('char_col'));
         $this->assertInstanceOf(DoubleColumn::class, $tableSchema->getColumn('float_col'));
         $this->assertInstanceOf(BinaryColumn::class, $tableSchema->getColumn('blob_col'));
-
-        if ($version21) {
-            $this->assertInstanceOf(JsonColumn::class, $tableSchema->getColumn('json_col'));
-        }
+        $this->assertInstanceOf(JsonColumn::class, $tableSchema->getColumn('json_col'));
     }
 
     /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::predefinedTypes */

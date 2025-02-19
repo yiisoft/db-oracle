@@ -63,11 +63,7 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::batchInsert
-     *
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $values,
@@ -76,9 +72,7 @@ final class CommandTest extends CommonCommandTest
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
-        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
-
-        if ($version21) {
+        if (version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
