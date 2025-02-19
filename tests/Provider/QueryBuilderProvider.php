@@ -346,19 +346,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         } else {
             $values['array()'] = [
                 'clob CHECK ("array_col" is json)',
-                $values['array()'][1]->withName('array_col')
+                $values['array()'][1]->withName('array_col'),
             ];
             $values['structured()'] = [
                 'clob CHECK ("structured_col" is json)',
-                $values['structured()'][1]->withName('structured_col')
+                $values['structured()'][1]->withName('structured_col'),
             ];
             $values['json()'] = [
                 'clob CHECK ("json_col" is json)',
-                $values['json()'][1]->withName('json_col')
+                $values['json()'][1]->withName('json_col'),
             ];
             $values['json(100)'] = [
                 'clob CHECK ("json_100" is json)',
-                $values['json(100)'][1]->withName('json_100')
+                $values['json(100)'][1]->withName('json_100'),
             ];
         }
 

@@ -65,7 +65,7 @@ final class ColumnFactory extends AbstractColumnFactory
             };
         }
 
-        if (isset($info['check'], $info['name']) && strcasecmp($info['check'], '"' . $info['name'] .'" is json') === 0) {
+        if (isset($info['check'], $info['name']) && strcasecmp($info['check'], '"' . $info['name'] . '" is json') === 0) {
             return ColumnType::JSON;
         }
 
