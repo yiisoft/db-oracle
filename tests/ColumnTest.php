@@ -29,8 +29,6 @@ final class ColumnTest extends AbstractColumnTest
 
     public function testPhpTypeCast(): void
     {
-        $this->markTestSkipped('Segmentation fault');
-
         $db = $this->getConnection();
 
         if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
