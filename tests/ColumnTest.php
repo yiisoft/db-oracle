@@ -8,12 +8,12 @@ use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 

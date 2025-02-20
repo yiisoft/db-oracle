@@ -78,11 +78,11 @@ final class ColumnFactory extends AbstractColumnFactory
 
     protected function getColumnClass(string $type, array $info = []): string
     {
-        if ($type === ColumnType::BINARY) {
-            return BinaryColumn::class;
-        }
-
-        return parent::getColumnClass($type, $info);
+        return match ($type) {
+            ColumnType::BINARY => BinaryColumn::class,
+            ColumnType::JSON => JsonColumn::class,
+            default => parent::getColumnClass($type, $info),
+        };
     }
 
     protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed

@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
@@ -78,5 +79,14 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         $defaultValueRaw[] = [ColumnType::TIMESTAMP, 'now() ', new Expression('now()')];
 
         return $defaultValueRaw;
+    }
+
+    public static function types(): array
+    {
+        $types = parent::types();
+
+        $types['json'][2] = JsonColumn::class;
+
+        return $types;
     }
 }
