@@ -338,7 +338,9 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE CASCADE';
         $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE CASCADE';
 
-        if (version_compare(self::getDb()->getServerInfo()->getVersion(), '21', '>=')) {
+        $db = self::getDb();
+
+        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
             $values['array()'][0] = 'json';
             $values['structured()'][0] = 'json';
             $values['json()'][0] = 'json';
@@ -361,6 +363,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 $values['json(100)'][1]->withName('json_100'),
             ];
         }
+
+        $db->close();
 
         return [
             ...$values,

@@ -32,7 +32,9 @@ final class SchemaTest extends CommonSchemaTest
      */
     public function testColumns(array $columns, string $tableName = 'type'): void
     {
-        $version21 = version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=');
+        $db = $this->getConnection();
+        $version21 = version_compare($db->getServerInfo()->getVersion(), '21', '>=');
+        $db->close();
 
         if ($version21 && $tableName === 'type') {
             $this->fixture = 'oci21.sql';

@@ -29,10 +29,13 @@ final class ColumnTest extends AbstractColumnTest
 
     public function testPhpTypeCast(): void
     {
-        if (version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=')) {
+        $db = $this->getConnection();
+
+        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
+        $db->close();
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
@@ -78,11 +81,15 @@ final class ColumnTest extends AbstractColumnTest
 
     public function testColumnInstance(): void
     {
-        if (version_compare($this->getConnection()->getServerInfo()->getVersion(), '21', '>=')) {
+        $db = $this->getConnection();
+
+        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
+        $db->close();
         $db = $this->getConnection(true);
+
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
 
