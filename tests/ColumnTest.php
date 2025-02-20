@@ -124,6 +124,13 @@ final class ColumnTest extends AbstractColumnTest
         );
     }
 
+    public function testJsonColumn(): void
+    {
+        $jsonCol = new JsonColumn();
+
+        $this->assertNull($jsonCol->phpTypecast(null));
+    }
+
     public function testUniqueColumn(): void
     {
         $db = $this->getConnection(true);
