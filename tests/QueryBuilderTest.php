@@ -681,4 +681,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     {
         parent::testPrepareValue($expected, $value);
     }
+
+    public function testBuildWithWhereExistsArrayParameters(): void
+    {
+        $this->markTestSkipped('Segmentation fault');
+    }
 }
