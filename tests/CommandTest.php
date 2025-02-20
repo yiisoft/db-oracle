@@ -15,16 +15,12 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
-use Yiisoft\Db\Oracle\Connection;
-use Yiisoft\Db\Oracle\Dsn;
-use Yiisoft\Db\Oracle\Driver;
 use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function is_resource;
@@ -637,13 +633,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testShowDatabases(): void
     {
-        $dsn = new Dsn('oci', 'localhost');
-        $db = new Connection(new Driver($dsn->asString(), 'SYSTEM', 'root'), DbHelper::getSchemaCache());
-
-        $command = $db->createCommand();
-
-        $this->assertSame('oci:dbname=localhost:1521', $db->getDriver()->getDsn());
-        $this->assertSame(['YIITEST'], $command->showDatabases());
+        $this->assertSame([self::getDatabaseName()], self::getDb()->createCommand()->showDatabases());
     }
 
     #[DataProviderExternal(CommandProvider::class, 'createIndex')]
