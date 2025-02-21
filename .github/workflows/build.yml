@@ -95,13 +95,6 @@ jobs:
 
       - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
-        env:
-          YII_ORACLE_SID: XE
-          YII_ORACLE_DATABASE: YIITEST
-          YII_ORACLE_HOST: localhost
-          YII_ORACLE_PORT: 1521
-          YII_ORACLE_USER: system
-          YII_ORACLE_PASSWORD: root
 
       - name: Upload coverage to Codecov.
         uses: codecov/codecov-action@v3
