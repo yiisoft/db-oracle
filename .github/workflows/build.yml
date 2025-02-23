@@ -67,7 +67,7 @@ jobs:
         run: docker exec -i oci bash -c "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
 
       - name: Checkout.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -76,6 +76,7 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
+          tools: composer:v2
 
       - name: Update composer.
         run: composer self-update
@@ -92,6 +93,9 @@ jobs:
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
+      - name: Install dependencies with composer.
+        run: composer update --no-interaction --no-progress --optimize-autoloader --ansi
+
       - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
         env:
@@ -103,7 +107,7 @@ jobs:
           YII_ORACLE_PASSWORD: root
 
       - name: Upload coverage to Codecov.
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
