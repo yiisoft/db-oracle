@@ -25,8 +25,8 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): string {
         $sql = 'ALTER TABLE ' . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)

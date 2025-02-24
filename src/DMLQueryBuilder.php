@@ -158,7 +158,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return parent::prepareInsertValues($table, $columns, $params);
     }
 
-    public function resetSequence(string $table, int|string $value = null): string
+    public function resetSequence(string $table, int|string|null $value = null): string
     {
         $tableSchema = $this->schema->getTableSchema($table);
 
