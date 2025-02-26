@@ -19,7 +19,7 @@ class ColumnProvider extends \Yiisoft\Db\Tests\Provider\ColumnProvider
     public static function dbTypecastColumns(): array
     {
         $values = parent::dbTypecastColumns();
-        $values['binary'][0] = BinaryColumn::class;
+        $values['binary'][0] = new BinaryColumn();
 
         return $values;
     }

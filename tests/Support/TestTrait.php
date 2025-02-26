@@ -17,6 +17,8 @@ trait TestTrait
 {
     private string $dsn = '';
 
+    private string $fixture = 'oci.sql';
+
     /**
      * @throws InvalidConfigException
      * @throws Exception
@@ -26,7 +28,7 @@ trait TestTrait
         $db = new Connection($this->getDriver(), DbHelper::getSchemaCache());
 
         if ($fixture) {
-            DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
+            DbHelper::loadFixture($db, __DIR__ . "/Fixture/$this->fixture");
         }
 
         return $db;

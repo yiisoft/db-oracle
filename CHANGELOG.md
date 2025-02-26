@@ -31,6 +31,7 @@
 - Enh #299: Convert database types to lower case (@Tigrov)
 - Enh #300: Replace `DbArrayHelper::getColumn()` with `array_column()` (@Tigrov)
 - New #301: Add `IndexType` class (@Tigrov)
+- New #303: Support JSON type (@Tigrov)
 - Bug #305: Explicitly mark nullable parameters (@vjik)
 
 ## 1.3.0 March 21, 2024

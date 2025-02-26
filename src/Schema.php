@@ -45,6 +45,7 @@ use function strtolower;
  *   nullable: string,
  *   data_default: string|null,
  *   constraint_type: string|null,
+ *   check: string|null,
  *   column_comment: string|null,
  *   schema: string,
  *   table: string
@@ -331,6 +332,22 @@ final class Schema extends AbstractPdoSchema
         $tableName = $table->getName();
 
         $sql = <<<SQL
+        WITH C AS (
+            SELECT AC.CONSTRAINT_TYPE, AC.SEARCH_CONDITION, ACC.COLUMN_NAME
+            FROM ALL_CONSTRAINTS AC
+            INNER JOIN ALL_CONS_COLUMNS ACC
+                ON ACC.OWNER = AC.OWNER
+                AND ACC.TABLE_NAME = AC.TABLE_NAME
+                AND ACC.CONSTRAINT_NAME = AC.CONSTRAINT_NAME
+            LEFT JOIN ALL_CONS_COLUMNS ACC2
+                ON ACC2.OWNER = AC.OWNER
+                AND ACC2.TABLE_NAME = AC.TABLE_NAME
+                AND ACC2.CONSTRAINT_NAME = AC.CONSTRAINT_NAME
+                AND ACC2.COLUMN_NAME != ACC.COLUMN_NAME
+            WHERE AC.OWNER = :schemaName2
+                AND AC.TABLE_NAME = :tableName2
+                AND (AC.CONSTRAINT_TYPE = 'P' OR AC.CONSTRAINT_TYPE IN ('U', 'C') AND ACC2.COLUMN_NAME IS NULL)
+        )
         SELECT
             A.COLUMN_NAME,
             A.DATA_TYPE,
@@ -339,7 +356,8 @@ final class Schema extends AbstractPdoSchema
             (CASE WHEN A.CHAR_LENGTH > 0 THEN A.CHAR_LENGTH ELSE A.DATA_PRECISION END) AS "size",
             A.NULLABLE,
             A.DATA_DEFAULT,
-            AC.CONSTRAINT_TYPE,
+            C.CONSTRAINT_TYPE,
+            C2.SEARCH_CONDITION AS "check",
             COM.COMMENTS AS COLUMN_COMMENT
         FROM ALL_TAB_COLUMNS A
         INNER JOIN ALL_OBJECTS B
@@ -349,26 +367,12 @@ final class Schema extends AbstractPdoSchema
             ON COM.OWNER = A.OWNER
             AND COM.TABLE_NAME = A.TABLE_NAME
             AND COM.COLUMN_NAME = A.COLUMN_NAME
-        LEFT JOIN ALL_CONSTRAINTS AC
-            ON AC.OWNER = A.OWNER
-            AND AC.TABLE_NAME = A.TABLE_NAME
-            AND (AC.CONSTRAINT_TYPE = 'P'
-                OR AC.CONSTRAINT_TYPE = 'U'
-                AND (
-                    SELECT COUNT(*)
-                    FROM ALL_CONS_COLUMNS UCC
-                    WHERE UCC.CONSTRAINT_NAME = AC.CONSTRAINT_NAME
-                        AND UCC.TABLE_NAME = AC.TABLE_NAME
-                        AND UCC.OWNER = AC.OWNER
-                ) = 1
-            )
-            AND AC.CONSTRAINT_NAME IN (
-                SELECT ACC.CONSTRAINT_NAME
-                FROM ALL_CONS_COLUMNS ACC
-                WHERE ACC.OWNER = A.OWNER
-                    AND ACC.TABLE_NAME = A.TABLE_NAME
-                    AND ACC.COLUMN_NAME = A.COLUMN_NAME
-            )
+        LEFT JOIN C
+            ON C.COLUMN_NAME = A.COLUMN_NAME
+            AND C.CONSTRAINT_TYPE IN ('P', 'U')
+        LEFT JOIN C C2
+            ON C2.COLUMN_NAME = A.COLUMN_NAME
+            AND C2.CONSTRAINT_TYPE = 'C'
         WHERE A.OWNER = :schemaName
             AND A.TABLE_NAME = :tableName
             AND B.OBJECT_TYPE IN ('TABLE', 'VIEW', 'MATERIALIZED VIEW')
@@ -377,7 +381,9 @@ final class Schema extends AbstractPdoSchema
 
         $columns = $this->db->createCommand($sql, [
             ':schemaName' => $schemaName,
+            ':schemaName2' => $schemaName,
             ':tableName' => $tableName,
+            ':tableName2' => $tableName,
         ])->queryAll();
 
         if ($columns === []) {
@@ -453,6 +459,7 @@ final class Schema extends AbstractPdoSchema
 
         return $this->getColumnFactory()->fromDbType($dbType, [
             'autoIncrement' => $info['identity_column'] === 'YES',
+            'check' => $info['check'],
             'comment' => $info['column_comment'],
             'defaultValueRaw' => $info['data_default'],
             'name' => $info['column_name'],

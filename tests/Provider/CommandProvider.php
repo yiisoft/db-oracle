@@ -67,6 +67,10 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             'empty columns and Traversable values' => [
                 ':qp3' => '1',
             ],
+            'binds json params' => [
+                ':qp3' => '1',
+                ':qp8' => '0',
+            ],
         ];
 
         foreach ($replaceParams as $key => $expectedParams) {
