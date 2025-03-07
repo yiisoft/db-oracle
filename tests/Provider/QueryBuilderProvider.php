@@ -311,14 +311,10 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['time()'][0] = 'interval day(0) to second(0)';
         $values['time(6)'][0] = 'interval day(0) to second(6)';
         $values['time(null)'][0] = 'interval day(0) to second';
-        $values['array()'][0] = 'clob';
-        $values['structured()'][0] = 'clob';
         $values["structured('json')"] = ['blob', ColumnBuilder::structured('blob')];
-        $values['json()'][0] = 'clob';
-        $values['json(100)'][0] = 'clob';
         $values["extra('NOT NULL')"][0] = 'varchar2(255) NOT NULL';
         $values["extra('')"][0] = 'varchar2(255)';
-        $values["check('value > 5')"][0] = 'number(10) CHECK ("col_59" > 5)';
+        $values["check('value > 5')"][0] = 'number(10) CHECK ("check_col" > 5)';
         $values["check('')"][0] = 'number(10)';
         $values['check(null)'][0] = 'number(10)';
         $values["comment('comment')"][0] = 'varchar2(255)';
@@ -341,6 +337,34 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['integer(8)->scale(2)'][0] = 'number(8)';
         $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE CASCADE';
         $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE CASCADE';
+
+        $db = self::getDb();
+
+        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
+            $values['array()'][0] = 'json';
+            $values['structured()'][0] = 'json';
+            $values['json()'][0] = 'json';
+            $values['json(100)'][0] = 'json';
+        } else {
+            $values['array()'] = [
+                'clob CHECK ("array_col" IS JSON)',
+                $values['array()'][1]->withName('array_col'),
+            ];
+            $values['structured()'] = [
+                'clob CHECK ("structured_col" IS JSON)',
+                $values['structured()'][1]->withName('structured_col'),
+            ];
+            $values['json()'] = [
+                'clob CHECK ("json_col" IS JSON)',
+                $values['json()'][1]->withName('json_col'),
+            ];
+            $values['json(100)'] = [
+                'clob CHECK ("json_100" IS JSON)',
+                $values['json(100)'][1]->withName('json_100'),
+            ];
+        }
+
+        $db->close();
 
         return [
             ...$values,

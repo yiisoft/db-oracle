@@ -9,6 +9,7 @@ use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function rtrim;
+use function strcasecmp;
 
 final class ColumnFactory extends AbstractColumnFactory
 {
@@ -43,6 +44,7 @@ final class ColumnFactory extends AbstractColumnFactory
         'timestamp with local time zone' => ColumnType::TIMESTAMP,
         'interval day to second' => ColumnType::STRING,
         'interval year to month' => ColumnType::STRING,
+        'json' => ColumnType::JSON,
 
         /** Deprecated */
         'long' => ColumnType::TEXT,
@@ -63,6 +65,10 @@ final class ColumnFactory extends AbstractColumnFactory
             };
         }
 
+        if (isset($info['check'], $info['name']) && strcasecmp($info['check'], '"' . $info['name'] . '" is json') === 0) {
+            return ColumnType::JSON;
+        }
+
         if ($dbType === 'interval day to second' && isset($info['scale']) && $info['scale'] === 0) {
             return ColumnType::TIME;
         }
@@ -72,11 +78,11 @@ final class ColumnFactory extends AbstractColumnFactory
 
     protected function getColumnClass(string $type, array $info = []): string
     {
-        if ($type === ColumnType::BINARY) {
-            return BinaryColumn::class;
-        }
-
-        return parent::getColumnClass($type, $info);
+        return match ($type) {
+            ColumnType::BINARY => BinaryColumn::class,
+            ColumnType::JSON => JsonColumn::class,
+            default => parent::getColumnClass($type, $info),
+        };
     }
 
     protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed

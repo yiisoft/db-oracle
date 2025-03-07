@@ -49,6 +49,27 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             . $this->buildExtra($column);
     }
 
+    protected function buildCheck(ColumnInterface $column): string
+    {
+        $check = $column->getCheck();
+
+        if (empty($check)) {
+            $name = $column->getName();
+
+            if (empty($name) || version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')) {
+                return '';
+            }
+
+            return match ($column->getType()) {
+                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
+                    ' CHECK (' . $this->queryBuilder->quoter()->quoteSimpleColumnName($name) . ' IS JSON)',
+                default => '',
+            };
+        }
+
+        return " CHECK ($check)";
+    }
+
     protected function buildOnDelete(string $onDelete): string
     {
         return match ($onDelete = strtoupper($onDelete)) {
@@ -96,9 +117,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                 ColumnType::TIMESTAMP => 'timestamp',
                 ColumnType::DATE => 'date',
                 ColumnType::TIME => 'interval day(0) to second',
-                ColumnType::ARRAY => 'clob',
-                ColumnType::STRUCTURED => 'clob',
-                ColumnType::JSON => 'clob',
+                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
+                    version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
+                    ? 'json'
+                    : 'clob',
                 default => 'varchar2',
             },
             'timestamp with time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
