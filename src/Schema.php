@@ -446,7 +446,9 @@ final class Schema extends AbstractPdoSchema
      */
     private function loadColumn(array $info): ColumnInterface
     {
-        $dbType = strtolower(preg_replace('/\([^)]+\)/', '', $info['data_type']));
+        /** @var string $dbType */
+        $dbType = preg_replace('/\([^)]+\)/', '', $info['data_type']);
+        $dbType = strtolower($dbType);
 
         match ($dbType) {
             'timestamp',
