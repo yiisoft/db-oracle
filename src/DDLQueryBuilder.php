@@ -83,6 +83,14 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         return 'DROP INDEX ' . $this->quoter->quoteTableName($name);
     }
 
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
+    {
+        return 'DROP TABLE '
+            . ($ifExists ? 'IF EXISTS ' : '')
+            . $this->quoter->quoteTableName($table)
+            . ($cascade ? ' CASCADE CONSTRAINTS' : '');
+    }
+
     public function renameTable(string $oldName, string $newName): string
     {
         return 'ALTER TABLE ' . $this->quoter->quoteTableName($oldName) . ' RENAME TO ' .

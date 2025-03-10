@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -680,5 +681,14 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     public function testPrepareValue(string $expected, mixed $value): void
     {
         parent::testPrepareValue($expected, $value);
+    }
+
+    #[DataProvider('dataDropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
+    {
+        if ($cascade) {
+            $expected = str_replace('CASCADE', 'CASCADE CONSTRAINTS', $expected);
+        }
+        parent::testDropTable($expected, $ifExists, $cascade);
     }
 }
