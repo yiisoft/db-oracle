@@ -269,6 +269,25 @@ final class CommandTest extends CommonCommandTest
         $command->dropDefaultValue('{{table}}', '{{name}}');
     }
 
+    public function testDropTableIfExists(): void
+    {
+        $command = $this->getConnection()->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Oracle doesn\'t support "IF EXISTS" option on drop table.');
+        $command->dropTable('{{table}}', ifExists: true);
+    }
+
+    public function testDropTableIfExistsWithExistTable(): void
+    {
+        $this->markTestSkipped('Oracle doesn\'t support "IF EXISTS" option on drop table.');
+    }
+
+    public function testDropTableIfExistsWithNonExistTable(): void
+    {
+        $this->markTestSkipped('Oracle doesn\'t support "IF EXISTS" option on drop table.');
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException

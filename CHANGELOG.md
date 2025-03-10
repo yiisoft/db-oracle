@@ -33,6 +33,8 @@
 - New #301: Add `IndexType` class (@Tigrov)
 - New #303: Support JSON type (@Tigrov)
 - Bug #305: Explicitly mark nullable parameters (@vjik)
+- New #307: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
+  `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 
 ## 1.3.0 March 21, 2024
 
