@@ -28,7 +28,9 @@ final class JsonColumn extends AbstractJsonColumn
         }
 
         if (is_resource($value)) {
-            return json_decode(stream_get_contents($value), true, 512, JSON_THROW_ON_ERROR);
+            /** @var string */
+            $value = stream_get_contents($value);
+            return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $value;
