@@ -83,10 +83,15 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         return 'DROP INDEX ' . $this->quoter->quoteTableName($name);
     }
 
+    /**
+     * @throws NotSupportedException Oracle doesn't support "IF EXISTS" option on drop table.
+     */
     public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
+        if ($ifExists) {
+            throw new NotSupportedException('Oracle doesn\'t support "IF EXISTS" option on drop table.');
+        }
         return 'DROP TABLE '
-            . ($ifExists ? 'IF EXISTS ' : '')
             . $this->quoter->quoteTableName($table)
             . ($cascade ? ' CASCADE CONSTRAINTS' : '');
     }

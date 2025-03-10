@@ -686,9 +686,23 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProvider('dataDropTable')]
     public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
+        if ($ifExists) {
+            $qb = $this->getConnection()->getQueryBuilder();
+
+            $this->expectException(NotSupportedException::class);
+            $this->expectExceptionMessage('Oracle doesn\'t support "IF EXISTS" option on drop table.');
+
+            $cascade === null
+                ? $qb->dropTable('customer', ifExists: true)
+                : $qb->dropTable('customer', ifExists: true, cascade: $cascade);
+
+            return;
+        }
+
         if ($cascade) {
             $expected = str_replace('CASCADE', 'CASCADE CONSTRAINTS', $expected);
         }
+
         parent::testDropTable($expected, $ifExists, $cascade);
     }
 }
