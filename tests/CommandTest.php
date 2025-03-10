@@ -228,12 +228,12 @@ final class CommandTest extends CommonCommandTest
         )->execute();
         $command->setSql(
             <<<SQL
-            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateViewTable_SEQ.NEXTVAL, 1)
             SQL,
         )->execute();
         $command->setSql(
             <<<SQL
-            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateViewTable_SEQ.NEXTVAL, 6)
             SQL,
         )->execute();
         $command->createView('{{testCreateView}}', $subquery)->execute();
