@@ -21,7 +21,7 @@ use function strlen;
  */
 final class Command extends AbstractPdoCommand
 {
-    public function insertWithReturningPks(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): array|false
     {
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
         $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
