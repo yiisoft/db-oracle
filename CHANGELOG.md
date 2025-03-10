@@ -33,6 +33,8 @@
 - New #301: Add `IndexType` class (@Tigrov)
 - New #303: Support JSON type (@Tigrov)
 - Bug #305: Explicitly mark nullable parameters (@vjik)
+- Chg #306: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
+- Enh #306: Minor refactoring (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
