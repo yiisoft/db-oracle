@@ -621,12 +621,12 @@ final class CommandTest extends CommonCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-    public function testProfiler(string $sql = null): void
+    public function testProfiler(string|null $sql = null): void
     {
         parent::testProfiler('SELECT 123 FROM DUAL');
     }
 
-    public function testProfilerData(string $sql = null): void
+    public function testProfilerData(string|null $sql = null): void
     {
         parent::testProfilerData('SELECT 123 FROM DUAL');
     }
