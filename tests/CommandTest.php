@@ -228,12 +228,12 @@ final class CommandTest extends CommonCommandTest
         )->execute();
         $command->setSql(
             <<<SQL
-            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 1)
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateViewTable_SEQ.NEXTVAL, 1)
             SQL,
         )->execute();
         $command->setSql(
             <<<SQL
-            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateTable_SEQ.NEXTVAL, 6)
+            INSERT INTO [[testCreateViewTable]] ("id", "bar") VALUES(testCreateViewTable_SEQ.NEXTVAL, 6)
             SQL,
         )->execute();
         $command->createView('{{testCreateView}}', $subquery)->execute();
@@ -640,12 +640,12 @@ final class CommandTest extends CommonCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-    public function testProfiler(string $sql = null): void
+    public function testProfiler(string|null $sql = null): void
     {
         parent::testProfiler('SELECT 123 FROM DUAL');
     }
 
-    public function testProfilerData(string $sql = null): void
+    public function testProfilerData(string|null $sql = null): void
     {
         parent::testProfilerData('SELECT 123 FROM DUAL');
     }
