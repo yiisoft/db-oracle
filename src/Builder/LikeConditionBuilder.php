@@ -52,7 +52,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
 
     protected function prepareColumn(LikeConditionInterface $expression, array &$params): string
     {
-        $column = null;
+        $column = parent::prepareColumn($expression, $params);
 
         if ($expression->getCaseSensitive() === false) {
             $column = 'LOWER(' . $column . ')';
@@ -67,7 +67,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
         ?array $escape,
         array &$params,
     ): string {
-        $placeholderName = null;
+        $placeholderName = parent::preparePlaceholderName($value, $expression, $escape, $params);
 
         if ($expression->getCaseSensitive() === false) {
             $placeholderName = 'LOWER(' . $placeholderName . ')';
