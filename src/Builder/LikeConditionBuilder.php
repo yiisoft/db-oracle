@@ -62,7 +62,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     }
 
     protected function preparePlaceholderName(
-        int|string|ExpressionInterface $value,
+        string|ExpressionInterface $value,
         LikeConditionInterface $expression,
         ?array $escape,
         array &$params,
