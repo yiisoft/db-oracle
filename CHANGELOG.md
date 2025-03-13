@@ -37,6 +37,7 @@
 - Enh #306: Minor refactoring (@Tigrov)
 - New #307: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
   `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
+- Chg #310: Remove usage of `hasLimit()` and `hasOffset()` methods of `DQLQueryBuilder` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
