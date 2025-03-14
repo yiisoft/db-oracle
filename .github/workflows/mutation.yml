@@ -1,5 +1,3 @@
-runs-on: self-hosted
-
 on:
   pull_request:
     paths:
@@ -23,6 +21,7 @@ concurrency:
 jobs:
   mutation:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
+    runs-on: self-hosted
 
     env:
       COMPOSER_ROOT_VERSION: 1.0.0
