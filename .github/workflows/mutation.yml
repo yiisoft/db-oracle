@@ -65,6 +65,8 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: memory_limit=-1
           coverage: pcov
+        env:
+          runner: self-hosted
 
       - name: Set environment variables pull request linux.
         uses: yiisoft/actions/db/environment-linux@master

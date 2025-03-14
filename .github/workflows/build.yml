@@ -78,6 +78,8 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
+        env:
+          runner: self-hosted
 
       - name: Update composer.
         run: composer self-update
