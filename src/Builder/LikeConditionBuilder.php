@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Exception;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
@@ -47,6 +48,32 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
         }
 
         return parent::build($expression, $params);
+    }
+
+    protected function prepareColumn(LikeConditionInterface $expression, array &$params): string
+    {
+        $column = parent::prepareColumn($expression, $params);
+
+        if ($expression->getCaseSensitive() === false) {
+            $column = 'LOWER(' . $column . ')';
+        }
+
+        return $column;
+    }
+
+    protected function preparePlaceholderName(
+        string|ExpressionInterface $value,
+        LikeConditionInterface $expression,
+        ?array $escape,
+        array &$params,
+    ): string {
+        $placeholderName = parent::preparePlaceholderName($value, $expression, $escape, $params);
+
+        if ($expression->getCaseSensitive() === false) {
+            $placeholderName = 'LOWER(' . $placeholderName . ')';
+        }
+
+        return $placeholderName;
     }
 
     /**
