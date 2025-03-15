@@ -36,14 +36,14 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 
         $filters = [];
 
-        if ($this->hasOffset($offset)) {
+        if (!empty($offset)) {
             $filters[] = 'rowNumId > ' .
-                ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string)$offset);
+                ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
 
-        if ($this->hasLimit($limit)) {
+        if ($limit !== null) {
             $filters[] = 'rownum <= ' .
-                ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string)$limit);
+                ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
         if (empty($filters)) {
