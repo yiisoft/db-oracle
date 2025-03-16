@@ -73,11 +73,6 @@ final class Schema extends AbstractPdoSchema
         parent::__construct($db, $schemaCache);
     }
 
-    public function getColumnFactory(): ColumnFactoryInterface
-    {
-        return new ColumnFactory();
-    }
-
     protected function resolveTableName(string $name): TableSchemaInterface
     {
         $resolvedName = new TableSchema();
@@ -459,7 +454,7 @@ final class Schema extends AbstractPdoSchema
             default => null,
         };
 
-        return $this->getColumnFactory()->fromDbType($dbType, [
+        return $this->db->getColumnFactory()->fromDbType($dbType, [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'check' => $info['check'],
             'comment' => $info['column_comment'],
