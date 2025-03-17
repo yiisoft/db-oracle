@@ -39,6 +39,7 @@
   `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 - Chg #310: Remove usage of `hasLimit()` and `hasOffset()` methods of `DQLQueryBuilder` class (@Tigrov)
 - Enh #313: Refactor according changes in `db` package (@Tigrov)
+- New #311: Add `caseSensitive` option to like condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 

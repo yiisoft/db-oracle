@@ -128,14 +128,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testBatchInsert($table, $rows, $columns, $expected, $expectedParams);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider::buildCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
         string|null $expected,
