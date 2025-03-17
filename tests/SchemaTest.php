@@ -10,7 +10,6 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonSchemaTest;
@@ -279,12 +278,5 @@ final class SchemaTest extends CommonSchemaTest
         $this->expectExceptionMessage('Only PDO connections are supported.');
 
         $schema->refresh();
-    }
-
-    public function testGetColumnFactory(): void
-    {
-        $db = $this->getConnection();
-
-        $this->assertInstanceOf(ColumnFactory::class, $db->getSchema()->getColumnFactory());
     }
 }

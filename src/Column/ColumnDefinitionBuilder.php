@@ -62,7 +62,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 
             return match ($column->getType()) {
                 ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
-                    ' CHECK (' . $this->queryBuilder->quoter()->quoteSimpleColumnName($name) . ' IS JSON)',
+                    ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)',
                 default => '',
             };
         }
