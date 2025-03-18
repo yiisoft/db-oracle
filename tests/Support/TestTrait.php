@@ -70,7 +70,7 @@ trait TestTrait
         $this->dsn = $dsn;
     }
 
-    private function getDriver(): PdoDriverInterface
+    protected function getDriver(): PdoDriverInterface
     {
         return new Driver($this->getDsn(), self::getUsername(), self::getPassword());
     }

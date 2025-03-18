@@ -55,8 +55,15 @@ final class ColumnFactory extends AbstractColumnFactory
         return new ColumnDefinitionParser();
     }
 
-    protected function getType(string $dbType, array $info = []): string
+    protected function getType(string $dbType, array &$info = []): string
     {
+        /** @psalm-var ColumnType::*|null $type */
+        $type = $this->mapType($this->typeMap, $dbType, $info);
+
+        if ($type !== null) {
+            return $type;
+        }
+
         if ($dbType === 'number') {
             return match ($info['scale'] ?? null) {
                 null => ColumnType::DOUBLE,
@@ -76,9 +83,10 @@ final class ColumnFactory extends AbstractColumnFactory
         return parent::getType($dbType, $info);
     }
 
-    protected function getColumnClass(string $type, array $info = []): string
+    protected function getColumnClass(string $type, array &$info = []): string
     {
-        return match ($type) {
+        /** @psalm-var class-string<ColumnInterface> */
+        return $this->mapType($this->columnClassMap, $type, $info) ?? match ($type) {
             ColumnType::BINARY => BinaryColumn::class,
             ColumnType::JSON => JsonColumn::class,
             default => parent::getColumnClass($type, $info),
