@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Exception;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -75,14 +77,14 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $buildCondition = parent::buildCondition();
 
-        $buildCondition['like-custom-1'] = [['like', 'a', 'b'], '"a" LIKE :qp0 ESCAPE \'!\'', [':qp0' => '%b%']];
+        $buildCondition['like-custom-1'] = [['like', 'a', 'b'], '"a" LIKE :qp0 ESCAPE \'!\'', [':qp0' => new Param('%b%', DataType::STRING)]];
         $buildCondition['like-custom-2'] = [
             ['like', 'a', new Expression(':qp0', [':qp0' => '%b%'])],
             '"a" LIKE :qp0 ESCAPE \'!\'',
             [':qp0' => '%b%'],
         ];
         $buildCondition['like-custom-3'] = [
-            ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0 ESCAPE \'!\'', [':qp0' => '%b%'],
+            ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0 ESCAPE \'!\'', [':qp0' => new Param('%b%', DataType::STRING)],
         ];
 
         return $buildCondition;

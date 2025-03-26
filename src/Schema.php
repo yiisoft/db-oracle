@@ -17,8 +17,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Helper\DbArrayHelper;
-use Yiisoft\Db\Oracle\Column\ColumnFactory;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
@@ -28,9 +26,7 @@ use function array_map;
 use function array_reverse;
 use function implode;
 use function is_array;
-use function md5;
 use function preg_replace;
-use function serialize;
 use function strtolower;
 
 /**
@@ -71,11 +67,6 @@ final class Schema extends AbstractPdoSchema
     {
         $this->defaultSchema = $defaultSchema;
         parent::__construct($db, $schemaCache);
-    }
-
-    public function getColumnFactory(): ColumnFactoryInterface
-    {
-        return new ColumnFactory();
     }
 
     protected function resolveTableName(string $name): TableSchemaInterface
@@ -459,7 +450,7 @@ final class Schema extends AbstractPdoSchema
             default => null,
         };
 
-        return $this->getColumnFactory()->fromDbType($dbType, [
+        return $this->db->getColumnFactory()->fromDbType($dbType, [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'check' => $info['check'],
             'comment' => $info['column_comment'],
@@ -745,29 +736,5 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $views;
-    }
-
-    /**
-     * Returns the cache key for the specified table name.
-     *
-     * @param string $name The table name.
-     *
-     * @return array The cache key.
-     */
-    protected function getCacheKey(string $name): array
-    {
-        return [self::class, ...$this->generateCacheKey(), $this->db->getQuoter()->getRawTableName($name)];
-    }
-
-    /**
-     * Returns the cache tag name.
-     *
-     * This allows {@see refresh()} to invalidate all cached table schemas.
-     *
-     * @return string The cache tag name.
-     */
-    protected function getCacheTag(): string
-    {
-        return md5(serialize([self::class, ...$this->generateCacheKey()]));
     }
 }
