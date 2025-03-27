@@ -177,6 +177,18 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         'scale' => null,
                         'defaultValue' => new Expression("to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')"),
                     ],
+                    'timestamp_local' => [
+                        'type' => 'timestamp',
+                        'dbType' => 'timestamp with local time zone',
+                        'phpType' => 'string',
+                        'primaryKey' => false,
+                        'notNull' => false,
+                        'autoIncrement' => false,
+                        'enumValues' => null,
+                        'size' => 6,
+                        'scale' => null,
+                        'defaultValue' => null,
+                    ],
                     'time_col' => [
                         'type' => 'time',
                         'dbType' => 'interval day to second',
