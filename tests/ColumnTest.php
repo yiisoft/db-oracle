@@ -109,17 +109,30 @@ final class ColumnTest extends AbstractColumnTest
     {
         $db = $this->getConnection();
 
-        $result = $db->createCommand("SELECT null, 1, 2.5, 'string' FROM DUAL")->phpTypecasting()->queryOne();
+        $sql = "SELECT null, 1, 2.5, 'string' FROM DUAL";
 
-        $this->assertSame(
-            [
-                'NULL' => null,
-                1 => 1.0,
-                '2.5' => 2.5,
-                "'STRING'" => 'string',
-            ],
-            $result,
-        );
+        $expected = [
+            'NULL' => null,
+            1 => 1.0,
+            '2.5' => 2.5,
+            "'STRING'" => 'string',
+        ];
+
+        $result = $db->createCommand($sql)->phpTypecasting()->queryOne();
+
+        $this->assertSame($expected, $result);
+
+        $result = $db->createCommand($sql)->phpTypecasting()->queryAll();
+
+        $this->assertSame([$expected], $result);
+
+        $result = $db->createCommand('SELECT 2.5 FROM DUAL')->phpTypecasting()->queryScalar();
+
+        $this->assertSame(2.5, $result);
+
+        $result = $db->createCommand('SELECT 2.5 FROM DUAL UNION SELECT 3.3 FROM DUAL')->phpTypecasting()->queryColumn();
+
+        $this->assertSame([2.5, 3.3], $result);
 
         $db->close();
     }
