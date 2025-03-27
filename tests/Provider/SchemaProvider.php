@@ -360,6 +360,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
     {
         return [
             [null, []],
+            [null, ['oci:decl_type' => '']],
             [new IntegerColumn(dbType: 'number', name: 'int_col', notNull: true, size: 38, scale: 0), [
                 'oci:decl_type' => 'NUMBER',
                 'native_type' => 'NUMBER',
