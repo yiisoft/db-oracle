@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
@@ -25,6 +26,7 @@ use function array_column;
 use function array_map;
 use function array_reverse;
 use function implode;
+use function in_array;
 use function is_array;
 use function preg_replace;
 use function strtolower;
@@ -173,6 +175,69 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $names;
+    }
+
+    /**
+     * @param array{
+     *     "oci:decl_type": int|string,
+     *     native_type: string,
+     *     pdo_type: int,
+     *     scale: int,
+     *     table?: string,
+     *     flags: string[],
+     *     name: string,
+     *     len: int,
+     *     precision: int,
+     * } $info
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
+    protected function loadResultColumn(array $info): ColumnInterface|null
+    {
+        if (empty($info['oci:decl_type'])) {
+            return null;
+        }
+
+        $dbType = match ($info['oci:decl_type']) {
+            119 => 'json',
+            'TIMESTAMP WITH TIMEZONE' => 'timestamp with time zone',
+            'TIMESTAMP WITH LOCAL TIMEZONE' => 'timestamp with local time zone',
+            default => strtolower((string) $info['oci:decl_type']),
+        };
+
+        $columnInfo = ['fromResult' => true];
+
+        if (!empty($info['table'])) {
+            $columnInfo['table'] = $info['table'];
+            $columnInfo['name'] = $info['name'];
+        } elseif (!empty($info['name'])) {
+            $columnInfo['name'] = $info['name'];
+        }
+
+        if ($info['pdo_type'] === 3) {
+            $columnInfo['type'] = ColumnType::BINARY;
+        }
+
+        if (!empty($info['precision'])) {
+            $columnInfo['size'] = $info['precision'];
+        }
+
+        /** @psalm-suppress PossiblyUndefinedArrayOffset, InvalidArrayOffset */
+        match ($dbType) {
+            'timestamp',
+            'timestamp with time zone',
+            'timestamp with local time zone' => $columnInfo['size'] = $info['scale'],
+            'interval day to second',
+            'interval year to month' => [$columnInfo['size'], $columnInfo['scale']] = [$info['scale'], $info['precision']],
+            'number' => $info['scale'] !== -127 ? $columnInfo['scale'] = $info['scale'] : null,
+            'float' => null,
+            default => $columnInfo['size'] = $info['len'],
+        };
+
+        $columnInfo['notNull'] = in_array('not_null', $info['flags'], true);
+
+        /** @psalm-suppress MixedArgumentTypeCoercion */
+        return $this->db->getColumnFactory()->fromDbType($dbType, $columnInfo);
     }
 
     /**

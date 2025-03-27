@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Oracle\Column\JsonColumn;
+use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Tests\Support\AnyValue;
 
 final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
@@ -348,6 +354,163 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
             ->expression('"C_col_2" IS NOT NULL');
 
         return $constraints;
+    }
+
+    public static function resultColumns(): array
+    {
+        return [
+            [null, []],
+            [new IntegerColumn(dbType: 'number', name: 'int_col', notNull: true, size: 38, scale: 0), [
+                'oci:decl_type' => 'NUMBER',
+                'native_type' => 'NUMBER',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['not_null'],
+                'name' => 'int_col',
+                'len' => 22,
+                'precision' => 38,
+            ]],
+            [new IntegerColumn(dbType: 'number', name: 'tinyint_col', notNull: false, size: 3, scale: 0), [
+                'oci:decl_type' => 'NUMBER',
+                'native_type' => 'NUMBER',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => 'tinyint_col',
+                'len' => 22,
+                'precision' => 3,
+            ]],
+            [new StringColumn(ColumnType::CHAR, dbType: 'char', name: 'char_col', notNull: true, size: 100), [
+                'oci:decl_type' => 'CHAR',
+                'native_type' => 'CHAR',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['not_null'],
+                'name' => 'char_col',
+                'len' => 100,
+                'precision' => 0,
+            ]],
+            [new StringColumn(dbType: 'varchar2', name: 'char_col2', notNull: false, size: 100), [
+                'oci:decl_type' => 'VARCHAR2',
+                'native_type' => 'VARCHAR2',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => 'char_col2',
+                'len' => 100,
+                'precision' => 0,
+            ]],
+            [new DoubleColumn(dbType: 'float', name: 'float_col', notNull: true, size: 126), [
+                'oci:decl_type' => 'FLOAT',
+                'native_type' => 'FLOAT',
+                'pdo_type' => 2,
+                'scale' => -127,
+                'flags' => ['not_null'],
+                'name' => 'float_col',
+                'len' => 22,
+                'precision' => 126,
+            ]],
+            [new BinaryColumn(dbType: 'blob', name: 'blob_col', notNull: false, size: 4000), [
+                'oci:decl_type' => 'BLOB',
+                'native_type' => 'BLOB',
+                'pdo_type' => 3,
+                'scale' => 0,
+                'flags' => ['blob', 'nullable'],
+                'name' => 'blob_col',
+                'len' => 4000,
+                'precision' => 0,
+            ]],
+            [new DoubleColumn(ColumnType::DECIMAL, dbType: 'number', name: 'numeric_col', notNull: false, size: 5, scale: 2), [
+                'oci:decl_type' => 'NUMBER',
+                'native_type' => 'NUMBER',
+                'pdo_type' => 2,
+                'scale' => 2,
+                'flags' => ['nullable'],
+                'name' => 'numeric_col',
+                'len' => 22,
+                'precision' => 5,
+            ]],
+            [new StringColumn(ColumnType::TIMESTAMP, dbType: 'timestamp', name: 'timestamp_col', notNull: true, size: 6), [
+                'oci:decl_type' => 'TIMESTAMP',
+                'native_type' => 'TIMESTAMP',
+                'pdo_type' => 2,
+                'scale' => 6,
+                'flags' => ['not_null'],
+                'name' => 'timestamp_col',
+                'len' => 11,
+                'precision' => 0,
+            ]],
+            [new StringColumn(ColumnType::TIME, dbType: 'interval day to second', name: 'time_col', notNull: false, size: 0), [
+                'oci:decl_type' => 'INTERVAL DAY TO SECOND',
+                'native_type' => 'INTERVAL DAY TO SECOND',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => 'time_col',
+                'len' => 11,
+                'precision' => 0,
+            ]],
+            [new BinaryColumn(dbType: 'clob', name: 'json_col', notNull: false, size: 4000), [
+                'oci:decl_type' => 'CLOB',
+                'native_type' => 'CLOB',
+                'pdo_type' => 3,
+                'scale' => 0,
+                'flags' => ['blob', 'nullable'],
+                'name' => 'json_col',
+                'len' => 4000,
+                'precision' => 0,
+            ]],
+            [new JsonColumn(dbType: 'json', name: 'json_col', notNull: false, size: 8200), [
+                'oci:decl_type' => 119,
+                'native_type' => 'UNKNOWN',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => 'json_col',
+                'len' => 8200,
+                'precision' => 0,
+            ]],
+            [new StringColumn(dbType: 'varchar2', name: 'NULL', notNull: false), [
+                'oci:decl_type' => 'VARCHAR2',
+                'native_type' => 'VARCHAR2',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => 'NULL',
+                'len' => 0,
+                'precision' => 0,
+            ]],
+            [new DoubleColumn(dbType: 'number', name: '1', notNull: false), [
+                'oci:decl_type' => 'NUMBER',
+                'native_type' => 'NUMBER',
+                'pdo_type' => 2,
+                'scale' => -127,
+                'flags' => ['nullable'],
+                'name' => '1',
+                'len' => 2,
+                'precision' => 0,
+            ]],
+            [new StringColumn(ColumnType::CHAR, dbType: 'char', name: "'STRING'", notNull: false, size: 6), [
+                'oci:decl_type' => 'CHAR',
+                'native_type' => 'CHAR',
+                'pdo_type' => 2,
+                'scale' => 0,
+                'flags' => ['nullable'],
+                'name' => "'STRING'",
+                'len' => 6,
+                'precision' => 0,
+            ]],
+            [new StringColumn(ColumnType::TIMESTAMP, dbType: 'timestamp with time zone', name: 'TIMESTAMP(3)', notNull: false, size: 3), [
+                'oci:decl_type' => 'TIMESTAMP WITH TIMEZONE',
+                'native_type' => 'TIMESTAMP WITH TIMEZONE',
+                'pdo_type' => 2,
+                'scale' => 3,
+                'flags' => ['nullable'],
+                'name' => 'TIMESTAMP(3)',
+                'len' => 13,
+                'precision' => 0,
+            ]],
+        ];
     }
 
     public static function tableSchemaWithDbSchemes(): array

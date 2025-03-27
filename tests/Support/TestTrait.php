@@ -23,7 +23,7 @@ trait TestTrait
      * @throws InvalidConfigException
      * @throws Exception
      */
-    protected function getConnection(bool $fixture = false): PdoConnectionInterface
+    protected function getConnection(bool $fixture = false): Connection
     {
         $db = new Connection($this->getDriver(), DbHelper::getSchemaCache());
 
@@ -34,7 +34,7 @@ trait TestTrait
         return $db;
     }
 
-    protected static function getDb(): PdoConnectionInterface
+    protected static function getDb(): Connection
     {
         $dsn = (new Dsn(
             host: self::getHost(),
@@ -70,7 +70,7 @@ trait TestTrait
         $this->dsn = $dsn;
     }
 
-    private function getDriver(): PdoDriverInterface
+    private function getDriver(): Driver
     {
         return new Driver($this->getDsn(), self::getUsername(), self::getPassword());
     }
