@@ -337,7 +337,9 @@ final class Schema extends AbstractPdoSchema
                 AND ACC2.COLUMN_NAME != ACC.COLUMN_NAME
             WHERE AC.OWNER = :schemaName2
                 AND AC.TABLE_NAME = :tableName2
-                AND (AC.CONSTRAINT_TYPE = 'P' OR AC.CONSTRAINT_TYPE IN ('U', 'C') AND ACC2.COLUMN_NAME IS NULL)
+                AND (AC.CONSTRAINT_TYPE = 'P'
+                    OR AC.CONSTRAINT_TYPE = 'U' AND ACC2.COLUMN_NAME IS NULL
+                    OR AC.CONSTRAINT_TYPE = 'C' AND ACC2.COLUMN_NAME IS NULL AND AC.SEARCH_CONDITION_VC != '"' || ACC.COLUMN_NAME || '" IS NOT NULL')
         )
         SELECT
             A.COLUMN_NAME,
