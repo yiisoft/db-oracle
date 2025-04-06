@@ -23,6 +23,7 @@ final class BooleanColumn extends AbstractColumn
         };
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::BOOL;
