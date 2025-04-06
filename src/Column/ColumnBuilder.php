@@ -13,6 +13,11 @@ final class ColumnBuilder extends \Yiisoft\Db\Schema\Column\ColumnBuilder
         return new BinaryColumn(ColumnType::BINARY, size: $size);
     }
 
+    public static function boolean(): BooleanColumn
+    {
+        return new BooleanColumn(ColumnType::BOOLEAN);
+    }
+
     public static function json(): JsonColumn
     {
         return new JsonColumn(ColumnType::JSON);

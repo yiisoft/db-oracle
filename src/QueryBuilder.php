@@ -15,6 +15,10 @@ use function bin2hex;
  */
 final class QueryBuilder extends AbstractQueryBuilder
 {
+    protected const FALSE_VALUE = "'0'";
+
+    protected const TRUE_VALUE = "'1'";
+
     public function __construct(ConnectionInterface $db)
     {
         $quoter = $db->getQuoter();

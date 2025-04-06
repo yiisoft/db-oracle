@@ -56,13 +56,17 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         if (empty($check)) {
             $name = $column->getName();
 
-            if (empty($name) || version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')) {
+            if (empty($name)) {
                 return '';
             }
 
             return match ($column->getType()) {
                 ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
-                    ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)',
+                    version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '<')
+                    ? ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)'
+                    : '',
+                ColumnType::BOOLEAN =>
+                    ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IN (0,1))',
                 default => '',
             };
         }
@@ -94,7 +98,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         return match ($dbType) {
             default => $dbType,
             null => match ($column->getType()) {
-                ColumnType::BOOLEAN => 'number(1)',
+                ColumnType::BOOLEAN => 'char(1)',
                 ColumnType::BIT => match (true) {
                     $size === null => 'number(38)',
                     $size <= 126 => 'number(' . ceil(log10(2 ** $size)) . ')',
