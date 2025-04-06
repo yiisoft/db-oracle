@@ -45,4 +45,14 @@ class ColumnProvider extends \Yiisoft\Db\Tests\Provider\ColumnProvider
 
         return $values;
     }
+
+    public static function phpTypecastColumns(): array
+    {
+        $values = parent::phpTypecastColumns();
+        $values['binary'][0] = new BinaryColumn();
+        $values['boolean'][0] = new BooleanColumn();
+        $values['json'][0] = new JsonColumn();
+
+        return $values;
+    }
 }

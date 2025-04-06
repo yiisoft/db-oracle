@@ -35,6 +35,6 @@ final class BooleanColumn extends AbstractColumn
             return null;
         }
 
-        return (bool) $value;
+        return $value && $value !== "\0";
     }
 }
