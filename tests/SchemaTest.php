@@ -38,8 +38,8 @@ final class SchemaTest extends CommonSchemaTest
         if ($version21 && $tableName === 'type') {
             $this->fixture = 'oci21.sql';
 
-            $columns['json_col']['dbType'] = 'json';
-            $columns['json_col']['check'] = null;
+            $columns['json_col']->dbType('json');
+            $columns['json_col']->check(null);
         }
 
         parent::testColumns($columns, $tableName);
