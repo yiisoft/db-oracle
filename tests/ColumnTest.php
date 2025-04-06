@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests;
 
 use PDO;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
+use Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -106,10 +108,16 @@ final class ColumnTest extends AbstractColumnTest
         parent::testPredefinedType($className, $type, $phpType);
     }
 
-    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::dbTypecastColumns */
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
     public function testDbTypecastColumns(ColumnInterface $column, array $values): void
     {
         parent::testDbTypecastColumns($column, $values);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values): void
+    {
+        parent::testPhpTypecastColumns($column, $values);
     }
 
     public function testBinaryColumn(): void

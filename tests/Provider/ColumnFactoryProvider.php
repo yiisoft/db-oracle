@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Oracle\Column\BooleanColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
@@ -85,6 +86,8 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
     {
         $types = parent::types();
 
+        $types['binary'][2] = BinaryColumn::class;
+        $types['boolean'][2] = BooleanColumn::class;
         $types['json'][2] = JsonColumn::class;
 
         return $types;

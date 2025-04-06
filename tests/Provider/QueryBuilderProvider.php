@@ -271,8 +271,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['bigPrimaryKey(false)'][0] = 'number(20) PRIMARY KEY';
         $values['uuidPrimaryKey()'][0] = 'raw(16) DEFAULT sys_guid() PRIMARY KEY';
         $values['uuidPrimaryKey(false)'][0] = 'raw(16) PRIMARY KEY';
-        $values['boolean()'][0] = 'number(1)';
-        $values['boolean(100)'][0] = 'number(1)';
+        $values['boolean()'] = ['char(1) CHECK ("boolean_col" IN (0,1))', $values['boolean()'][1]->withName('boolean_col')];
+        $values['boolean(100)'] = ['char(1) CHECK ("boolean_100" IN (0,1))', $values['boolean(100)'][1]->withName('boolean_100')];
         $values['bit()'][0] = 'number(38)';
         $values['bit(1)'][0] = 'number(1)';
         $values['bit(8)'][0] = 'number(3)';
@@ -384,6 +384,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $values = parent::prepareParam();
 
+        $values['true'][0] = "'1'";
+        $values['false'][0] = "'0'";
         $values['binary'][0] = "HEXTORAW('737472696e67')";
 
         return $values;
@@ -393,6 +395,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $values = parent::prepareValue();
 
+        $values['true'][0] = "'1'";
+        $values['false'][0] = "'0'";
         $values['binary'][0] = "HEXTORAW('737472696e67')";
         $values['paramBinary'][0] = "HEXTORAW('737472696e67')";
 
