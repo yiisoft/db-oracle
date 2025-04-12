@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
+use Yiisoft\Db\Oracle\Column\BooleanColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
@@ -102,19 +103,17 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         scale: 1,
                         defaultValue: new Expression("INTERVAL '2 04:56:12' DAY(1) TO SECOND(0)"),
                     ),
-                    'bool_col' => new StringColumn(
-                        ColumnType::CHAR,
+                    'bool_col' => new BooleanColumn(
                         dbType: 'char',
                         check: '"bool_col" in (0,1)',
                         notNull: true,
                         size: 1,
                     ),
-                    'bool_col2' => new StringColumn(
-                        ColumnType::CHAR,
+                    'bool_col2' => new BooleanColumn(
                         dbType: 'char',
                         check: '"bool_col2" in (0,1)',
                         size: 1,
-                        defaultValue: '1',
+                        defaultValue: true,
                     ),
                     'ts_default' => new StringColumn(
                         ColumnType::TIMESTAMP,

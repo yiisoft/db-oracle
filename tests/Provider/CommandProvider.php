@@ -99,6 +99,20 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         ];
     }
 
+    public static function rawSql(): array
+    {
+        $rawSql = parent::rawSql();
+
+        foreach ($rawSql as &$values) {
+            $values[2] = strtr($values[2], [
+                'FALSE' => "'0'",
+                'TRUE' => "'1'",
+            ]);
+        }
+
+        return $rawSql;
+    }
+
     public static function createIndex(): array
     {
         return [
