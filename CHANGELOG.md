@@ -42,7 +42,7 @@
 - New #311: Add `caseSensitive` option to like condition (@vjik)
 - Enh #315: Remove `getCacheKey()` and `getCacheTag()` methods from `Schema` class (@Tigrov)
 - Enh #319: Support `boolean` type (@Tigrov)
-- Enh #318: Use `DbArrayHelper::arrange()` instead of `DbArrayHelper::index()` method (@Tigrov)
+- Enh #318, #320: Use `DbArrayHelper::arrange()` instead of `DbArrayHelper::index()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
