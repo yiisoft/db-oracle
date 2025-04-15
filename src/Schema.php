@@ -188,53 +188,54 @@ final class Schema extends AbstractPdoSchema
      *     name: string,
      *     len: int,
      *     precision: int,
-     * } $info
+     * } $metadata
      *
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    protected function loadResultColumn(array $info): ColumnInterface|null
+    protected function loadResultColumn(array $metadata): ColumnInterface|null
     {
-        if (empty($info['oci:decl_type'])) {
+        if (empty($metadata['oci:decl_type'])) {
             return null;
         }
 
-        $dbType = match ($info['oci:decl_type']) {
+        $dbType = match ($metadata['oci:decl_type']) {
             119 => 'json',
             'TIMESTAMP WITH TIMEZONE' => 'timestamp with time zone',
             'TIMESTAMP WITH LOCAL TIMEZONE' => 'timestamp with local time zone',
-            default => strtolower((string) $info['oci:decl_type']),
+            default => strtolower((string) $metadata['oci:decl_type']),
         };
 
         $columnInfo = ['fromResult' => true];
 
-        if (!empty($info['table'])) {
-            $columnInfo['table'] = $info['table'];
-            $columnInfo['name'] = $info['name'];
-        } elseif (!empty($info['name'])) {
-            $columnInfo['name'] = $info['name'];
+        if (!empty($metadata['table'])) {
+            $columnInfo['table'] = $metadata['table'];
+            $columnInfo['name'] = $metadata['name'];
+        } elseif (!empty($metadata['name'])) {
+            $columnInfo['name'] = $metadata['name'];
         }
 
-        if ($info['pdo_type'] === 3) {
+        if ($metadata['pdo_type'] === 3) {
             $columnInfo['type'] = ColumnType::BINARY;
         }
 
-        if (!empty($info['precision'])) {
-            $columnInfo['size'] = $info['precision'];
+        if (!empty($metadata['precision'])) {
+            $columnInfo['size'] = $metadata['precision'];
         }
 
         /** @psalm-suppress PossiblyUndefinedArrayOffset, InvalidArrayOffset */
         match ($dbType) {
             'timestamp',
             'timestamp with time zone',
-            'timestamp with local time zone' => $columnInfo['size'] = $info['scale'],
+            'timestamp with local time zone' => $columnInfo['size'] = $metadata['scale'],
             'interval day to second',
-            'interval year to month' => [$columnInfo['size'], $columnInfo['scale']] = [$info['scale'], $info['precision']],
-            'number' => $info['scale'] !== -127 ? $columnInfo['scale'] = $info['scale'] : null,
+            'interval year to month' =>
+                [$columnInfo['size'], $columnInfo['scale']] = [$metadata['scale'], $metadata['precision']],
+            'number' => $metadata['scale'] !== -127 ? $columnInfo['scale'] = $metadata['scale'] : null,
             'float' => null,
-            default => $columnInfo['size'] = $info['len'],
+            default => $columnInfo['size'] = $metadata['len'],
         };
 
-        $columnInfo['notNull'] = in_array('not_null', $info['flags'], true);
+        $columnInfo['notNull'] = in_array('not_null', $metadata['flags'], true);
 
         /** @psalm-suppress MixedArgumentTypeCoercion */
         return $this->db->getColumnFactory()->fromDbType($dbType, $columnInfo);
