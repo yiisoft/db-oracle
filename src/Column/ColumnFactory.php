@@ -65,8 +65,18 @@ final class ColumnFactory extends AbstractColumnFactory
             };
         }
 
-        if (isset($info['check'], $info['name']) && strcasecmp($info['check'], '"' . $info['name'] . '" is json') === 0) {
-            return ColumnType::JSON;
+        if (isset($info['check'], $info['name'])) {
+            if (strcasecmp($info['check'], '"' . $info['name'] . '" is json') === 0) {
+                return ColumnType::JSON;
+            }
+
+            if (isset($info['size'])
+                && $dbType === 'char'
+                && $info['size'] === 1
+                && strcasecmp($info['check'], '"' . $info['name'] . '" in (0,1)') === 0
+            ) {
+                return ColumnType::BOOLEAN;
+            }
         }
 
         if ($dbType === 'interval day to second' && isset($info['scale']) && $info['scale'] === 0) {
@@ -80,6 +90,7 @@ final class ColumnFactory extends AbstractColumnFactory
     {
         return match ($type) {
             ColumnType::BINARY => BinaryColumn::class,
+            ColumnType::BOOLEAN => BooleanColumn::class,
             ColumnType::JSON => JsonColumn::class,
             default => parent::getColumnClass($type, $info),
         };

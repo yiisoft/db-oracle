@@ -311,15 +311,14 @@ final class Schema extends AbstractPdoSchema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @psalm-var array[] $indexes */
         $indexes = array_map(array_change_key_case(...), $indexes);
-        $indexes = DbArrayHelper::index($indexes, null, ['name']);
+        $indexes = DbArrayHelper::arrange($indexes, ['name']);
 
         $result = [];
 
         /**
-         * @psalm-var object|string|null $name
-         * @psalm-var array[] $index
+         * @var string $name
+         * @var array[] $index
          */
         foreach ($indexes as $name => $index) {
             $columnNames = array_column($index, 'column_name');
@@ -402,7 +401,9 @@ final class Schema extends AbstractPdoSchema
                 AND ACC2.COLUMN_NAME != ACC.COLUMN_NAME
             WHERE AC.OWNER = :schemaName2
                 AND AC.TABLE_NAME = :tableName2
-                AND (AC.CONSTRAINT_TYPE = 'P' OR AC.CONSTRAINT_TYPE IN ('U', 'C') AND ACC2.COLUMN_NAME IS NULL)
+                AND (AC.CONSTRAINT_TYPE = 'P'
+                    OR AC.CONSTRAINT_TYPE = 'U' AND ACC2.COLUMN_NAME IS NULL
+                    OR AC.CONSTRAINT_TYPE = 'C' AND ACC2.COLUMN_NAME IS NULL AND AC.SEARCH_CONDITION_VC != '"' || ACC.COLUMN_NAME || '" IS NOT NULL')
         )
         SELECT
             A.COLUMN_NAME,
@@ -718,9 +719,8 @@ final class Schema extends AbstractPdoSchema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @psalm-var array[] $constraints */
         $constraints = array_map(array_change_key_case(...), $constraints);
-        $constraints = DbArrayHelper::index($constraints, null, ['type', 'name']);
+        $constraints = DbArrayHelper::arrange($constraints, ['type', 'name']);
 
         $result = [
             self::PRIMARY_KEY => null,
@@ -729,13 +729,9 @@ final class Schema extends AbstractPdoSchema
             self::CHECKS => [],
         ];
 
-        /**
-         * @psalm-var string $type
-         * @psalm-var array $names
-         */
         foreach ($constraints as $type => $names) {
             /**
-             * @psalm-var object|string|null $name
+             * @var string $name
              * @psalm-var ConstraintArray $constraint
              */
             foreach ($names as $name => $constraint) {

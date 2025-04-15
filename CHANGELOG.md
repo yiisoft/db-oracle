@@ -19,7 +19,7 @@
 - Bug #285: Fix `DMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #283: Refactor `Dsn` class (@Tigrov)
 - Enh #286: Use constructor to create columns and initialize properties (@Tigrov)
-- Enh #288: Refactor `Schema::findColumns()` method (@Tigrov)
+- Enh #288, #317: Refactor `Schema::findColumns()` method (@Tigrov)
 - Enh #289: Refactor `Schema::normalizeDefaultValue()` method and move it to `ColumnFactory` class (@Tigrov)
 - New #292: Override `QueryBuilder::prepareBinary()` method (@Tigrov)
 - Chg #294: Update `QueryBuilder` constructor (@Tigrov)
@@ -41,6 +41,8 @@
 - Enh #313: Refactor according changes in `db` package (@Tigrov)
 - New #311: Add `caseSensitive` option to like condition (@vjik)
 - Enh #315: Remove `getCacheKey()` and `getCacheTag()` methods from `Schema` class (@Tigrov)
+- Enh #319: Support `boolean` type (@Tigrov)
+- Enh #318, #320: Use `DbArrayHelper::arrange()` instead of `DbArrayHelper::index()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
