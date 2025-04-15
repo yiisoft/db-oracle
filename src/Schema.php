@@ -246,15 +246,14 @@ final class Schema extends AbstractPdoSchema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @psalm-var array[] $indexes */
         $indexes = array_map(array_change_key_case(...), $indexes);
-        $indexes = DbArrayHelper::index($indexes, null, ['name']);
+        $indexes = DbArrayHelper::arrange($indexes, ['name']);
 
         $result = [];
 
         /**
-         * @psalm-var object|string|null $name
-         * @psalm-var array[] $index
+         * @var string $name
+         * @var array[] $index
          */
         foreach ($indexes as $name => $index) {
             $columnNames = array_column($index, 'column_name');
@@ -655,9 +654,8 @@ final class Schema extends AbstractPdoSchema
             ':tableName' => $resolvedName->getName(),
         ])->queryAll();
 
-        /** @psalm-var array[] $constraints */
         $constraints = array_map(array_change_key_case(...), $constraints);
-        $constraints = DbArrayHelper::index($constraints, null, ['type', 'name']);
+        $constraints = DbArrayHelper::arrange($constraints, ['type', 'name']);
 
         $result = [
             self::PRIMARY_KEY => null,
@@ -666,13 +664,9 @@ final class Schema extends AbstractPdoSchema
             self::CHECKS => [],
         ];
 
-        /**
-         * @psalm-var string $type
-         * @psalm-var array $names
-         */
         foreach ($constraints as $type => $names) {
             /**
-             * @psalm-var object|string|null $name
+             * @var string $name
              * @psalm-var ConstraintArray $constraint
              */
             foreach ($names as $name => $constraint) {
