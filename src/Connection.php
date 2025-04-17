@@ -51,7 +51,7 @@ final class Connection extends AbstractPdoConnection
 
     public function getColumnFactory(): ColumnFactoryInterface
     {
-        return new ColumnFactory();
+        return $this->columnFactory ??= new ColumnFactory();
     }
 
     /**

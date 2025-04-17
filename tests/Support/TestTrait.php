@@ -68,7 +68,7 @@ trait TestTrait
         $this->dsn = $dsn;
     }
 
-    private function getDriver(): Driver
+    protected function getDriver(): Driver
     {
         return new Driver($this->getDsn(), self::getUsername(), self::getPassword());
     }
