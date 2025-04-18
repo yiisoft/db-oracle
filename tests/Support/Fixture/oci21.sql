@@ -16,6 +16,7 @@ CREATE TABLE "type" (
   "blob_col" blob DEFAULT NULL,
   "numeric_col" decimal(5,2) DEFAULT 33.22,
   "timestamp_col" timestamp DEFAULT to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss') NOT NULL,
+  "timestamp_local" timestamp with local time zone,
   "time_col" interval day (0) to second(0) DEFAULT INTERVAL '0 10:33:21' DAY(0) TO SECOND(0),
   "interval_day_col" interval day (1) to second(0) DEFAULT INTERVAL '2 04:56:12' DAY(1) TO SECOND(0),
   "bool_col" char NOT NULL check ("bool_col" in (0,1)),

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Support;
 
-use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Connection;
@@ -23,7 +21,7 @@ trait TestTrait
      * @throws InvalidConfigException
      * @throws Exception
      */
-    protected function getConnection(bool $fixture = false): PdoConnectionInterface
+    protected function getConnection(bool $fixture = false): Connection
     {
         $db = new Connection($this->getDriver(), DbHelper::getSchemaCache());
 
@@ -34,7 +32,7 @@ trait TestTrait
         return $db;
     }
 
-    protected static function getDb(): PdoConnectionInterface
+    protected static function getDb(): Connection
     {
         $dsn = (new Dsn(
             host: self::getHost(),
@@ -70,7 +68,7 @@ trait TestTrait
         $this->dsn = $dsn;
     }
 
-    protected function getDriver(): PdoDriverInterface
+    protected function getDriver(): Driver
     {
         return new Driver($this->getDsn(), self::getUsername(), self::getPassword());
     }
