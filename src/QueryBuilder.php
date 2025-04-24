@@ -37,4 +37,9 @@ final class QueryBuilder extends AbstractQueryBuilder
     {
         return "HEXTORAW('" . bin2hex($binary) . "')";
     }
+
+    protected function createSqlParser(string $sql): SqlParser
+    {
+        return new SqlParser($sql);
+    }
 }
