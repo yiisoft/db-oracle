@@ -5,7 +5,7 @@
 - Enh #268: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilder` and change parameters 
   from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
-- Enh #255, #321: Implement `SqlParser` and `ExpressionBuilder` driver classes (@Tigrov)
+- Enh #255, #321: Implement and use `SqlParser` class (@Tigrov)
 - New #236: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
   for type casting performance. Related with yiisoft/db#752 (@Tigrov)
 - Chg #272: Replace call of `SchemaInterface::getRawTableName()` to `QuoterInterface::getRawTableName()` (@Tigrov)
