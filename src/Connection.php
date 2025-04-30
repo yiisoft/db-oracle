@@ -62,7 +62,7 @@ final class Connection extends AbstractPdoConnection
      * @throws InvalidCallException
      * @throws Throwable
      */
-    public function getLastInsertID(?string $sequenceName = null): string
+    public function getLastInsertId(?string $sequenceName = null): string
     {
         if ($sequenceName === null) {
             throw new InvalidArgumentException('Oracle not support lastInsertId without sequence name.');
