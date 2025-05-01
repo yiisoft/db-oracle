@@ -373,7 +373,7 @@ final class CommandTest extends CommonCommandTest
         $command->delete('{{order_with_null_fk}}')->execute();
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
         $columnValueQuery = new Query($db);
-        $orderId = $db->getLastInsertID('order_SEQ');
+        $orderId = $db->getLastInsertId('order_SEQ');
         $columnValueQuery->select('created_at')->from('{{order}}')->where(['id' => $orderId]);
         $command->insert(
             '{{order_with_null_fk}}',
@@ -558,7 +558,7 @@ final class CommandTest extends CommonCommandTest
             ],
         )->execute();
 
-        $customerId = $db->getLastInsertID('customer_SEQ');
+        $customerId = $db->getLastInsertId('customer_SEQ');
 
         $customer = $command->setSql(
             <<<SQL

@@ -35,7 +35,7 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
         $command->insert('item', ['name' => 'Yii2 starter', 'category_id' => 1])->execute();
         $command->insert('item', ['name' => 'Yii3 starter', 'category_id' => 1])->execute();
 
-        $this->assertSame('7', $db->getLastInsertID('item_SEQ'));
+        $this->assertSame('7', $db->getLastInsertId('item_SEQ'));
 
         $db->close();
     }
@@ -57,7 +57,7 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Oracle not support lastInsertId without sequence name.');
 
-        $db->getLastInsertID();
+        $db->getLastInsertId();
     }
 
     /**
@@ -77,8 +77,8 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
         $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate2\')';
         $db2->createCommand($sql)->execute();
 
-        $this->assertNotEquals($db1->getLastInsertID('profile_SEQ'), $db2->getLastInsertID('profile_SEQ'));
-        $this->assertNotEquals($db2->getLastInsertID('profile_SEQ'), $db1->getLastInsertID('profile_SEQ'));
+        $this->assertNotEquals($db1->getLastInsertId('profile_SEQ'), $db2->getLastInsertId('profile_SEQ'));
+        $this->assertNotEquals($db2->getLastInsertId('profile_SEQ'), $db1->getLastInsertId('profile_SEQ'));
 
         $db1->close();
         $db2->close();
