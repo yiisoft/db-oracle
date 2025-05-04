@@ -35,7 +35,7 @@ final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
 
     public function phpTypecast(mixed $value): DateTimeImmutable|null
     {
-        if (is_string($value) && match($this->getType()) {
+        if (is_string($value) && match ($this->getType()) {
             ColumnType::TIME, ColumnType::TIMETZ => true,
             default => false,
         }) {

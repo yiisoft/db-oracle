@@ -16,7 +16,7 @@ final class ServerInfo extends PdoServerInfo
         /** @psalm-suppress TypeDoesNotContainType */
         if (!isset($this->timezone) || $refresh) {
             /** @var string */
-            $this->timezone = $this->db->createCommand("SELECT SESSIONTIMEZONE FROM DUAL")->queryScalar();
+            $this->timezone = $this->db->createCommand('SELECT SESSIONTIMEZONE FROM DUAL')->queryScalar();
         }
 
         return $this->timezone;
