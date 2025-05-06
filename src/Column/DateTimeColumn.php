@@ -27,7 +27,9 @@ final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
 
         return match ($this->getType()) {
             ColumnType::TIMESTAMP, ColumnType::DATETIME, ColumnType::DATETIMETZ => new Expression("TIMESTAMP '$value'"),
-            ColumnType::TIME, ColumnType::TIMETZ => new Expression("INTERVAL '$value' DAY(0) TO SECOND"),
+            ColumnType::TIME, ColumnType::TIMETZ => new Expression(
+                "INTERVAL '$value' DAY(0) TO SECOND" . (($size = $this->getSize()) !== null ? "($size)" : '')
+            ),
             ColumnType::DATE => new Expression("DATE '$value'"),
             default => $value,
         };
@@ -47,7 +49,6 @@ final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
 
     protected function getFormat(): string
     {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
         return $this->format ??= match ($this->getType()) {
             ColumnType::TIME, ColumnType::TIMETZ => '0 H:i:s' . $this->getMillisecondsFormat(),
             default => parent::getFormat(),
@@ -56,7 +57,6 @@ final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
 
     protected function shouldConvertTimezone(): bool
     {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
         return $this->shouldConvertTimezone ??= !empty($this->dbTimezone) && match ($this->getType()) {
             ColumnType::DATETIMETZ,
             ColumnType::DATE => false,

@@ -225,20 +225,20 @@ final class ColumnTest extends CommonColumnTest
         $this->assertInstanceOf(JsonColumn::class, $tableSchema->getColumn('json_col'));
     }
 
-    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider::predefinedTypes */
-    public function testPredefinedType(string $className, string $type, string $phpType): void
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
+    public function testPredefinedType(string $className, string $type, string $phpType)
     {
         parent::testPredefinedType($className, $type, $phpType);
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
-    public function testDbTypecastColumns(ColumnInterface $column, array $values): void
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
     {
         parent::testDbTypecastColumns($column, $values);
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
-    public function testPhpTypecastColumns(ColumnInterface $column, array $values): void
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
     {
         parent::testPhpTypecastColumns($column, $values);
     }
