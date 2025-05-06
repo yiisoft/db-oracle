@@ -17,7 +17,21 @@ final class Driver extends AbstractPdoDriver
     public function createConnection(): PDO
     {
         $this->attributes += [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-        return parent::createConnection();
+
+        $pdo = parent::createConnection();
+
+        $pdo->exec(
+            <<<SQL
+            ALTER SESSION SET
+                NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFF'
+                NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFFTZH:TZM'
+                NLS_TIME_FORMAT = 'HH24:MI:SSXFF'
+                NLS_TIME_TZ_FORMAT = 'HH24:MI:SSXFFTZH:TZM'
+                NLS_DATE_FORMAT = 'YYYY-MM-DD'
+            SQL
+        );
+
+        return $pdo;
     }
 
     public function getDriverName(): string

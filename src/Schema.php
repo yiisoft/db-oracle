@@ -235,6 +235,10 @@ final class Schema extends AbstractPdoSchema
             default => $columnInfo['size'] = $metadata['len'],
         };
 
+        if ($dbType === 'timestamp with local time zone') {
+            $columnInfo['dbTimezone'] = $this->db->getServerInfo()->getTimezone();
+        }
+
         $columnInfo['notNull'] = in_array('not_null', $metadata['flags'], true);
 
         /** @psalm-suppress MixedArgumentTypeCoercion */
@@ -517,7 +521,7 @@ final class Schema extends AbstractPdoSchema
             default => null,
         };
 
-        return $this->db->getColumnFactory()->fromDbType($dbType, [
+        $columnInfo = [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'check' => $info['check'],
             'comment' => $info['column_comment'],
@@ -530,7 +534,13 @@ final class Schema extends AbstractPdoSchema
             'size' => $info['size'] !== null ? (int) $info['size'] : null,
             'table' => $info['table'],
             'unique' => $info['constraint_type'] === 'U',
-        ]);
+        ];
+
+        if ($dbType === 'timestamp with local time zone') {
+            $columnInfo['dbTimezone'] = $this->db->getServerInfo()->getTimezone();
+        }
+
+        return $this->db->getColumnFactory()->fromDbType($dbType, $columnInfo);
     }
 
     /**

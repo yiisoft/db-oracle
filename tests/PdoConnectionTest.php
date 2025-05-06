@@ -9,6 +9,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Oracle\ServerInfo;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Common\CommonPdoConnectionTest;
 
@@ -82,5 +83,25 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
 
         $db1->close();
         $db2->close();
+    }
+
+    public function testGetServerInfo(): void
+    {
+        $db = $this->getConnection();
+        $serverInfo = $db->getServerInfo();
+
+        $this->assertInstanceOf(ServerInfo::class, $serverInfo);
+
+        $dbTimezone = $serverInfo->getTimezone();
+
+        $this->assertSame(6, strlen($dbTimezone));
+
+        $db->createCommand("ALTER SESSION SET TIME_ZONE = '+06:15'")->execute();
+
+        $this->assertSame($dbTimezone, $serverInfo->getTimezone());
+        $this->assertNotSame($dbTimezone, $serverInfo->getTimezone(true));
+        $this->assertSame('+06:15', $serverInfo->getTimezone());
+
+        $db->close();
     }
 }

@@ -117,10 +117,12 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                 ColumnType::TEXT => 'clob',
                 ColumnType::BINARY => 'blob',
                 ColumnType::UUID => 'raw(16)',
-                ColumnType::DATETIME => 'timestamp',
                 ColumnType::TIMESTAMP => 'timestamp',
-                ColumnType::DATE => 'date',
+                ColumnType::DATETIME => 'timestamp',
+                ColumnType::DATETIMETZ => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
                 ColumnType::TIME => 'interval day(0) to second',
+                ColumnType::TIMETZ => 'interval day(0) to second',
+                ColumnType::DATE => 'date',
                 ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
                     version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
                     ? 'json'

@@ -310,9 +310,15 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['datetime()'][0] = 'timestamp(0)';
         $values['datetime(6)'][0] = 'timestamp(6)';
         $values['datetime(null)'][0] = 'timestamp';
+        $values['datetimeWithTimezone()'][0] = 'timestamp(0) with time zone';
+        $values['datetimeWithTimezone(6)'][0] = 'timestamp(6) with time zone';
+        $values['datetimeWithTimezone(null)'][0] = 'timestamp with time zone';
         $values['time()'][0] = 'interval day(0) to second(0)';
         $values['time(6)'][0] = 'interval day(0) to second(6)';
         $values['time(null)'][0] = 'interval day(0) to second';
+        $values['timeWithTimezone()'][0] = 'interval day(0) to second(0)';
+        $values['timeWithTimezone(6)'][0] = 'interval day(0) to second(6)';
+        $values['timeWithTimezone(null)'][0] = 'interval day(0) to second';
         $values["structured('json')"] = ['blob', ColumnBuilder::structured('blob')];
         $values["extra('NOT NULL')"][0] = 'varchar2(255) NOT NULL';
         $values["extra('')"][0] = 'varchar2(255)';
