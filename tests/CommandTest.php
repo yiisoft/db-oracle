@@ -30,8 +30,6 @@ use function version_compare;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class CommandTest extends CommonCommandTest
 {
@@ -39,10 +37,6 @@ final class CommandTest extends CommonCommandTest
 
     protected string $upsertTestCharCast = 'CAST([[address]] AS VARCHAR(255))';
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -108,11 +102,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCLOBStringInsertion(): void
     {
         $db = $this->getConnection();
@@ -142,11 +131,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCreateTable(): void
     {
         $db = $this->getConnection(true);
@@ -188,11 +172,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -251,10 +230,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -288,12 +263,6 @@ final class CommandTest extends CommonCommandTest
         $this->markTestSkipped('Oracle doesn\'t support "IF EXISTS" option on drop table.');
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
     public function testExecuteWithTransaction(): void
     {
         $db = $this->getConnection(true);
@@ -345,24 +314,12 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::rawSql
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(CommandProvider::class, 'rawSql')]
     public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
         parent::testGetRawSql($sql, $params, $expectedRawSql);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testsInsertQueryAsColumnValue(): void
     {
         $db = $this->getConnection(true);
@@ -399,12 +356,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertWithReturningPksWithPrimaryKeyString(): void
     {
         $db = $this->getConnection();
@@ -451,11 +402,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertSelectAlias(): void
     {
         $db = $this->getConnection();
@@ -510,13 +456,7 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::insertVarbinary
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'insertVarbinary')]
     public function testInsertVarbinary(mixed $expectedData, mixed $testData): void
     {
         $db = $this->getConnection(true);
@@ -537,12 +477,6 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testNoTablenameReplacement(): void
     {
         $db = $this->getConnection(true);
@@ -592,13 +526,7 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::update
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -610,25 +538,46 @@ final class CommandTest extends CommonCommandTest
         parent::testUpdate($table, $columns, $conditions, $params, $expectedValues, $expectedCount);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'upsert')]
     public function testUpsert(array $firstData, array $secondData): void
     {
         parent::testUpsert($firstData, $secondData);
     }
 
-    /**
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     * @throws Exception
-     * @throws Throwable
-     */
+    public function testUpsertWithReturningPks(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+
+        $command->upsertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
+    }
+
+    public function testUpsertWithReturningPksEmptyValues()
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+
+        $command->upsertWithReturningPks('null_values', []);
+    }
+
+    public function testUpsertWithReturningPksWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+
+        $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+    }
+
     public function testQueryScalarWithBlob(): void
     {
         $db = $this->getConnection(true);
