@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function date_create_immutable;
+use function preg_match;
 use function rtrim;
 use function strcasecmp;
 
 final class ColumnFactory extends AbstractColumnFactory
 {
+    private const DATETIME_REGEX = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()\s*'(?:\d )?([^']+)/";
+
     /**
      * The mapping from physical column types (keys) to abstract column types (values).
      *
@@ -39,9 +44,9 @@ final class ColumnFactory extends AbstractColumnFactory
         'binary_double' => ColumnType::DOUBLE, // 64 bit
         'float' => ColumnType::DOUBLE, // 126 bit
         'date' => ColumnType::DATE,
-        'timestamp' => ColumnType::TIMESTAMP,
-        'timestamp with time zone' => ColumnType::TIMESTAMP,
-        'timestamp with local time zone' => ColumnType::TIMESTAMP,
+        'timestamp' => ColumnType::DATETIME,
+        'timestamp with time zone' => ColumnType::DATETIMETZ,
+        'timestamp with local time zone' => ColumnType::DATETIME,
         'interval day to second' => ColumnType::STRING,
         'interval year to month' => ColumnType::STRING,
         'json' => ColumnType::JSON,
@@ -91,6 +96,11 @@ final class ColumnFactory extends AbstractColumnFactory
         return match ($type) {
             ColumnType::BINARY => BinaryColumn::class,
             ColumnType::BOOLEAN => BooleanColumn::class,
+            ColumnType::DATETIME => DateTimeColumn::class,
+            ColumnType::DATETIMETZ => DateTimeColumn::class,
+            ColumnType::TIME => DateTimeColumn::class,
+            ColumnType::TIMETZ => DateTimeColumn::class,
+            ColumnType::DATE => DateTimeColumn::class,
             ColumnType::JSON => JsonColumn::class,
             default => parent::getColumnClass($type, $info),
         };
@@ -98,6 +108,17 @@ final class ColumnFactory extends AbstractColumnFactory
 
     protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed
     {
-        return parent::normalizeNotNullDefaultValue(rtrim($defaultValue), $column);
+        $value = parent::normalizeNotNullDefaultValue(rtrim($defaultValue), $column);
+
+        if ($column instanceof DateTimeColumn
+            && $value instanceof Expression
+            && preg_match(self::DATETIME_REGEX, (string) $value, $matches) === 1
+        ) {
+            return date_create_immutable($matches[1]) !== false
+                ? $column->phpTypecast($matches[1])
+                : new Expression($matches[1]);
+        }
+
+        return $value;
     }
 }

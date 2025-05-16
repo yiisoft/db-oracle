@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use Throwable;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
 use Yiisoft\Db\Driver\Pdo\PdoCommandInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -91,5 +92,10 @@ final class Connection extends AbstractPdoConnection
     public function getSchema(): SchemaInterface
     {
         return $this->schema ??= new Schema($this, $this->schemaCache, strtoupper($this->driver->getUsername()));
+    }
+
+    public function getServerInfo(): ServerInfoInterface
+    {
+        return $this->serverInfo ??= new ServerInfo($this);
     }
 }

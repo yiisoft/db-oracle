@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\BooleanColumn;
+use Yiisoft\Db\Oracle\Column\DateTimeColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
+use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -17,8 +21,14 @@ use Yiisoft\Db\Tests\Support\AnyValue;
 
 final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
 {
+    use TestTrait;
+
     public static function columns(): array
     {
+        $db = self::getDb();
+        $dbTimezone = self::getDb()->getServerInfo()->getTimezone();
+        $db->close();
+
         return [
             [
                 [
@@ -83,24 +93,25 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         scale: 2,
                         defaultValue: 33.22,
                     ),
-                    'timestamp_col' => new StringColumn(
-                        ColumnType::TIMESTAMP,
+                    'timestamp_col' => new DateTimeColumn(
                         dbType: 'timestamp',
                         notNull: true,
                         size: 6,
-                        defaultValue: new Expression("to_timestamp('2002-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss')"),
+                        defaultValue: new DateTimeImmutable('2002-01-01 00:00:00', new DateTimeZone('UTC')),
+                        shouldConvertTimezone: true,
                     ),
-                    'timestamp_local' => new StringColumn(
-                        ColumnType::TIMESTAMP,
+                    'timestamp_local' => new DateTimeColumn(
                         dbType: 'timestamp with local time zone',
                         size:6,
+                        dbTimezone: $dbTimezone,
                     ),
-                    'time_col' => new StringColumn(
+                    'time_col' => new DateTimeColumn(
                         ColumnType::TIME,
                         dbType: 'interval day to second',
                         size: 0,
                         scale: 0,
-                        defaultValue: new Expression("INTERVAL '0 10:33:21' DAY(0) TO SECOND(0)"),
+                        defaultValue: new DateTimeImmutable('10:33:21', new DateTimeZone('UTC')),
+                        shouldConvertTimezone: true,
                     ),
                     'interval_day_col' => new StringColumn(
                         dbType: 'interval day to second',
@@ -120,8 +131,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         size: 1,
                         defaultValue: true,
                     ),
-                    'ts_default' => new StringColumn(
-                        ColumnType::TIMESTAMP,
+                    'ts_default' => new DateTimeColumn(
                         dbType: 'timestamp',
                         notNull: true,
                         size: 6,
@@ -296,7 +306,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 'len' => 22,
                 'precision' => 5,
             ]],
-            [new StringColumn(ColumnType::TIMESTAMP, dbType: 'timestamp', name: 'timestamp_col', notNull: true, size: 6), [
+            [new DateTimeColumn(dbType: 'timestamp', name: 'timestamp_col', notNull: true, size: 6), [
                 'oci:decl_type' => 'TIMESTAMP',
                 'native_type' => 'TIMESTAMP',
                 'pdo_type' => 2,
@@ -306,7 +316,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 'len' => 11,
                 'precision' => 0,
             ]],
-            [new StringColumn(ColumnType::TIME, dbType: 'interval day to second', name: 'time_col', notNull: false, size: 0), [
+            [new DateTimeColumn(ColumnType::TIME, dbType: 'interval day to second', name: 'time_col', notNull: false, size: 0), [
                 'oci:decl_type' => 'INTERVAL DAY TO SECOND',
                 'native_type' => 'INTERVAL DAY TO SECOND',
                 'pdo_type' => 2,
@@ -366,7 +376,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 'len' => 6,
                 'precision' => 0,
             ]],
-            [new StringColumn(ColumnType::TIMESTAMP, dbType: 'timestamp with time zone', name: 'TIMESTAMP(3)', notNull: false, size: 3), [
+            [new DateTimeColumn(ColumnType::DATETIMETZ, dbType: 'timestamp with time zone', name: 'TIMESTAMP(3)', notNull: false, size: 3), [
                 'oci:decl_type' => 'TIMESTAMP WITH TIMEZONE',
                 'native_type' => 'TIMESTAMP WITH TIMEZONE',
                 'pdo_type' => 2,
