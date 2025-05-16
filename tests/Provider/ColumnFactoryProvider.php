@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\BooleanColumn;
+use Yiisoft\Db\Oracle\Column\DateTimeColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
@@ -36,11 +37,10 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
             ['binary_float', ColumnType::FLOAT, DoubleColumn::class],
             ['binary_double', ColumnType::DOUBLE, DoubleColumn::class],
             ['float', ColumnType::DOUBLE, DoubleColumn::class],
-            ['date', ColumnType::DATE, StringColumn::class],
-            ['timestamp', ColumnType::TIMESTAMP, StringColumn::class],
-            ['timestamp with time zone', ColumnType::TIMESTAMP, StringColumn::class],
-            ['timestamp with local time zone', ColumnType::TIMESTAMP, StringColumn::class],
-            ['timestamp with local time zone', ColumnType::TIMESTAMP, StringColumn::class],
+            ['date', ColumnType::DATE, DateTimeColumn::class],
+            ['timestamp', ColumnType::DATETIME, DateTimeColumn::class],
+            ['timestamp with time zone', ColumnType::DATETIMETZ, DateTimeColumn::class],
+            ['timestamp with local time zone', ColumnType::DATETIME, DateTimeColumn::class],
             ['interval day to second', ColumnType::STRING, StringColumn::class],
             ['interval year to month', ColumnType::STRING, StringColumn::class],
         ];
@@ -62,8 +62,8 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         return [
             ...$definitions,
             ['interval day to second', new StringColumn(dbType: 'interval day to second')],
-            ['interval day(0) to second', new StringColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0)],
-            ['interval day (0) to second(6)', new StringColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0, size: 6)],
+            ['interval day(0) to second', new DateTimeColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0)],
+            ['interval day (0) to second(6)', new DateTimeColumn(ColumnType::TIME, dbType: 'interval day to second', scale: 0, size: 6)],
             ['interval day to second (0)', new StringColumn(dbType: 'interval day to second', size: 0)],
             ['interval year to month', new StringColumn(dbType: 'interval year to month')],
             ['interval year (2) to month', new StringColumn(dbType: 'interval year to month', scale: 2)],
@@ -77,7 +77,7 @@ final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFacto
         $defaultValueRaw[] = [ColumnType::STRING, 'NULL ', null];
         $defaultValueRaw[] = [ColumnType::STRING, "'str''ing' ", "str'ing"];
         $defaultValueRaw[] = [ColumnType::INTEGER, '-1 ', -1];
-        $defaultValueRaw[] = [ColumnType::TIMESTAMP, 'now() ', new Expression('now()')];
+        $defaultValueRaw[] = [ColumnType::DATETIME, 'now() ', new Expression('now()')];
 
         return $defaultValueRaw;
     }
