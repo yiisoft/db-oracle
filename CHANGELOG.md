@@ -45,6 +45,7 @@
 - Enh #318, #320: Use `DbArrayHelper::arrange()` instead of `DbArrayHelper::index()` method (@Tigrov)
 - New #316: Realize `Schema::loadResultColumn()` method (@Tigrov)
 - New #323: Use `DateTimeColumn` class for datetime column types (@Tigrov)
+- Enh #324: Refactor `Command::insertWithReturningPks()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

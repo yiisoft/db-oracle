@@ -49,7 +49,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return $query . "\nSELECT " . implode(" FROM DUAL UNION ALL\nSELECT ", $values) . ' FROM DUAL';
     }
 
-    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
@@ -59,9 +59,9 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
      */
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        array|bool $updateColumns,
-        array &$params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
     ): string {
         $constraints = [];
 
@@ -132,6 +132,15 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $updateSql = 'UPDATE SET ' . implode(', ', $updates);
 
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
+    }
+
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
+    ): string {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
 
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array

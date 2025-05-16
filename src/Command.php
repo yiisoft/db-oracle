@@ -8,9 +8,11 @@ use PDO;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 
 use function array_keys;
+use function array_map;
 use function count;
 use function implode;
 use function strlen;
@@ -21,7 +23,7 @@ use function strlen;
  */
 final class Command extends AbstractPdoCommand
 {
-    public function insertWithReturningPks(string $table, array $columns): array|false
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
         $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
@@ -37,9 +39,9 @@ final class Command extends AbstractPdoCommand
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
 
-        $tableColumns = $tableSchema?->getColumns() ?? [];
+        /** @var TableSchema $tableSchema */
+        $tableColumns = $tableSchema->getColumns();
         $returnParams = [];
-        $returning = [];
 
         foreach ($returnColumns as $name) {
             $phName = AbstractQueryBuilder::PARAM_PREFIX . (count($params) + count($returnParams));
@@ -49,18 +51,20 @@ final class Command extends AbstractPdoCommand
                 'value' => '',
             ];
 
-            if (!isset($tableColumns[$name]) || $tableColumns[$name]->getPhpType() !== PhpType::INT) {
+            $column = $tableColumns[$name];
+
+            if ($column->getPhpType() !== PhpType::INT) {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
             } else {
                 $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
             }
 
-            $returnParams[$phName]['size'] = ($tableColumns[$name]?->getSize() ?? 3998) + 2;
-
-            $returning[] = $this->db->getQuoter()->quoteColumnName($name);
+            $returnParams[$phName]['size'] = ($column->getSize() ?? 3998) + 2;
         }
 
-        $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
+        $quotedReturnColumns = array_map($this->db->getQuoter()->quoteColumnName(...), $returnColumns);
+
+        $sql .= ' RETURNING ' . implode(', ', $quotedReturnColumns) . ' INTO ' . implode(', ', array_keys($returnParams));
 
         $this->setSql($sql)->bindValues($params);
         $this->prepare(false);
@@ -72,15 +76,20 @@ final class Command extends AbstractPdoCommand
 
         unset($value);
 
-        if (!$this->execute()) {
+        if ($this->execute() === 0) {
             return false;
         }
 
         $result = [];
 
         foreach ($returnParams as $value) {
-            /** @psalm-var mixed */
             $result[$value['column']] = $value['value'];
+        }
+
+        if ($this->phpTypecasting) {
+            foreach ($result as $column => &$value) {
+                $value = $tableColumns[$column]->phpTypecast($value);
+            }
         }
 
         return $result;
