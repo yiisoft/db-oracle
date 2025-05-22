@@ -14,6 +14,7 @@ use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -539,13 +540,40 @@ final class CommandTest extends CommonCommandTest
         parent::testUpsert($firstData, $secondData);
     }
 
+    #[DataProviderExternal(CommandProvider::class, 'upsertWithReturning')]
+    public function testUpsertWithReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        array $selectCondition,
+        array $expectedValues,
+    ): void {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
+
+        $command->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns);
+
+    }
+
+    public function testUpsertWithReturningWithUnique(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
+
+        parent::testUpsertWithReturningWithUnique();
+    }
+
     public function testUpsertWithReturningPks(): void
     {
         $db = $this->getConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
 
         $command->upsertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
     }
@@ -556,7 +584,7 @@ final class CommandTest extends CommonCommandTest
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
 
         $command->upsertWithReturningPks('null_values', []);
     }
@@ -566,7 +594,7 @@ final class CommandTest extends CommonCommandTest
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
 
         $db->createCommand()
             ->withPhpTypecasting()
