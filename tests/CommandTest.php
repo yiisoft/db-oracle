@@ -556,7 +556,6 @@ final class CommandTest extends CommonCommandTest
         $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturning() is not supported by Oracle.');
 
         $command->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns);
-
     }
 
     public function testUpsertWithReturningWithUnique(): void
