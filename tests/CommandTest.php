@@ -398,6 +398,14 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
+    public function testInsertWithReturningPksWithQuery(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\Command::insertWithReturningPks() is not supported by Oracle when inserting sub-query.');
+
+        parent::testInsertWithReturningPksWithQuery();
+    }
+
     public function testInsertSelectAlias(): void
     {
         $db = $this->getConnection();
