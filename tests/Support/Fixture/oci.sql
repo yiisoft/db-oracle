@@ -77,7 +77,6 @@ CREATE TABLE "customer" (
   "name" varchar2(128),
   "address" varchar(4000),
   "status" integer DEFAULT 0,
-  "bool_status" char DEFAULT 0 check ("bool_status" in (0,1)),
   "profile_id" integer,
   CONSTRAINT "customer_PK" PRIMARY KEY ("id") ENABLE
 );
@@ -396,9 +395,9 @@ INSERT INTO "animal" ("type") VALUES ('yiiunit\data\ar\Dog');
 INSERT INTO "profile" ("description") VALUES ('profile customer 1');
 INSERT INTO "profile" ("description") VALUES ('profile customer 3');
 
-INSERT INTO "customer" ("email", "name", "address", "status", "bool_status", "profile_id") VALUES ('user1@example.com', 'user1', 'address1', 1, 1, 1);
-INSERT INTO "customer" ("email", "name", "address", "status", "bool_status") VALUES ('user2@example.com', 'user2', 'address2', 1, 1);
-INSERT INTO "customer" ("email", "name", "address", "status", "bool_status", "profile_id") VALUES ('user3@example.com', 'user3', 'address3', 2, 0, 2);
+INSERT INTO "customer" ("email", "name", "address", "status", "profile_id") VALUES ('user1@example.com', 'user1', 'address1', 1, 1);
+INSERT INTO "customer" ("email", "name", "address", "status") VALUES ('user2@example.com', 'user2', 'address2', 1);
+INSERT INTO "customer" ("email", "name", "address", "status", "profile_id") VALUES ('user3@example.com', 'user3', 'address3', 2, 2);
 
 INSERT INTO "category" ("name") VALUES ('Books');
 INSERT INTO "category" ("name") VALUES ('Movies');

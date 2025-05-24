@@ -24,7 +24,6 @@ final class CommandPDOProvider
                     'name' => 'user1',
                     'address' => 'address1',
                     'status' => '1',
-                    'bool_status' => '1',
                     'profile_id' => '1',
                 ],
             ],
