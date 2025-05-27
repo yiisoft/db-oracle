@@ -122,7 +122,7 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         ];
     }
 
-    public static function upsertWithReturning(): array
+    public static function upsertReturning(): array
     {
         return [['table', [], true, ['col1'], [], []]];
     }

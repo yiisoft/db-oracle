@@ -136,7 +136,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
     }
 
-    public function upsertWithReturning(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
