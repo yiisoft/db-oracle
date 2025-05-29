@@ -57,7 +57,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 
     public function selectExists(string $rawSql): string
     {
-        return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END FROM DUAL';
+        return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END AS "0" FROM DUAL';
     }
 
     public function buildFrom(array|null $tables, array &$params): string
