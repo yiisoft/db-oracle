@@ -329,6 +329,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values["check('value > 5')"][0] = 'number(10) CHECK ("check_col" > 5)';
         $values["check('')"][0] = 'number(10)';
         $values['check(null)'][0] = 'number(10)';
+        unset($values["collation('collation_name')"]);
         $values["comment('comment')"][0] = 'varchar2(255)';
         $values["comment('')"][0] = 'varchar2(255)';
         $values['comment(null)'][0] = 'varchar2(255)';
