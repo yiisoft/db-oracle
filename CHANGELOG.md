@@ -47,6 +47,7 @@
 - New #323: Use `DateTimeColumn` class for datetime column types (@Tigrov)
 - Enh #324: Refactor `Command::insertWithReturningPks()` method (@Tigrov)
 - Chg #326: Add alias in `DQLQueryBuilder::selectExists()` method for consistency with other DBMS (@Tigrov)
+- Enh #327: Refactor constraints (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
