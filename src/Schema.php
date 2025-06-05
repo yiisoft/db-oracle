@@ -246,8 +246,8 @@ final class Schema extends AbstractPdoSchema
     {
         $sql = <<<SQL
         SELECT "ui"."INDEX_NAME" AS "name", "uicol"."COLUMN_NAME" AS "column_name",
-        CASE "ui"."UNIQUENESS" WHEN 'UNIQUE' THEN 1 ELSE 0 END AS "index_is_unique",
-        CASE WHEN "uc"."CONSTRAINT_NAME" IS NOT NULL THEN 1 ELSE 0 END AS "index_is_primary"
+        CASE "ui"."UNIQUENESS" WHEN 'UNIQUE' THEN 1 ELSE 0 END AS "is_unique",
+        CASE WHEN "uc"."CONSTRAINT_NAME" IS NOT NULL THEN 1 ELSE 0 END AS "is_primary_key"
         FROM "SYS"."USER_INDEXES" "ui"
         LEFT JOIN "SYS"."USER_IND_COLUMNS" "uicol"
         ON "uicol"."INDEX_NAME" = "ui"."INDEX_NAME"
@@ -283,8 +283,8 @@ final class Schema extends AbstractPdoSchema
             $result[] = new IndexConstraint(
                 $name,
                 $columnNames,
-                (bool) $index[0]['index_is_unique'],
-                (bool) $index[0]['index_is_primary'],
+                (bool) $index[0]['is_unique'],
+                (bool) $index[0]['is_primary_key'],
             );
         }
 
@@ -598,7 +598,7 @@ final class Schema extends AbstractPdoSchema
      * - uniques
      * - checks
      *
-     * @return CheckConstraint[]|ForeignKeyConstraint[]|IndexConstraint|IndexConstraint[]|null Constraints.
+     * @return CheckConstraint[]|ForeignKeyConstraint[]|IndexConstraint[]|IndexConstraint|null Constraints.
      */
     private function loadTableConstraints(string $tableName, string $returnType): array|IndexConstraint|null
     {
