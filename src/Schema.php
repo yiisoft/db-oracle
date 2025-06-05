@@ -598,7 +598,7 @@ final class Schema extends AbstractPdoSchema
      * - uniques
      * - checks
      *
-     * @return CheckConstraint[]|ForeignKeyConstraint[]|IndexConstraint[]|IndexConstraint|null Constraints.
+     * @return CheckConstraint[]|ForeignKeyConstraint[]|IndexConstraint|IndexConstraint[]|null Constraints.
      */
     private function loadTableConstraints(string $tableName, string $returnType): array|IndexConstraint|null
     {
