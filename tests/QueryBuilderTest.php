@@ -486,11 +486,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testUpsert($table, $insertColumns, $updateColumns, $expectedSql, $expectedParams);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturningPks')]
-    public function testUpsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
+        array|null $returnColumns,
         string $expectedSql,
         array $expectedParams
     ): void {
@@ -498,9 +499,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
 
-        $qb->upsertWithReturningPks($table, $insertColumns, $updateColumns);
+        $qb->upsertReturning($table, $insertColumns, $updateColumns);
     }
 
     public function testDefaultValues(): void

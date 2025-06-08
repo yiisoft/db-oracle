@@ -14,6 +14,7 @@ use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -397,6 +398,14 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
+    public function testInsertWithReturningPksWithQuery(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\Command::insertWithReturningPks() is not supported by Oracle when inserting sub-query.');
+
+        parent::testInsertWithReturningPksWithQuery();
+    }
+
     public function testInsertSelectAlias(): void
     {
         $db = $this->getConnection();
@@ -539,38 +548,64 @@ final class CommandTest extends CommonCommandTest
         parent::testUpsert($firstData, $secondData);
     }
 
-    public function testUpsertWithReturningPks(): void
+    #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        array $selectCondition,
+        array $expectedValues,
+    ): void {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
+
+        $command->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
+    }
+
+    public function testUpsertReturningWithUnique(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
+
+        parent::testUpsertReturningWithUnique();
+    }
+
+    public function testUpsertReturningPks(): void
     {
         $db = $this->getConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
 
-        $command->upsertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
+        $command->upsertReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
     }
 
-    public function testUpsertWithReturningPksEmptyValues()
+    public function testUpsertReturningPksEmptyValues()
     {
         $db = $this->getConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
 
-        $command->upsertWithReturningPks('null_values', []);
+        $command->upsertReturningPks('null_values', []);
     }
 
-    public function testUpsertWithReturningPksWithPhpTypecasting(): void
+    public function testUpsertReturningPksWithPhpTypecasting(): void
     {
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertWithReturningPks is not supported by Oracle.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
 
         $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
     }
 
     public function testQueryScalarWithBlob(): void

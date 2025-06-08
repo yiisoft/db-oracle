@@ -107,13 +107,15 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         }
 
         $insertValues = [];
-        $mergeSql = 'MERGE INTO ' . $quotedTableName . ' USING (' . $values . ') "EXCLUDED" ON (' . $on . ')';
+        $quotedInsertNames = array_map($this->quoter->quoteColumnName(...), $insertNames);
 
-        foreach ($insertNames as $quotedName) {
+        foreach ($quotedInsertNames as $quotedName) {
             $insertValues[] = '"EXCLUDED".' . $quotedName;
         }
 
-        $insertSql = 'INSERT (' . implode(', ', $insertNames) . ')' . ' VALUES (' . implode(', ', $insertValues) . ')';
+        $mergeSql = 'MERGE INTO ' . $quotedTableName . ' USING (' . $values . ') "EXCLUDED" ON (' . $on . ')';
+        $insertSql = 'INSERT (' . implode(', ', $quotedInsertNames) . ')'
+            . ' VALUES (' . implode(', ', $insertValues) . ')';
 
         if ($updateColumns === false || $updateNames === []) {
             /** there are no columns to update */
@@ -123,24 +125,25 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         if ($updateColumns === true) {
             $updateColumns = [];
             /** @psalm-var string[] $updateNames */
-            foreach ($updateNames as $quotedName) {
-                $updateColumns[$quotedName] = new Expression('"EXCLUDED".' . $quotedName);
+            foreach ($updateNames as $name) {
+                $updateColumns[$name] = new Expression('"EXCLUDED".' . $this->quoter->quoteColumnName($name));
             }
         }
 
-        [$updates, $params] = $this->prepareUpdateSets($table, $updateColumns, $params);
+        $updates = $this->prepareUpdateSets($table, $updateColumns, $params);
         $updateSql = 'UPDATE SET ' . implode(', ', $updates);
 
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        array|null $returnColumns = null,
         array &$params = [],
     ): string {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
+        throw new NotSupportedException(__METHOD__ . '() is not supported by Oracle.');
     }
 
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
@@ -152,10 +155,13 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
             if ($tableSchema !== null) {
                 if (!empty($tableSchema->getPrimaryKey())) {
-                    $names = array_map($this->quoter->quoteColumnName(...), $tableSchema->getPrimaryKey());
+                    $names = $tableSchema->getPrimaryKey();
                 } else {
-                    /** @psalm-suppress PossiblyNullArgument */
-                    $names = [$this->quoter->quoteColumnName(array_key_first($tableSchema->getColumns()))];
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @var string[] $names
+                     */
+                    $names = [array_key_first($tableSchema->getColumns())];
                 }
 
                 $placeholders = array_fill(0, count($names), 'DEFAULT');
