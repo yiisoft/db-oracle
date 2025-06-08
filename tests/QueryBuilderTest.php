@@ -527,6 +527,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testBuildColumnDefinition($expected, $column);
     }
 
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildValue')]
+    public function testBuildValue(mixed $value, string $expected, array $expectedParams): void
+    {
+        parent::testBuildValue($value, $expected, $expectedParams);
+    }
+
     #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
     public function testPrepareParam(string $expected, mixed $value, int $type): void
     {

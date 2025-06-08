@@ -59,16 +59,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $batchInsert = parent::batchInsert();
 
-        foreach ($batchInsert as $key => $value) {
-            DbHelper::changeSqlForOracleBatchInsert($batchInsert[$key]['expected']);
-        }
-
-        $batchInsert['bool-false, bool2-null']['expectedParams'][':qp0'] = '0';
-        $batchInsert['bool-false, time-now()']['expectedParams'][':qp0'] = '0';
-        $batchInsert['column table names are not checked']['expectedParams'] = [
-            ':qp0' => '1',
-            ':qp1' => '0',
+        $replaceParams = [
+            'bool-false, bool2-null' => [':qp0' => '0'],
+            'bool-false, time-now()' => [':qp0' => '0'],
+            'column table names are not checked' => [':qp0' => '1', ':qp1' => '0'],
         ];
+
+        foreach ($batchInsert as $key => &$value) {
+            DbHelper::changeSqlForOracleBatchInsert($value['expected'], $replaceParams[$key] ?? []);
+
+            foreach ($replaceParams[$key] ?? [] as $param => $val) {
+                $value['expectedParams'][$param] = new Param($val, DataType::STRING);
+            }
+        }
 
         return $batchInsert;
     }
@@ -373,6 +376,16 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ['interval day(5) to second(6)', 'interval day(5) to second (6)'],
             ['interval year(8) to month', 'interval year(8) to month'],
         ];
+    }
+
+    public static function buildValue(): array
+    {
+        $values = parent::buildValue();
+
+        $values['true'][1] = "'1'";
+        $values['false'][1] = "'0'";
+
+        return $values;
     }
 
     public static function prepareParam(): array
