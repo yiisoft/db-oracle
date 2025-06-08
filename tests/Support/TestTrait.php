@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Support;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Dsn;
 use Yiisoft\Db\Oracle\Driver;
@@ -17,10 +15,15 @@ trait TestTrait
 
     private string $fixture = 'oci.sql';
 
-    /**
-     * @throws InvalidConfigException
-     * @throws Exception
-     */
+    public static function setUpBeforeClass(): void
+    {
+        $db = self::getDb();
+
+        DbHelper::loadFixture($db, __DIR__ . '/Fixture/oci.sql');
+
+        $db->close();
+    }
+
     protected function getConnection(bool $fixture = false): Connection
     {
         $db = new Connection($this->getDriver(), DbHelper::getSchemaCache());

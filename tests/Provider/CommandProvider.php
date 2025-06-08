@@ -155,4 +155,9 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
             [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::BITMAP, null],
         ];
     }
+
+    public static function upsertReturning(): array
+    {
+        return [['table', [], true, ['col1'], [], []]];
+    }
 }
