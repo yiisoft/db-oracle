@@ -8,6 +8,7 @@ use PDO;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 
@@ -34,6 +35,12 @@ final class Command extends AbstractPdoCommand
             }
 
             return [];
+        }
+
+        if ($columns instanceof QueryInterface) {
+            throw new NotSupportedException(
+                __METHOD__ . '() is not supported by Oracle when inserting sub-query.'
+            );
         }
 
         $params = [];

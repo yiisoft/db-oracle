@@ -59,16 +59,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $batchInsert = parent::batchInsert();
 
-        foreach ($batchInsert as $key => $value) {
-            DbHelper::changeSqlForOracleBatchInsert($batchInsert[$key]['expected']);
-        }
-
-        $batchInsert['bool-false, bool2-null']['expectedParams'][':qp0'] = '0';
-        $batchInsert['bool-false, time-now()']['expectedParams'][':qp0'] = '0';
-        $batchInsert['column table names are not checked']['expectedParams'] = [
-            ':qp0' => '1',
-            ':qp1' => '0',
+        $replaceParams = [
+            'bool-false, bool2-null' => [':qp0' => '0'],
+            'bool-false, time-now()' => [':qp0' => '0'],
+            'column table names are not checked' => [':qp0' => '1', ':qp1' => '0'],
         ];
+
+        foreach ($batchInsert as $key => &$value) {
+            DbHelper::changeSqlForOracleBatchInsert($value['expected'], $replaceParams[$key] ?? []);
+
+            foreach ($replaceParams[$key] ?? [] as $param => $val) {
+                $value['expectedParams'][$param] = new Param($val, DataType::STRING);
+            }
+        }
 
         return $batchInsert;
     }
@@ -178,7 +181,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             'values and expressions without update part' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
                 SQL,
             ],
             'query, values and expressions with update part' => [
@@ -203,7 +206,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                         ],
                     )->from('DUAL'),
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO "T_upsert" USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
                 SQL,
             ],
             'no columns to update' => [
@@ -213,7 +216,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ],
             'no columns to update with unique' => [
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email") VALUES ("EXCLUDED"."email")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email") VALUES ("EXCLUDED"."email")
                 SQL,
             ],
             'no unique columns in table - simple insert' => [
@@ -373,6 +376,16 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ['interval day(5) to second(6)', 'interval day(5) to second (6)'],
             ['interval year(8) to month', 'interval year(8) to month'],
         ];
+    }
+
+    public static function buildValue(): array
+    {
+        $values = parent::buildValue();
+
+        $values['true'][1] = "'1'";
+        $values['false'][1] = "'0'";
+
+        return $values;
     }
 
     public static function prepareParam(): array
