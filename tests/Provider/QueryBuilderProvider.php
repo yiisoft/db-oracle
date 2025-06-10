@@ -395,6 +395,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['true'][0] = "'1'";
         $values['false'][0] = "'0'";
         $values['binary'][0] = "HEXTORAW('737472696e67')";
+        $values['resource'][0] = "HEXTORAW('737472696e67')";
 
         return $values;
     }
@@ -407,6 +408,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['false'][0] = "'0'";
         $values['binary'][0] = "HEXTORAW('737472696e67')";
         $values['paramBinary'][0] = "HEXTORAW('737472696e67')";
+        $values['paramResource'][0] = "HEXTORAW('737472696e67')";
 
         return $values;
     }
