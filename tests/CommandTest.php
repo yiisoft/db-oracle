@@ -667,12 +667,12 @@ final class CommandTest extends CommonCommandTest
 
         $this->assertSame(['col1'], $index->getColumnNames());
         $this->assertFalse($index->isUnique());
-        $this->assertFalse($index->isPrimary());
+        $this->assertFalse($index->isPrimaryKey());
 
         $sysIndex = $schema->getTableIndexes($tableName)[1];
         $this->assertSame([], $sysIndex->getColumnNames());
         $this->assertTrue($sysIndex->isUnique());
-        $this->assertFalse($sysIndex->isPrimary());
+        $this->assertFalse($sysIndex->isPrimaryKey());
 
         $db->close();
     }
