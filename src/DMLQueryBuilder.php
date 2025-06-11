@@ -49,7 +49,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return $query . "\nSELECT " . implode(" FROM DUAL UNION ALL\nSELECT ", $values) . ' FROM DUAL';
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
+    public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }
