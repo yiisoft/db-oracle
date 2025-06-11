@@ -352,7 +352,7 @@ final class CommandTest extends CommonCommandTest
         $db->close();
     }
 
-    public function testInsertWithReturningPksWithPrimaryKeyString(): void
+    public function testInsertReturningPksWithPrimaryKeyString(): void
     {
         $db = $this->getConnection();
 
@@ -368,14 +368,14 @@ final class CommandTest extends CommonCommandTest
             ['id' => 'varchar(10) primary key', 'name' => 'varchar(10)'],
         )->execute();
 
-        $result = $command->insertWithReturningPks('{{test_insert_pk}}', ['id' => '1', 'name' => 'test']);
+        $result = $command->insertReturningPks('{{test_insert_pk}}', ['id' => '1', 'name' => 'test']);
 
         $this->assertSame(['id' => '1'], $result);
 
         $db->close();
     }
 
-    public function testInsertWithReturningPksWithPrimaryKeySignedDecimal(): void
+    public function testInsertReturningPksWithPrimaryKeySignedDecimal(): void
     {
         $db = $this->getConnection();
 
@@ -391,19 +391,19 @@ final class CommandTest extends CommonCommandTest
             ['id' => 'number(5,2) primary key', 'name' => 'varchar(10)'],
         )->execute();
 
-        $result = $command->insertWithReturningPks('{{test_insert_pk}}', ['id' => '-123.45', 'name' => 'test']);
+        $result = $command->insertReturningPks('{{test_insert_pk}}', ['id' => '-123.45', 'name' => 'test']);
 
         $this->assertSame(['id' => '-123.45'], $result);
 
         $db->close();
     }
 
-    public function testInsertWithReturningPksWithQuery(): void
+    public function testInsertReturningPksWithQuery(): void
     {
         $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\Command::insertWithReturningPks() is not supported by Oracle when inserting sub-query.');
+        $this->expectExceptionMessage('Yiisoft\Db\Oracle\Command::insertReturningPks() is not supported by Oracle when inserting sub-query.');
 
-        parent::testInsertWithReturningPksWithQuery();
+        parent::testInsertReturningPksWithQuery();
     }
 
     public function testInsertSelectAlias(): void
