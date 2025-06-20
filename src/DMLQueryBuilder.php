@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
@@ -49,7 +49,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         return $query . "\nSELECT " . implode(" FROM DUAL UNION ALL\nSELECT ", $values) . ' FROM DUAL';
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
+    public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
     }

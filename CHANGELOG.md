@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- Chg #332: Use `\InvalidArgumentException` instead of `Yiisoft\Db\Exception\InvalidArgumentException` (@DikoIbragimov)
 - Enh #268: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilder` and change parameters 
   from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
@@ -49,6 +50,7 @@
 - Enh #325: Refactor `DMLQueryBuilder::upsert()` method (@Tigrov)
 - Chg #326: Add alias in `DQLQueryBuilder::selectExists()` method for consistency with other DBMS (@Tigrov)
 - Enh #327: Refactor constraints (@Tigrov)
+- Chg #330: Rename `insertWithReturningPks()` to `insertReturningPks()` in `Command` and `DMLQueryBuilder` classes (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

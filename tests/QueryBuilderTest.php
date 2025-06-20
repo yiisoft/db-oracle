@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider;
@@ -320,8 +320,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testInsert($table, $columns, $params, $expectedSQL, $expectedParams);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'insertWithReturningPks')]
-    public function testInsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
+    public function testInsertReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
@@ -330,12 +330,12 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     ): void {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DMLQueryBuilder::insertWithReturningPks is not supported by Oracle.',
+            'Yiisoft\Db\Oracle\DMLQueryBuilder::insertReturningPks is not supported by Oracle.',
         );
 
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
-        $qb->insertWithReturningPks($table, $columns, $params);
+        $qb->insertReturningPks($table, $columns, $params);
     }
 
     public function testRenameTable(): void
