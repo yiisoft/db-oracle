@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- Chg #332: Use `\InvalidArgumentException` instead of `Yiisoft\Db\Exception\InvalidArgumentException` (@DikoIbragimov)
 - Enh #268: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilder` and change parameters 
   from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #260: Support `Traversable` values for `DMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
