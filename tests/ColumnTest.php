@@ -9,11 +9,11 @@ use DateTimeZone;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
-use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
@@ -23,6 +23,7 @@ use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Tests\Common\CommonColumnTest;
 
+use function iterator_to_array;
 use function str_repeat;
 use function stream_get_contents;
 use function version_compare;
@@ -36,7 +37,7 @@ final class ColumnTest extends CommonColumnTest
 
     protected const COLUMN_BUILDER = ColumnBuilder::class;
 
-    private function insertTypeValues(Connection $db): void
+    protected function insertTypeValues(ConnectionInterface $db): void
     {
         $db->createCommand()->insert(
             'type',
@@ -56,7 +57,7 @@ final class ColumnTest extends CommonColumnTest
         )->execute();
     }
 
-    private function assertTypecastedValues(array $result, bool $allTypecasted = false): void
+    protected function assertTypecastedValues(array $result, bool $allTypecasted = false): void
     {
         $utcTimezone = new DateTimeZone('UTC');
 
@@ -81,10 +82,10 @@ final class ColumnTest extends CommonColumnTest
     public function testQueryWithTypecasting(): void
     {
         $db = $this->getConnection();
-        $varsion = $db->getServerInfo()->getVersion();
+        $version = $db->getServerInfo()->getVersion();
         $db->close();
 
-        $isOldVersion = version_compare($varsion, '21', '<');
+        $isOldVersion = version_compare($version, '21', '<');
 
         if (!$isOldVersion) {
             $this->fixture = 'oci21.sql';
@@ -110,10 +111,10 @@ final class ColumnTest extends CommonColumnTest
     public function testCommandWithPhpTypecasting(): void
     {
         $db = $this->getConnection();
-        $varsion = $db->getServerInfo()->getVersion();
+        $version = $db->getServerInfo()->getVersion();
         $db->close();
 
-        $isOldVersion = version_compare($varsion, '21', '<');
+        $isOldVersion = version_compare($version, '21', '<');
 
         if (!$isOldVersion) {
             $this->fixture = 'oci21.sql';
@@ -161,6 +162,12 @@ final class ColumnTest extends CommonColumnTest
 
         $this->assertSame([$expected], $result);
 
+        $result = $db->createCommand($sql)
+            ->withPhpTypecasting()
+            ->query();
+
+        $this->assertSame([$expected], iterator_to_array($result));
+
         $result = $db->createCommand('SELECT 2.5 FROM DUAL')
             ->withPhpTypecasting()
             ->queryScalar();
@@ -176,32 +183,17 @@ final class ColumnTest extends CommonColumnTest
         $db->close();
     }
 
-    public function testPhpTypeCast(): void
+    public function testPhpTypecast(): void
     {
         $db = $this->getConnection();
+        $version = $db->getServerInfo()->getVersion();
+        $db->close();
 
-        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
+        if (version_compare($version, '21', '>=')) {
             $this->fixture = 'oci21.sql';
         }
 
-        $db->close();
-        $db = $this->getConnection(true);
-        $schema = $db->getSchema();
-        $columns = $schema->getTableSchema('type')->getColumns();
-
-        $this->insertTypeValues($db);
-
-        $query = (new Query($db))->from('type')->one();
-
-        $result = [];
-
-        foreach ($columns as $columnName => $column) {
-            $result[$columnName] = $column->phpTypecast($query[$columnName]);
-        }
-
-        $this->assertTypecastedValues($result, true);
-
-        $db->close();
+        parent::testPhpTypecast();
     }
 
     public function testColumnInstance(): void
