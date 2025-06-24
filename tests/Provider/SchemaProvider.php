@@ -17,7 +17,6 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
-use Yiisoft\Db\Tests\Support\AnyValue;
 
 final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
 {
@@ -177,56 +176,23 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
         $constraints = parent::constraints();
 
         $constraints['1: check'][2][0]->expression('"C_check" <> \'\'');
-        $constraints['1: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_id'])
-            ->expression('"C_id" IS NOT NULL');
-        $constraints['1: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_not_null'])
-            ->expression('"C_not_null" IS NOT NULL');
-        $constraints['1: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_unique'])
-            ->expression('"C_unique" IS NOT NULL');
-        $constraints['1: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_default'])
-            ->expression('"C_default" IS NOT NULL');
+        $constraints['1: check'][2][] = new CheckConstraint('', ['C_id'], '"C_id" IS NOT NULL');
+        $constraints['1: check'][2][] = new CheckConstraint('', ['C_not_null'], '"C_not_null" IS NOT NULL');
+        $constraints['1: check'][2][] = new CheckConstraint('', ['C_unique'], '"C_unique" IS NOT NULL');
+        $constraints['1: check'][2][] = new CheckConstraint('', ['C_default'], '"C_default" IS NOT NULL');
 
-        $constraints['2: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_id_1'])
-            ->expression('"C_id_1" IS NOT NULL');
-        $constraints['2: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_id_2'])
-            ->expression('"C_id_2" IS NOT NULL');
+        $constraints['2: check'][2][] = new CheckConstraint('', ['C_id_1'], '"C_id_1" IS NOT NULL');
+        $constraints['2: check'][2][] = new CheckConstraint('', ['C_id_2'], '"C_id_2" IS NOT NULL');
 
-        $constraints['3: foreign key'][2][0]->foreignSchemaName('SYSTEM');
+        $constraints['3: foreign key'][2][0]->foreignTableName('SYSTEM.T_constraints_2');
         $constraints['3: foreign key'][2][0]->onUpdate(null);
         $constraints['3: index'][2] = [];
-        $constraints['3: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_fk_id_1'])
-            ->expression('"C_fk_id_1" IS NOT NULL');
-        $constraints['3: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_fk_id_2'])
-            ->expression('"C_fk_id_2" IS NOT NULL');
-        $constraints['3: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_id'])
-            ->expression('"C_id" IS NOT NULL');
+        $constraints['3: check'][2][] = new CheckConstraint('', ['C_fk_id_1'], '"C_fk_id_1" IS NOT NULL');
+        $constraints['3: check'][2][] = new CheckConstraint('', ['C_fk_id_2'], '"C_fk_id_2" IS NOT NULL');
+        $constraints['3: check'][2][] = new CheckConstraint('', ['C_id'], '"C_id" IS NOT NULL');
 
-        $constraints['4: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_id'])
-            ->expression('"C_id" IS NOT NULL');
-        $constraints['4: check'][2][] = (new CheckConstraint())
-            ->name(AnyValue::getInstance())
-            ->columnNames(['C_col_2'])
-            ->expression('"C_col_2" IS NOT NULL');
+        $constraints['4: check'][2][] = new CheckConstraint('', ['C_id'], '"C_id" IS NOT NULL');
+        $constraints['4: check'][2][] = new CheckConstraint('', ['C_col_2'], '"C_col_2" IS NOT NULL');
 
         return $constraints;
     }

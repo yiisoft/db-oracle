@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
@@ -80,9 +80,9 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         $quotedTableName = $this->quoter->quoteTableName($table);
 
         foreach ($constraints as $constraint) {
-            $columnNames = (array) $constraint->getColumnNames();
+            $columnNames = $constraint->getColumnNames();
             $constraintCondition = ['and'];
-            /** @psalm-var string[] $columnNames */
+
             foreach ($columnNames as $name) {
                 $quotedName = $this->quoter->quoteColumnName($name);
                 $constraintCondition[] = "$quotedTableName.$quotedName=\"EXCLUDED\".$quotedName";
