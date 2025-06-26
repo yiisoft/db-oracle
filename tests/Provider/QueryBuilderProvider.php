@@ -412,4 +412,22 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
         return $values;
     }
+
+    public static function caseExpressionBuilder(): array
+    {
+        $data = parent::caseExpressionBuilder();
+
+        $data['with case expression'] = [
+            $data['with case expression'][0]->else(
+                new Expression('to_number(:qp0)', [':qp0' => $param = new Param(4, DataType::INTEGER)])
+            ),
+            'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE to_number(:qp0) END',
+            [':qp0' => $param],
+            3,
+        ];
+        $data['without case expression'][1] = 'CASE WHEN "column_name" = :qp0 THEN :qp1'
+            . ' WHEN "column_name" = 2 THEN (SELECT :pv2 FROM DUAL) END';
+
+        return $data;
+    }
 }

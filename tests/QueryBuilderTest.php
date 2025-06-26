@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
@@ -567,5 +568,15 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         }
 
         parent::testDropTable($expected, $ifExists, $cascade);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
+    public function testCaseExpressionBuilder(
+        CaseExpression $case,
+        string $expectedSql,
+        array $expectedParams,
+        string|int $expectedResult,
+    ): void {
+        parent::testCaseExpressionBuilder($case, $expectedSql, $expectedParams, $expectedResult);
     }
 }
