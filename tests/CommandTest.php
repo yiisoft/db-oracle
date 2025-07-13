@@ -16,8 +16,6 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
-use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function is_resource;
 use function str_pad;
