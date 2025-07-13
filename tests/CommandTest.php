@@ -16,8 +16,6 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
-use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function is_resource;
 use function str_pad;
@@ -257,57 +255,6 @@ final class CommandTest extends CommonCommandTest
     public function testDropTableIfExistsWithNonExistTable(): void
     {
         $this->markTestSkipped('Oracle doesn\'t support "IF EXISTS" option on drop table.');
-    }
-
-    public function testExecuteWithTransaction(): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNull($db->getTransaction());
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 1')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction');
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 1'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 2')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_COMMITTED]);
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 2'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $db->close();
     }
 
     #[DataProviderExternal(CommandProvider::class, 'rawSql')]
