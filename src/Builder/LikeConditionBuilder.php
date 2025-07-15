@@ -36,8 +36,9 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
 
     /**
      * @throws Exception
+     * @param LikeConditionInterface $expression
      */
-    public function build(LikeConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!isset($this->escapingReplacements['\\'])) {
             /*
