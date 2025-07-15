@@ -35,8 +35,8 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     }
 
     /**
-     * @throws Exception
      * @param LikeConditionInterface $expression
+     * @throws Exception
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
