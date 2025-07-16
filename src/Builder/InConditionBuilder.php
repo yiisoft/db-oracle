@@ -24,7 +24,7 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
      *
-     * @param ExpressionInterface $expression The expression to build.
+     * @param InConditionInterface $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
@@ -33,8 +33,6 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
      * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
-     *
-     * @psalm-param InConditionInterface $expression
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
