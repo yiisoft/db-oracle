@@ -124,7 +124,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         SQL;
 
         $insert['carry passed params (query)'][3] = <<<SQL
-        INSERT INTO [customer] ([email], [name], [address], [is_active], [related_id]) SELECT [email], [name], [address], [is_active], [related_id] FROM [customer] WHERE ([email]=:qp1) AND ([name]=:qp2) AND ([address]=:qp3) AND ([is_active]='0') AND ([related_id] IS NULL) AND ([col]=CONCAT(:phFoo, :phBar))
+        INSERT INTO "customer" ("email", "name", "address", "is_active", "related_id") SELECT "email", "name", "address", "is_active", "related_id" FROM "customer" WHERE ("email"=:qp1) AND ("name"=:qp2) AND ("address"=:qp3) AND ("is_active"='0') AND ("related_id" IS NULL) AND ("col"=CONCAT(:phFoo, :phBar))
         SQL;
 
         return $insert;
@@ -442,7 +442,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     public static function delete(): array
     {
         $values = parent::delete();
-        $values['base'][2] = 'DELETE FROM [user] WHERE ([is_enabled]=\'0\') AND ([power]=WRONG_POWER())';
+        $values['base'][2] = 'DELETE FROM "user" WHERE ("is_enabled"=\'0\') AND ("power"=WRONG_POWER())';
         return $values;
     }
 }
