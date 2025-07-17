@@ -90,6 +90,10 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0 ESCAPE \'!\'', [':qp0' => new Param('%b%', DataType::STRING)],
         ];
 
+        $buildCondition['and-subquery'][1] = <<<SQL
+            ([[expired]]='0') AND ((SELECT count(*) > 1 FROM [[queue]]))
+            SQL;
+
         return $buildCondition;
     }
 
@@ -117,6 +121,10 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
         $insert['empty columns'][3] = <<<SQL
         INSERT INTO "customer" ("id") VALUES (DEFAULT)
+        SQL;
+
+        $insert['carry passed params (query)'][3] = <<<SQL
+        INSERT INTO [customer] ([email], [name], [address], [is_active], [related_id]) SELECT [email], [name], [address], [is_active], [related_id] FROM [customer] WHERE ([email]=:qp1) AND ([name]=:qp2) AND ([address]=:qp3) AND ([is_active]='0') AND ([related_id] IS NULL) AND ([col]=CONCAT(:phFoo, :phBar))
         SQL;
 
         return $insert;
@@ -429,5 +437,12 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             . ' WHEN "column_name" = 2 THEN (SELECT :pv2 FROM DUAL) END';
 
         return $data;
+    }
+
+    public static function delete(): array
+    {
+        $values = parent::delete();
+        $values['base'][2] = 'DELETE FROM [user] WHERE ([is_enabled]=\'0\') AND ([power]=WRONG_POWER())';
+        return $values;
     }
 }
