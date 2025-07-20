@@ -54,6 +54,7 @@
 - Enh #336: Provide `yiisoft/db-implementation` virtual package (@vjik)
 - Enh #340: Adapt to `Param` refactoring in `yiisoft/db` package (@vjik)
 - Enh #341: Adapt to specific condition interfaces removing in `yiisoft/db` package (@vjik)
+- Enh #342: Adapt to conditions refactoring in `yiisoft/db` package (@vjik)
 
 ## 1.3.0 March 21, 2024
 
