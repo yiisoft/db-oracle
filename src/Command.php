@@ -114,21 +114,17 @@ final class Command extends AbstractPdoCommand
     protected function bindPendingParams(): void
     {
         $paramsPassedByReference = [];
-
-        $params = $this->params;
-
-        foreach ($params as $name => $value) {
-            if (PDO::PARAM_STR === $value->getType()) {
-                /** @var mixed */
-                $paramsPassedByReference[$name] = $value->getValue();
+        foreach ($this->params as $name => $param) {
+            if (PDO::PARAM_STR === $param->type) {
+                $paramsPassedByReference[$name] = $param->value;
                 $this->pdoStatement?->bindParam(
                     $name,
                     $paramsPassedByReference[$name],
-                    $value->getType(),
-                    strlen((string) $value->getValue())
+                    $param->type,
+                    strlen((string) $param->value)
                 );
             } else {
-                $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
+                $this->pdoStatement?->bindValue($name, $param->value, $param->type);
             }
         }
     }
