@@ -14,7 +14,7 @@ use function substr;
 /**
  * Build an object of {@see LikeCondition} into SQL expressions for Oracle Server.
  */
-final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
+final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\LikeConditionBuilder
 {
     private string $escapeCharacter = '!';
 
@@ -50,7 +50,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     {
         $column = parent::prepareColumn($expression, $params);
 
-        if ($expression->getCaseSensitive() === false) {
+        if ($expression->caseSensitive === false) {
             $column = 'LOWER(' . $column . ')';
         }
 
@@ -65,7 +65,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
     ): string {
         $placeholderName = parent::preparePlaceholderName($value, $expression, $escape, $params);
 
-        if ($expression->getCaseSensitive() === false) {
+        if ($expression->caseSensitive === false) {
             $placeholderName = 'LOWER(' . $placeholderName . ')';
         }
 

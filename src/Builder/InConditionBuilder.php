@@ -19,7 +19,7 @@ use function is_array;
 /**
  * Build an object of {@see InCondition} into SQL expressions for Oracle Server.
  */
-final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
+final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\InConditionBuilder
 {
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
@@ -57,9 +57,9 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
      */
     protected function splitCondition(InCondition $condition, array &$params): string|null
     {
-        $operator = $condition->getOperator();
-        $values = $condition->getValues();
-        $column = $condition->getColumn();
+        $operator = $condition->operator;
+        $values = $condition->values;
+        $column = $condition->column;
 
         if (!is_array($values)) {
             return null;
