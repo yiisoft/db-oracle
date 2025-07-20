@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
 use function substr;
 
 /**
- * Build an object of {@see `\Yiisoft\Db\QueryBuilder\Condition\LikeCondition`} into SQL expressions for Oracle Server.
+ * Build an object of {@see LikeCondition} into SQL expressions for Oracle Server.
  */
 final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
 {
@@ -46,7 +46,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
         return parent::build($expression, $params);
     }
 
-    protected function prepareColumn(LikeConditionInterface $expression, array &$params): string
+    protected function prepareColumn(LikeCondition $expression, array &$params): string
     {
         $column = parent::prepareColumn($expression, $params);
 
@@ -59,7 +59,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
 
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        LikeConditionInterface $expression,
+        LikeCondition $expression,
         ?array $escape,
         array &$params,
     ): string {
