@@ -19,7 +19,7 @@ use function is_array;
 /**
  * Build an object of {@see InCondition} into SQL expressions for Oracle Server.
  */
-final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\InConditionBuilder
+final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InConditionBuilder
 {
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.

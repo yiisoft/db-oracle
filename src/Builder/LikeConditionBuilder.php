@@ -14,7 +14,7 @@ use function substr;
 /**
  * Build an object of {@see LikeCondition} into SQL expressions for Oracle Server.
  */
-final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\LikeConditionBuilder
+final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
 {
     private string $escapeCharacter = '!';
 
