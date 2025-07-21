@@ -8,9 +8,9 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoSchema;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Helper\DbArrayHelper;
@@ -230,15 +230,15 @@ final class Schema extends AbstractPdoSchema
         return null;
     }
 
-    protected function loadTablePrimaryKey(string $tableName): IndexConstraint|null
+    protected function loadTablePrimaryKey(string $tableName): Index|null
     {
-        /** @var IndexConstraint|null */
+        /** @var Index|null */
         return $this->loadTableConstraints($tableName, self::PRIMARY_KEY);
     }
 
     protected function loadTableForeignKeys(string $tableName): array
     {
-        /** @var ForeignKeyConstraint[] */
+        /** @var ForeignKey[] */
         return $this->loadTableConstraints($tableName, self::FOREIGN_KEYS);
     }
 
@@ -280,7 +280,7 @@ final class Schema extends AbstractPdoSchema
             }
 
             /** @var string[] $columnNames */
-            $result[] = new IndexConstraint(
+            $result[] = new Index(
                 $name,
                 $columnNames,
                 (bool) $index[0]['is_unique'],
@@ -293,13 +293,13 @@ final class Schema extends AbstractPdoSchema
 
     protected function loadTableUniques(string $tableName): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->loadTableConstraints($tableName, self::UNIQUES);
     }
 
     protected function loadTableChecks(string $tableName): array
     {
-        /** @var CheckConstraint[] */
+        /** @var Check[] */
         return $this->loadTableConstraints($tableName, self::CHECKS);
     }
 
@@ -598,9 +598,9 @@ final class Schema extends AbstractPdoSchema
      * - uniques
      * - checks
      *
-     * @return CheckConstraint[]|ForeignKeyConstraint[]|IndexConstraint|IndexConstraint[]|null Constraints.
+     * @return Check[]|ForeignKey[]|Index|Index[]|null Constraints.
      */
-    private function loadTableConstraints(string $tableName, string $returnType): array|IndexConstraint|null
+    private function loadTableConstraints(string $tableName, string $returnType): array|Index|null
     {
         $sql = <<<SQL
         SELECT
@@ -647,7 +647,7 @@ final class Schema extends AbstractPdoSchema
             foreach ($names as $name => $constraint) {
                 switch ($type) {
                     case 'P':
-                        $result[self::PRIMARY_KEY] = new IndexConstraint(
+                        $result[self::PRIMARY_KEY] = new Index(
                             $name,
                             array_column($constraint, 'column_name'),
                             true,
@@ -655,24 +655,25 @@ final class Schema extends AbstractPdoSchema
                         );
                         break;
                     case 'R':
-                        $result[self::FOREIGN_KEYS][] = new ForeignKeyConstraint(
+                        $result[self::FOREIGN_KEYS][] = new ForeignKey(
                             $name,
                             array_column($constraint, 'column_name'),
-                            $constraint[0]['foreign_table_schema'] . '.' . $constraint[0]['foreign_table_name'],
+                            $constraint[0]['foreign_table_schema'],
+                            $constraint[0]['foreign_table_name'],
                             array_column($constraint, 'foreign_column_name'),
-                            null,
                             $constraint[0]['on_delete'],
+                            null,
                         );
                         break;
                     case 'U':
-                        $result[self::UNIQUES][] = new IndexConstraint(
+                        $result[self::UNIQUES][] = new Index(
                             $name,
                             array_column($constraint, 'column_name'),
                             true,
                         );
                         break;
                     case 'C':
-                        $result[self::CHECKS][] = new CheckConstraint(
+                        $result[self::CHECKS][] = new Check(
                             $name,
                             array_column($constraint, 'column_name'),
                             $constraint[0]['check_expr'],
