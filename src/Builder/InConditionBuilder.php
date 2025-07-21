@@ -57,9 +57,9 @@ final class InConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builde
      */
     protected function splitCondition(InCondition $condition, array &$params): string|null
     {
-        $operator = $condition->getOperator();
-        $values = $condition->getValues();
-        $column = $condition->getColumn();
+        $operator = $condition->operator;
+        $values = $condition->values;
+        $column = $condition->column;
 
         if (!is_array($values)) {
             return null;
