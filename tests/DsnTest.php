@@ -14,46 +14,39 @@ use Yiisoft\Db\Oracle\Dsn;
  */
 final class DsnTest extends TestCase
 {
-    public function testAsStringWithDatabaseName(): void
+    public function testConstruct(): void
     {
-        $this->assertSame(
-            'oci:dbname=localhost:1521;charset=AL32UTF8',
-            (new Dsn('oci', 'localhost', port: '1521', options: ['charset' => 'AL32UTF8']))->asString(),
-        );
+        $dsn = new Dsn('oci', 'localhost', 'yiitest', '1522', ['charset' => 'AL32UTF8']);
+
+        $this->assertSame('oci', $dsn->driver);
+        $this->assertSame('localhost', $dsn->host);
+        $this->assertSame('yiitest', $dsn->databaseName);
+        $this->assertSame('1522', $dsn->port);
+        $this->assertSame(['charset' => 'AL32UTF8'], $dsn->options);
+        $this->assertSame('oci:dbname=localhost:1522/yiitest;charset=AL32UTF8', (string) $dsn);
     }
 
-    public function testAsStringWithDatabaseNameWithEmptyString(): void
+    public function testConstructDefaults(): void
     {
-        $this->assertSame(
-            'oci:dbname=localhost:1521;charset=AL32UTF8',
-            (new Dsn('oci', 'localhost', '', '1521', ['charset' => 'AL32UTF8']))->asString(),
-        );
+        $dsn = new Dsn();
+
+        $this->assertSame('oci', $dsn->driver);
+        $this->assertSame('127.0.0.1', $dsn->host);
+        $this->assertSame('', $dsn->databaseName);
+        $this->assertSame('1521', $dsn->port);
+        $this->assertSame([], $dsn->options);
+        $this->assertSame('oci:dbname=127.0.0.1:1521', (string) $dsn);
     }
 
-    public function testAsStringWithDatabaseNameWithNull(): void
+    public function testConstructWithEmptyPort(): void
     {
-        $this->assertSame(
-            'oci:dbname=localhost:1521;charset=AL32UTF8',
-            (new Dsn('oci', 'localhost', null, '1521', ['charset' => 'AL32UTF8']))->asString(),
-        );
-    }
+        $dsn = new Dsn('oci', 'localhost', port: '');
 
-    /**
-     * Oracle service name it support only in version 18 and higher, for docker image gvenzl/oracle-xe:18
-     */
-    public function testAsStringWithService(): void
-    {
-        $this->assertSame(
-            'oci:dbname=localhost:1521/yiitest;charset=AL32UTF8',
-            (new Dsn('oci', 'localhost', 'yiitest', '1521', ['charset' => 'AL32UTF8']))->asString(),
-        );
-    }
-
-    public function testAsStringWithSID(): void
-    {
-        $this->assertSame(
-            'oci:dbname=localhost:1521/XE;charset=AL32UTF8',
-            (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString(),
-        );
+        $this->assertSame('oci', $dsn->driver);
+        $this->assertSame('localhost', $dsn->host);
+        $this->assertSame('', $dsn->databaseName);
+        $this->assertSame('', $dsn->port);
+        $this->assertSame([], $dsn->options);
+        $this->assertSame('oci:dbname=localhost:', (string) $dsn);
     }
 }

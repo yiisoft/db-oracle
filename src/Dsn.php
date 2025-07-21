@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle;
 
-use Yiisoft\Db\Connection\AbstractDsn;
+use Stringable;
 
 /**
- * Implement a Data Source Name (DSN) for an Oracle Server.
+ * Represents a Data Source Name (DSN) for an Oracle Server that's used to configure a {@see Driver} instance.
+ *
+ * To get DSN in string format, use the `(string)` type casting operator.
  *
  * @link https://www.php.net/manual/en/ref.pdo-oci.connection.php
  */
-final class Dsn extends AbstractDsn
+final class Dsn implements Stringable
 {
     /**
      * @psalm-param array<string,string> $options
      */
     public function __construct(
-        string $driver = 'oci',
-        string $host = '127.0.0.1',
-        string|null $databaseName = null,
-        string $port = '1521',
-        array $options = []
+        public readonly string $driver = 'oci',
+        public readonly string $host = '127.0.0.1',
+        public readonly string $databaseName = '',
+        public readonly string $port = '1521',
+        public readonly array $options = [],
     ) {
-        parent::__construct($driver, $host, $databaseName, $port, $options);
     }
 
     /**
@@ -31,31 +32,24 @@ final class Dsn extends AbstractDsn
      *
      * Please refer to the [PHP manual](https://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
      *
-     * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
-     * `key=value` and concatenated by `;`. For example:
+     * The `driver` property is used as the driver prefix of the DSN. For example:
      *
      * ```php
      * $dsn = new Dsn('oci', 'localhost', 'yiitest', '1521', ['charset' => 'AL32UTF8']);
-     * $connection = new Connection($dsn->asString(), 'system', 'root');
+     * $connection = new Connection($dsn, 'system', 'root');
      * ```
      *
      * Will result in the DSN string `oci:dbname=localhost:1521/yiitest;charset=AL32UTF8`.
      */
-    public function asString(): string
+    public function __toString(): string
     {
-        $driver = $this->getDriver();
-        $host = $this->getHost();
-        $databaseName = $this->getDatabaseName();
-        $port = $this->getPort();
-        $options = $this->getOptions();
+        $dsn = "$this->driver:dbname=$this->host:$this->port";
 
-        $dsn = "$driver:dbname=$host:$port";
-
-        if (!empty($databaseName)) {
-            $dsn .= "/$databaseName";
+        if ($this->databaseName !== '') {
+            $dsn .= "/$this->databaseName";
         }
 
-        foreach ($options as $key => $value) {
+        foreach ($this->options as $key => $value) {
             $dsn .= ";$key=$value";
         }
 
