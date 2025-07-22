@@ -36,7 +36,8 @@ final class Dsn implements Stringable
      *
      * ```php
      * $dsn = new Dsn('oci', 'localhost', 'yiitest', '1521', ['charset' => 'AL32UTF8']);
-     * $connection = new Connection($dsn, 'system', 'root');
+     * $driver = new Driver($dsn, 'username', 'password');
+     * $connection = new Connection($driver, 'system', 'root');
      * ```
      *
      * Will result in the DSN string `oci:dbname=localhost:1521/yiitest;charset=AL32UTF8`.
