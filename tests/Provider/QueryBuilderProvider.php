@@ -10,7 +10,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
@@ -243,15 +243,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
     public static function buildColumnDefinition(): array
     {
-        $referenceRestrict = new ForeignKeyConstraint();
-        $referenceRestrict->foreignColumnNames(['id']);
-        $referenceRestrict->foreignTableName('ref_table');
-        $referenceRestrict->onDelete(ReferentialAction::RESTRICT);
-        $referenceRestrict->onUpdate(ReferentialAction::RESTRICT);
+        $referenceRestrict = new ForeignKey(
+            foreignTableName: 'ref_table',
+            foreignColumnNames: ['id'],
+            onDelete: ReferentialAction::RESTRICT,
+            onUpdate: ReferentialAction::RESTRICT,
+        );
 
-        $referenceSetNull = clone $referenceRestrict;
-        $referenceSetNull->onDelete(ReferentialAction::SET_NULL);
-        $referenceRestrict->onUpdate(ReferentialAction::SET_NULL);
+        $referenceSetNull = new ForeignKey(
+            foreignTableName: 'ref_table',
+            foreignColumnNames:['id'],
+            onDelete: ReferentialAction::SET_NULL,
+            onUpdate: ReferentialAction::SET_NULL,
+        );
 
         $values = parent::buildColumnDefinition();
 
@@ -343,8 +347,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['unsigned()'][0] = 'number(10)';
         $values['scale(2)'][0] = 'number(10,2)';
         $values['integer(8)->scale(2)'][0] = 'number(8)';
-        $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE CASCADE';
-        $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE CASCADE';
+        $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL';
+        $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE SET NULL';
 
         $db = self::getDb();
 
