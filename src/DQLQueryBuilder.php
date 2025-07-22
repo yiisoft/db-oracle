@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Oracle\Builder\InConditionBuilder;
-use Yiisoft\Db\Oracle\Builder\LikeConditionBuilder;
+use Yiisoft\Db\Oracle\Builder\InBuilder;
+use Yiisoft\Db\Oracle\Builder\LikeBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 
 use function implode;
 
@@ -83,8 +83,8 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
     {
         return [
             ...parent::defaultExpressionBuilders(),
-            InCondition::class => InConditionBuilder::class,
-            LikeCondition::class => LikeConditionBuilder::class,
+            In::class => InBuilder::class,
+            Like::class => LikeBuilder::class,
         ];
     }
 }
