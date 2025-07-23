@@ -53,7 +53,7 @@
 - Chg #330: Rename `insertWithReturningPks()` to `insertReturningPks()` in `Command` and `DMLQueryBuilder` classes (@Tigrov)
 - Enh #336: Provide `yiisoft/db-implementation` virtual package (@vjik)
 - Enh #340: Adapt to `Param` refactoring in `yiisoft/db` package (@vjik)
-- Enh #341, #342, #344: Adapt to conditions refactoring in `yiisoft/db` package (@vjik)
+- Enh #341, #342, #345: Adapt to conditions refactoring in `yiisoft/db` package (@vjik)
 
 ## 1.3.0 March 21, 2024
 
