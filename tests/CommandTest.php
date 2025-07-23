@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
@@ -16,6 +17,7 @@ use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
+use Yiisoft\Db\Tests\Support\Assert;
 
 use function is_resource;
 use function str_pad;
@@ -608,18 +610,16 @@ final class CommandTest extends CommonCommandTest
         $command->createTable($tableName, ['col1' => ColumnBuilder::text()])->execute();
         $command->createIndex($tableName, $indexName, ['col1'], IndexType::SEARCH)->execute();
 
-        $this->assertCount(2, $schema->getTableIndexes($tableName));
+        $indexes = $schema->getTableIndexes($tableName);
+        Assert::setPropertyValue($indexes[1], 'name', '');
 
-        $index = $schema->getTableIndexes($tableName)[0];
-
-        $this->assertSame(['col1'], $index->getColumnNames());
-        $this->assertFalse($index->isUnique());
-        $this->assertFalse($index->isPrimaryKey());
-
-        $sysIndex = $schema->getTableIndexes($tableName)[1];
-        $this->assertSame([], $sysIndex->getColumnNames());
-        $this->assertTrue($sysIndex->isUnique());
-        $this->assertFalse($sysIndex->isPrimaryKey());
+        $this->assertEquals(
+            [
+                new Index($indexName, ['col1']),
+                new Index('', [], true),
+            ],
+            $indexes,
+        );
 
         $db->close();
     }
