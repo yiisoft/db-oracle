@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Builder;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 
 use function substr;
 
 /**
- * Build an object of {@see LikeCondition} into SQL expressions for Oracle Server.
+ * Build an object of {@see Like} into SQL expressions for Oracle Server.
  */
-final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder
+final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder
 {
     private string $escapeCharacter = '!';
 
     /**
-     * `\` is initialized in {@see buildLikeCondition()} method since there is a need to choose replacement value
+     * `\` is initialized in {@see buildLike()} method since there is a need to choose replacement value
      * based on {@see Quoter::quoteValue()}.
      */
     protected array $escapingReplacements = [
@@ -46,7 +46,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
         return parent::build($expression, $params);
     }
 
-    protected function prepareColumn(LikeCondition $expression, array &$params): string
+    protected function prepareColumn(Like $expression, array &$params): string
     {
         $column = parent::prepareColumn($expression, $params);
 
@@ -59,7 +59,7 @@ final class LikeConditionBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Buil
 
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        LikeCondition $expression,
+        Like $expression,
         ?array $escape,
         array &$params,
     ): string {
