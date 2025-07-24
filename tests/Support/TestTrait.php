@@ -37,12 +37,12 @@ trait TestTrait
 
     protected static function getDb(): Connection
     {
-        $dsn = (new Dsn(
+        $dsn = (string) new Dsn(
             host: self::getHost(),
             databaseName: self::getSid(),
             port: self::getPort(),
             options: ['charset' => 'AL32UTF8'],
-        ))->asString();
+        );
 
         return new Connection(new Driver($dsn, self::getUsername(), self::getPassword()), DbHelper::getSchemaCache());
     }
@@ -50,12 +50,12 @@ trait TestTrait
     protected function getDsn(): string
     {
         if ($this->dsn === '') {
-            $this->dsn = (new Dsn(
+            $this->dsn = (string) new Dsn(
                 host: self::getHost(),
                 databaseName: self::getSid(),
                 port: self::getPort(),
                 options: ['charset' => 'AL32UTF8'],
-            ))->asString();
+            );
         }
 
         return $this->dsn;
