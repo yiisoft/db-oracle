@@ -437,7 +437,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             [':qp0' => $param],
             3,
         ];
-        $data['without case expression'][1] = 'CASE WHEN "column_name"=1 THEN :qp0'
+        $data['without case expression'][1] = 'CASE WHEN "column_name" = 1 THEN :qp0'
             . ' WHEN "column_name" = 2 THEN (SELECT :pv1 FROM DUAL) END';
 
         return $data;
