@@ -20,7 +20,6 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_change_key_case;
 use function array_column;
 use function array_map;
-use function array_reverse;
 use function implode;
 use function in_array;
 use function preg_replace;
