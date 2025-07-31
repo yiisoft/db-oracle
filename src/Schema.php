@@ -20,7 +20,6 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_change_key_case;
 use function array_column;
 use function array_map;
-use function array_reverse;
 use function implode;
 use function in_array;
 use function preg_replace;
@@ -70,16 +69,14 @@ final class Schema extends AbstractPdoSchema
     {
         $resolvedName = new TableSchema();
 
-        $parts = array_reverse(
-            $this->db->getQuoter()->getTableNameParts($name)
-        );
+        $parts = $this->db->getQuoter()->getTableNameParts($name);
 
-        $resolvedName->name($parts[0] ?? '');
-        $resolvedName->schemaName($parts[1] ?? $this->defaultSchema);
+        $resolvedName->name($parts['name']);
+        $resolvedName->schemaName($parts['schemaName'] ?? $this->defaultSchema);
 
         $resolvedName->fullName(
             $resolvedName->getSchemaName() !== $this->defaultSchema ?
-            implode('.', array_reverse($parts)) : $resolvedName->getName()
+            implode('.', $parts) : $resolvedName->getName()
         );
 
         return $resolvedName;
@@ -257,10 +254,10 @@ final class Schema extends AbstractPdoSchema
         ORDER BY "uicol"."COLUMN_POSITION" ASC
         SQL;
 
-        $resolvedName = $this->resolveTableName($tableName);
+        $nameParts = $this->db->getQuoter()->getTableNameParts($tableName);
         $indexes = $this->db->createCommand($sql, [
-            ':schemaName' => $resolvedName->getSchemaName(),
-            ':tableName' => $resolvedName->getName(),
+            ':schemaName' => $nameParts['schemaName'] ?? $this->defaultSchema,
+            ':tableName' => $nameParts['name'],
         ])->queryAll();
 
         $indexes = array_map(array_change_key_case(...), $indexes);
@@ -623,10 +620,10 @@ final class Schema extends AbstractPdoSchema
         ORDER BY "uccol"."POSITION" ASC
         SQL;
 
-        $resolvedName = $this->resolveTableName($tableName);
+        $nameParts = $this->db->getQuoter()->getTableNameParts($tableName);
         $constraints = $this->db->createCommand($sql, [
-            ':schemaName' => $resolvedName->getSchemaName(),
-            ':tableName' => $resolvedName->getName(),
+            ':schemaName' => $nameParts['schemaName'] ?? $this->defaultSchema,
+            ':tableName' => $nameParts['name'],
         ])->queryAll();
 
         $constraints = array_map(array_change_key_case(...), $constraints);

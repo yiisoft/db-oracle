@@ -39,7 +39,7 @@
 - New #307: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
   `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 - Chg #310: Remove usage of `hasLimit()` and `hasOffset()` methods of `DQLQueryBuilder` class (@Tigrov)
-- Enh #313: Refactor according changes in `db` package (@Tigrov)
+- Enh #313, #347: Refactor according changes in `db` package (@Tigrov)
 - New #311: Add `caseSensitive` option to like condition (@vjik)
 - Enh #315: Remove `getCacheKey()` and `getCacheTag()` methods from `Schema` class (@Tigrov)
 - Enh #319: Support `boolean` type (@Tigrov)
