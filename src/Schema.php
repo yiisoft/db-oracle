@@ -15,12 +15,13 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoSchema;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 use function array_change_key_case;
 use function array_column;
 use function array_map;
-use function implode;
 use function in_array;
 use function preg_replace;
 use function strtolower;
@@ -59,27 +60,19 @@ use function strtolower;
  */
 final class Schema extends AbstractPdoSchema
 {
+    protected function findConstraints(TableSchemaInterface $table): void
+    {
+        $tableName = $this->resolveFullName($table->getName(), $table->getSchemaName());
+
+        $table->checks(...$this->getTableMetadata($tableName, SchemaInterface::CHECKS));
+        $table->foreignKeys(...$this->getTableMetadata($tableName, SchemaInterface::FOREIGN_KEYS));
+        $table->indexes(...$this->getTableMetadata($tableName, SchemaInterface::INDEXES));
+    }
+
     public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
     {
         $this->defaultSchema = $defaultSchema;
         parent::__construct($db, $schemaCache);
-    }
-
-    protected function resolveTableName(string $name): TableSchemaInterface
-    {
-        $resolvedName = new TableSchema();
-
-        $parts = $this->db->getQuoter()->getTableNameParts($name);
-
-        $resolvedName->name($parts['name']);
-        $resolvedName->schemaName($parts['schemaName'] ?? $this->defaultSchema);
-
-        $resolvedName->fullName(
-            $resolvedName->getSchemaName() !== $this->defaultSchema ?
-            implode('.', $parts) : $resolvedName->getName()
-        );
-
-        return $resolvedName;
     }
 
     /**
@@ -109,7 +102,7 @@ final class Schema extends AbstractPdoSchema
         SQL;
 
         $comment = $this->db->createCommand($sql, [
-            ':schemaName' => $tableSchema->getSchemaName(),
+            ':schemaName' => $tableSchema->getSchemaName() ?: $this->defaultSchema,
             ':tableName' => $tableSchema->getName(),
         ])->queryScalar();
 
@@ -216,21 +209,17 @@ final class Schema extends AbstractPdoSchema
 
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
-        $table = $this->resolveTableName($name);
-        $this->findTableComment($table);
+        $table = new TableSchema(...$this->db->getQuoter()->getTableNameParts($name));
 
         if ($this->findColumns($table)) {
+            $this->findTableComment($table);
             $this->findConstraints($table);
+            $table->sequenceName($this->getTableSequenceName($table->getName()));
+
             return $table;
         }
 
         return null;
-    }
-
-    protected function loadTablePrimaryKey(string $tableName): Index|null
-    {
-        /** @var Index|null */
-        return $this->loadTableConstraints($tableName, self::PRIMARY_KEY);
     }
 
     protected function loadTableForeignKeys(string $tableName): array
@@ -277,7 +266,7 @@ final class Schema extends AbstractPdoSchema
             }
 
             /** @var string[] $columnNames */
-            $result[] = new Index(
+            $result[$name] = new Index(
                 $name,
                 $columnNames,
                 (bool) $index[0]['is_unique'],
@@ -286,12 +275,6 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $result;
-    }
-
-    protected function loadTableUniques(string $tableName): array
-    {
-        /** @var Index[] */
-        return $this->loadTableConstraints($tableName, self::UNIQUES);
     }
 
     protected function loadTableChecks(string $tableName): array
@@ -317,7 +300,7 @@ final class Schema extends AbstractPdoSchema
      */
     protected function findColumns(TableSchemaInterface $table): bool
     {
-        $schemaName = $table->getSchemaName();
+        $schemaName = $table->getSchemaName() ?: $this->defaultSchema;
         $tableName = $table->getName();
 
         $sql = <<<SQL
@@ -469,135 +452,16 @@ final class Schema extends AbstractPdoSchema
     }
 
     /**
-     * Finds constraints and fills them into TableSchemaInterface object passed.
-     *
-     * @psalm-suppress PossiblyNullArrayOffset
-     */
-    protected function findConstraints(TableSchemaInterface $table): void
-    {
-        $sql = <<<SQL
-        SELECT
-            /*+ PUSH_PRED(C) PUSH_PRED(D) PUSH_PRED(E) */
-            D.CONSTRAINT_NAME,
-            D.CONSTRAINT_TYPE,
-            C.COLUMN_NAME,
-            C.POSITION,
-            D.R_CONSTRAINT_NAME,
-            E.TABLE_NAME AS TABLE_REF,
-            F.COLUMN_NAME AS COLUMN_REF,
-            C.TABLE_NAME
-        FROM ALL_CONS_COLUMNS C
-            INNER JOIN ALL_CONSTRAINTS D ON D.OWNER = C.OWNER AND D.CONSTRAINT_NAME = C.CONSTRAINT_NAME
-            LEFT JOIN ALL_CONSTRAINTS E ON E.OWNER = D.R_OWNER AND E.CONSTRAINT_NAME = D.R_CONSTRAINT_NAME
-            LEFT JOIN ALL_CONS_COLUMNS F ON F.OWNER = E.OWNER AND F.CONSTRAINT_NAME = E.CONSTRAINT_NAME AND F.POSITION = C.POSITION
-        WHERE
-            C.OWNER = :schemaName
-            AND C.TABLE_NAME = :tableName
-            ORDER BY D.CONSTRAINT_NAME, C.POSITION
-        SQL;
-
-        /**
-         * @psalm-var array{
-         *   array{
-         *     constraint_name: string,
-         *     constraint_type: string,
-         *     column_name: string,
-         *     position: string|null,
-         *     r_constraint_name: string|null,
-         *     table_ref: string|null,
-         *     column_ref: string|null,
-         *     table_name: string
-         *   }
-         * } $rows
-         */
-        $rows = $this->db->createCommand(
-            $sql,
-            [':tableName' => $table->getName(), ':schemaName' => $table->getSchemaName()]
-        )->queryAll();
-
-        $constraints = [];
-
-        foreach ($rows as $row) {
-            /** @psalm-var string[] $row */
-            $row = array_change_key_case($row);
-
-            if ($row['constraint_type'] === 'P') {
-                $table->getColumns()[$row['column_name']]->primaryKey(true);
-                $table->primaryKey($row['column_name']);
-
-                if (empty($table->getSequenceName())) {
-                    $table->sequenceName($this->getTableSequenceName($table->getName()));
-                }
-            }
-
-            if ($row['constraint_type'] !== 'R') {
-                /**
-                 * This condition isn't checked in `WHERE` because of an Oracle Bug:
-                 *
-                 * @link https://github.com/yiisoft/yii2/pull/8844
-                 */
-                continue;
-            }
-
-            $name = $row['constraint_name'];
-
-            if (!isset($constraints[$name])) {
-                $constraints[$name] = [
-                    'tableName' => $row['table_ref'],
-                    'columns' => [],
-                ];
-            }
-
-            $constraints[$name]['columns'][$row['column_name']] = $row['column_ref'];
-        }
-
-        foreach ($constraints as $index => $constraint) {
-            $table->foreignKey($index, [$constraint['tableName'], ...$constraint['columns']]);
-        }
-    }
-
-    public function findUniqueIndexes(TableSchemaInterface $table): array
-    {
-        $query = <<<SQL
-        SELECT
-            DIC.INDEX_NAME,
-            DIC.COLUMN_NAME
-        FROM ALL_INDEXES DI
-            INNER JOIN ALL_IND_COLUMNS DIC ON DI.TABLE_NAME = DIC.TABLE_NAME AND DI.INDEX_NAME = DIC.INDEX_NAME
-        WHERE
-            DI.UNIQUENESS = 'UNIQUE'
-            AND DIC.TABLE_OWNER = :schemaName
-            AND DIC.TABLE_NAME = :tableName
-        ORDER BY DIC.TABLE_NAME, DIC.INDEX_NAME, DIC.COLUMN_POSITION
-        SQL;
-        $result = [];
-
-        $rows = $this->db->createCommand(
-            $query,
-            [':tableName' => $table->getName(), ':schemaName' => $table->getschemaName()]
-        )->queryAll();
-
-        /** @psalm-var array<array{INDEX_NAME: string, COLUMN_NAME: string}> $rows */
-        foreach ($rows as $row) {
-            $result[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
-        }
-
-        return $result;
-    }
-
-    /**
      * Loads multiple types of constraints and returns the specified ones.
      *
      * @param string $tableName The table name.
      * @param string $returnType The return type:
-     * - primaryKey
      * - foreignKeys
-     * - uniques
      * - checks
      *
-     * @return Check[]|ForeignKey[]|Index|Index[]|null Constraints.
+     * @return Check[]|ForeignKey[] Constraints.
      */
-    private function loadTableConstraints(string $tableName, string $returnType): array|Index|null
+    private function loadTableConstraints(string $tableName, string $returnType): array
     {
         $sql = <<<SQL
         SELECT
@@ -616,7 +480,7 @@ final class Schema extends AbstractPdoSchema
         ON "fuc"."OWNER" = "uc"."R_OWNER" AND "fuc"."CONSTRAINT_NAME" = "uc"."R_CONSTRAINT_NAME"
         LEFT JOIN "USER_CONS_COLUMNS" "fuccol"
         ON "fuccol"."OWNER" = "fuc"."OWNER" AND "fuccol"."CONSTRAINT_NAME" = "fuc"."CONSTRAINT_NAME" AND "fuccol"."POSITION" = "uccol"."POSITION"
-        WHERE "uc"."OWNER" = :schemaName AND "uc"."TABLE_NAME" = :tableName
+        WHERE "uc"."OWNER" = :schemaName AND "uc"."TABLE_NAME" = :tableName AND "uc"."CONSTRAINT_TYPE" IN ('R', 'C')
         ORDER BY "uccol"."POSITION" ASC
         SQL;
 
@@ -630,9 +494,7 @@ final class Schema extends AbstractPdoSchema
         $constraints = DbArrayHelper::arrange($constraints, ['type', 'name']);
 
         $result = [
-            self::PRIMARY_KEY => null,
             self::FOREIGN_KEYS => [],
-            self::UNIQUES => [],
             self::CHECKS => [],
         ];
 
@@ -642,41 +504,21 @@ final class Schema extends AbstractPdoSchema
              * @psalm-var ConstraintArray $constraint
              */
             foreach ($names as $name => $constraint) {
-                switch ($type) {
-                    case 'P':
-                        $result[self::PRIMARY_KEY] = new Index(
-                            $name,
-                            array_column($constraint, 'column_name'),
-                            true,
-                            true,
-                        );
-                        break;
-                    case 'R':
-                        $result[self::FOREIGN_KEYS][] = new ForeignKey(
-                            $name,
-                            array_column($constraint, 'column_name'),
-                            $constraint[0]['foreign_table_schema'],
-                            $constraint[0]['foreign_table_name'],
-                            array_column($constraint, 'foreign_column_name'),
-                            $constraint[0]['on_delete'],
-                            null,
-                        );
-                        break;
-                    case 'U':
-                        $result[self::UNIQUES][] = new Index(
-                            $name,
-                            array_column($constraint, 'column_name'),
-                            true,
-                        );
-                        break;
-                    case 'C':
-                        $result[self::CHECKS][] = new Check(
-                            $name,
-                            array_column($constraint, 'column_name'),
-                            $constraint[0]['check_expr'],
-                        );
-                        break;
-                }
+                match ($type) {
+                    'R' => $result[self::FOREIGN_KEYS][$name] = new ForeignKey(
+                        $name,
+                        array_column($constraint, 'column_name'),
+                        $constraint[0]['foreign_table_schema'],
+                        $constraint[0]['foreign_table_name'],
+                        array_column($constraint, 'foreign_column_name'),
+                        $constraint[0]['on_delete'],
+                    ),
+                    'C' => $result[self::CHECKS][$name] = new Check(
+                        $name,
+                        array_column($constraint, 'column_name'),
+                        $constraint[0]['check_expr'],
+                    ),
+                };
             }
         }
 

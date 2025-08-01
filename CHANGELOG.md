@@ -54,6 +54,7 @@
 - Enh #336: Provide `yiisoft/db-implementation` virtual package (@vjik)
 - Enh #340: Adapt to `Param` refactoring in `yiisoft/db` package (@vjik)
 - Enh #341, #342, #345: Adapt to conditions refactoring in `yiisoft/db` package (@vjik)
+- Enh #348: Remove `TableSchema` class and refactor `Schema` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

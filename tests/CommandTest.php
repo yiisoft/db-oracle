@@ -610,15 +610,12 @@ final class CommandTest extends CommonCommandTest
         $command->createTable($tableName, ['col1' => ColumnBuilder::text()])->execute();
         $command->createIndex($tableName, $indexName, ['col1'], IndexType::SEARCH)->execute();
 
-        $indexes = $schema->getTableIndexes($tableName);
-        Assert::setPropertyValue($indexes[1], 'name', '');
-
-        $this->assertEquals(
+        Assert::constraintsEquals(
             [
                 new Index($indexName, ['col1']),
                 new Index('', [], true),
             ],
-            $indexes,
+            $schema->getTableIndexes($tableName),
         );
 
         $db->close();
