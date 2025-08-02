@@ -21,6 +21,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Tests\Common\CommonColumnTest;
 
 use function iterator_to_array;
@@ -65,7 +66,7 @@ final class ColumnTest extends CommonColumnTest
         $this->assertSame(str_repeat('x', 100), $result['char_col']);
         $this->assertNull($result['char_col3']);
         $this->assertSame(1.234, $result['float_col']);
-        $this->assertSame("\x10\x11\x12", stream_get_contents($result['blob_col']));
+        $this->assertSame("\x10\x11\x12", (string) $result['blob_col']);
         $this->assertEquals(new DateTimeImmutable('2023-07-11 14:50:23', $utcTimezone), $result['timestamp_col']);
         $this->assertEquals(new DateTimeImmutable('2023-07-11 14:50:23', $utcTimezone), $result['timestamp_local']);
         $this->assertEquals(new DateTimeImmutable('14:50:23'), $result['time_col']);
@@ -240,10 +241,19 @@ final class ColumnTest extends CommonColumnTest
         $binaryCol = new BinaryColumn();
         $binaryCol->dbType('blob');
 
-        $this->assertInstanceOf(Expression::class, $binaryCol->dbTypecast("\x10\x11\x12"));
-        $this->assertInstanceOf(
-            Expression::class,
+        $expected = new Expression('TO_BLOB(UTL_RAW.CAST_TO_RAW(:value))', ['value' => "\x10\x11\x12"]);
+
+        $this->assertEquals(
+            $expected,
+            $binaryCol->dbTypecast("\x10\x11\x12"),
+        );
+        $this->assertEquals(
+            $expected,
             $binaryCol->dbTypecast(new Param("\x10\x11\x12", PDO::PARAM_LOB)),
+        );
+        $this->assertEquals(
+            $expected,
+            $binaryCol->dbTypecast(new StringableStream("\x10\x11\x12")),
         );
     }
 

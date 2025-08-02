@@ -421,6 +421,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['binary'][0] = "HEXTORAW('737472696e67')";
         $values['paramBinary'][0] = "HEXTORAW('737472696e67')";
         $values['paramResource'][0] = "HEXTORAW('737472696e67')";
+        $values['ResourceStream'][0] = "HEXTORAW('737472696e67')";
 
         return $values;
     }
