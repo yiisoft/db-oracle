@@ -26,7 +26,6 @@ use Yiisoft\Db\Tests\Common\CommonColumnTest;
 
 use function iterator_to_array;
 use function str_repeat;
-use function stream_get_contents;
 use function version_compare;
 
 /**
