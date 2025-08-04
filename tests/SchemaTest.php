@@ -7,9 +7,9 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider;
@@ -22,16 +22,12 @@ use function version_compare;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class SchemaTest extends CommonSchemaTest
 {
     use TestTrait;
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::columns
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'columns')]
     public function testColumns(array $columns, string $tableName = 'type'): void
     {
         $db = $this->getConnection();
@@ -48,10 +44,6 @@ final class SchemaTest extends CommonSchemaTest
         parent::testColumns($columns, $tableName);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testCompositeFk(): void
     {
         $db = $this->getConnection(true);
@@ -59,22 +51,23 @@ final class SchemaTest extends CommonSchemaTest
         $schema = $db->getSchema();
         $table = $schema->getTableSchema('composite_fk');
 
-        $this->assertNotNull($table);
-
-        $fk = $table->getForeignKeys();
-
-        $this->assertCount(1, $fk);
-        $this->assertSame('order_item', $fk[0][0]);
-        $this->assertSame('order_id', $fk[0]['order_id']);
-        $this->assertSame('item_id', $fk[0]['item_id']);
+        $this->assertEquals(
+            [
+                'FK_composite_fk_order_item' => new ForeignKey(
+                    'FK_composite_fk_order_item',
+                    ['order_id', 'item_id'],
+                    'SYSTEM',
+                    'order_item',
+                    ['order_id', 'item_id'],
+                    ReferentialAction::CASCADE,
+                ),
+            ],
+            $table->getForeignKeys(),
+        );
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testGetDefaultSchema(): void
     {
         $db = $this->getConnection();
@@ -94,11 +87,6 @@ final class SchemaTest extends CommonSchemaTest
         parent::testGetSchemaDefaultValues();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testGetSchemaNames(): void
     {
         $db = $this->getConnection(true);
@@ -114,11 +102,6 @@ final class SchemaTest extends CommonSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testGetTableNamesWithSchema(): void
     {
         $db = $this->getConnection(true);
@@ -164,10 +147,6 @@ final class SchemaTest extends CommonSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testGetViewNames(): void
     {
         $db = $this->getConnection(true);
@@ -180,10 +159,6 @@ final class SchemaTest extends CommonSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testGetViewNamesWithSchema(): void
     {
         $db = $this->getConnection(true);
@@ -196,41 +171,25 @@ final class SchemaTest extends CommonSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
     {
         parent::testTableSchemaConstraints($tableName, $type, $expected);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
     {
         parent::testTableSchemaConstraintsWithPdoLowercase($tableName, $type, $expected);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
     {
         parent::testTableSchemaConstraintsWithPdoUppercase($tableName, $type, $expected);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider::tableSchemaWithDbSchemes
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'tableSchemaWithDbSchemes')]
     public function testTableSchemaWithDbSchemes(
         string $tableName,
         string $expectedTableName,
@@ -257,7 +216,7 @@ final class SchemaTest extends CommonSchemaTest
             )
             ->willReturn($commandMock);
         $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
-        $schema->getTablePrimaryKey($tableName);
+        $schema->getTablePrimaryKey($tableName, true);
 
         $db->close();
     }

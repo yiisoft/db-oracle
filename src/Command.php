@@ -11,6 +11,7 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
+use Yiisoft\Db\Schema\TableSchema;
 
 use function array_keys;
 use function array_map;
