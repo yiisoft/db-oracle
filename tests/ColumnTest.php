@@ -76,7 +76,7 @@ final class ColumnTest extends CommonColumnTest
         if ($allTypecasted) {
             $this->assertSame([['a' => 1, 'b' => null, 'c' => [1, 3, 5]]], $result['json_col']);
         } else {
-            $this->assertSame('[{"a":1,"b":null,"c":[1,3,5]}]', stream_get_contents($result['json_col']));
+            $this->assertSame('[{"a":1,"b":null,"c":[1,3,5]}]', (string) $result['json_col']);
         }
     }
 
