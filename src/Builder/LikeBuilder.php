@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Builder;
 
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function implode;
-use function is_array;
 use function substr;
-use function strtr;
 
 /**
  * Build an object of {@see Like} into SQL expressions for Oracle Server.
