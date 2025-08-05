@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Oracle\Builder;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Quoter;
 
 use function substr;
 
@@ -28,29 +27,23 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
         '!' => '!!',
     ];
 
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
+    public function __construct(
+        private readonly QueryBuilderInterface $queryBuilder,
+    ) {
         parent::__construct($queryBuilder, $this->getEscapeSql());
+
+        /**
+         * Different pdo_oci8 versions may or may not implement `PDO::quote()`, so {@see Quoter::quoteValue()} may or
+         * may not quote `\`.
+         */
+        $this->escapingReplacements['\\'] = substr($this->queryBuilder->getQuoter()->quoteValue('\\'), 1, -1);
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    protected function prepareColumn(Like $condition, array &$params): string
     {
-        if (!isset($this->escapingReplacements['\\'])) {
-            /*
-             * Different pdo_oci8 versions may or may not implement `PDO::quote()`, so {@see Quoter::quoteValue()} may or
-             * may not quote `\`.
-             */
-            $this->escapingReplacements['\\'] = substr($this->queryBuilder->getQuoter()->quoteValue('\\'), 1, -1);
-        }
+        $column = parent::prepareColumn($condition, $params);
 
-        return parent::build($expression, $params);
-    }
-
-    protected function prepareColumn(Like $expression, array &$params): string
-    {
-        $column = parent::prepareColumn($expression, $params);
-
-        if ($expression->caseSensitive === false) {
+        if ($condition->caseSensitive === false) {
             $column = 'LOWER(' . $column . ')';
         }
 
@@ -59,13 +52,12 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
 
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        Like $expression,
-        ?array $escape,
+        Like $condition,
         array &$params,
     ): string {
-        $placeholderName = parent::preparePlaceholderName($value, $expression, $escape, $params);
+        $placeholderName = parent::preparePlaceholderName($value, $condition, $params);
 
-        if ($expression->caseSensitive === false) {
+        if ($condition->caseSensitive === false) {
             $placeholderName = 'LOWER(' . $placeholderName . ')';
         }
 
