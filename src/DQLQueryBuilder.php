@@ -11,7 +11,6 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
-
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 
 use function implode;
