@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 
 use function array_slice;
 use function array_unshift;
@@ -17,14 +18,14 @@ use function count;
 use function is_array;
 
 /**
- * Build an object of {@see In} into SQL expressions for Oracle Server.
+ * Build an object of {@see In} or {@see NotIn} into SQL expressions for Oracle Server.
  */
 final class InBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InBuilder
 {
     /**
      * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
      *
-     * @param In $expression The expression to build.
+     * @param In|NotIn $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
@@ -55,9 +56,12 @@ final class InBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InBuild
      *
      * @return string|null `null` when split isn't required. Otherwise - built SQL condition.
      */
-    protected function splitCondition(In $condition, array &$params): string|null
+    protected function splitCondition(In|NotIn $condition, array &$params): string|null
     {
-        $operator = $condition->operator;
+        $operator = match ($condition::class) {
+            In::class => 'IN',
+            NotIn::class => 'NOT IN',
+        };
         $values = $condition->values;
         $column = $condition->column;
 
