@@ -56,6 +56,7 @@
 - Enh #341, #342, #345: Adapt to conditions refactoring in `yiisoft/db` package (@vjik)
 - Enh #348: Remove `TableSchema` class and refactor `Schema` class (@Tigrov)
 - Enh #350: Adapt to `Like` changes in `yiisoft/db` package (@vjik)
+- Enh #352: Support column's collation (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
