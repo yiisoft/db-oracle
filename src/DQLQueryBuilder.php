@@ -11,6 +11,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 
 use function implode;
 
@@ -84,6 +85,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         return [
             ...parent::defaultExpressionBuilders(),
             In::class => InBuilder::class,
+            NotIn::class => InBuilder::class,
             Like::class => LikeBuilder::class,
         ];
     }
