@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle\Builder;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function substr;
@@ -15,7 +16,7 @@ use function substr;
  */
 final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder
 {
-    private string $escapeCharacter = '!';
+    protected const ESCAPE_SQL = " ESCAPE '!'";
 
     /**
      * `\` is initialized in {@see buildLike()} method since there is a need to choose replacement value
@@ -30,7 +31,7 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
     ) {
-        parent::__construct($queryBuilder, $this->getEscapeSql());
+        parent::__construct($queryBuilder);
 
         /**
          * Different pdo_oci8 versions may or may not implement `PDO::quote()`, so {@see Quoter::quoteValue()} may or
@@ -39,7 +40,7 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
         $this->escapingReplacements['\\'] = substr($this->queryBuilder->getQuoter()->quoteValue('\\'), 1, -1);
     }
 
-    protected function prepareColumn(Like $condition, array &$params): string
+    protected function prepareColumn(Like|NotLike $condition, array &$params): string
     {
         $column = parent::prepareColumn($condition, $params);
 
@@ -52,7 +53,7 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
 
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        Like $condition,
+        Like|NotLike $condition,
         array &$params,
     ): string {
         $placeholderName = parent::preparePlaceholderName($value, $condition, $params);
@@ -62,14 +63,5 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
         }
 
         return $placeholderName;
-    }
-
-    /**
-     * @return string Character used to escape special characters in `LIKE` conditions. By default, it's assumed to be
-     * `!`.
-     */
-    private function getEscapeSql(): string
-    {
-        return $this->escapeCharacter !== '' ? " ESCAPE '$this->escapeCharacter'" : '';
     }
 }
