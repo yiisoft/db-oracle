@@ -37,6 +37,7 @@ use function strtolower;
  *   size: string|null,
  *   nullable: string,
  *   data_default: string|null,
+ *   collation: string|null,
  *   constraint_type: string|null,
  *   check: string|null,
  *   column_comment: string|null,
@@ -330,6 +331,7 @@ final class Schema extends AbstractPdoSchema
             (CASE WHEN A.CHAR_LENGTH > 0 THEN A.CHAR_LENGTH ELSE A.DATA_PRECISION END) AS "size",
             A.NULLABLE,
             A.DATA_DEFAULT,
+            A.COLLATION,
             C.CONSTRAINT_TYPE,
             C2.SEARCH_CONDITION AS "check",
             COM.COMMENTS AS COLUMN_COMMENT
@@ -432,6 +434,7 @@ final class Schema extends AbstractPdoSchema
         $columnInfo = [
             'autoIncrement' => $info['identity_column'] === 'YES',
             'check' => $info['check'],
+            'collation' => $info['collation'],
             'comment' => $info['column_comment'],
             'defaultValueRaw' => $info['data_default'],
             'name' => $info['column_name'],

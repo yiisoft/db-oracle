@@ -45,6 +45,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             . $this->buildUnique($column)
             . $this->buildNotNull($column)
             . $this->buildCheck($column)
+            . $this->buildCollate($column)
             . $this->buildReferences($column)
             . $this->buildExtra($column);
     }

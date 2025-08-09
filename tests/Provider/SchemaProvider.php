@@ -58,19 +58,23 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         dbType: 'char',
                         notNull: true,
                         size: 100,
+                        collation: 'USING_NLS_COMP',
                     ),
                     'char_col2' => new StringColumn(
                         dbType: 'varchar2',
                         size: 100,
+                        collation: 'USING_NLS_COMP',
                         defaultValue: 'some\'thing',
                     ),
                     'char_col3' => new StringColumn(
                         dbType: 'varchar2',
                         size: 4000,
+                        collation: 'USING_NLS_COMP',
                     ),
                     'nvarchar_col' => new StringColumn(
                         dbType: 'nvarchar2',
                         size: 100,
+                        collation: 'USING_NLS_COMP',
                         defaultValue: '',
                     ),
                     'float_col' => new DoubleColumn(
@@ -165,6 +169,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                         dbType: 'varchar2',
                         notNull: true,
                         size: 255,
+                        collation: 'USING_NLS_COMP',
                     ),
                 ],
                 'animal',
