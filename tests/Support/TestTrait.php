@@ -9,6 +9,8 @@ use Yiisoft\Db\Oracle\Dsn;
 use Yiisoft\Db\Oracle\Driver;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
+use function str_replace;
+
 trait TestTrait
 {
     private string $dsn = '';
@@ -64,6 +66,11 @@ trait TestTrait
     protected static function getDriverName(): string
     {
         return 'oci';
+    }
+
+    protected static function replaceQuotes(string $sql): string
+    {
+        return str_replace(['[[', ']]'], '"', $sql);
     }
 
     protected function setDsn(string $dsn): void
