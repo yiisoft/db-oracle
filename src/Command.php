@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
-use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
