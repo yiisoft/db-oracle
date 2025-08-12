@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use JsonException;
 use PDO;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
