@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Oracle;
 
 use PDO;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
@@ -61,12 +60,6 @@ final class Command extends AbstractPdoCommand
 
             $column = $tableColumns[$name];
 
-            if ($column->getPhpType() !== PhpType::INT) {
-                $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
-            } else {
-                $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
-            }
-
             $returnParams[$phName]['size'] = ($column->getSize() ?? 3998) + 2;
         }
 
@@ -77,9 +70,9 @@ final class Command extends AbstractPdoCommand
         $this->setSql($sql)->bindValues($params);
         $this->prepare(false);
 
-        /** @psalm-var array<string, array{column: string, value: mixed, dataType: DataType::*, size: int}> $returnParams */
+        /** @psalm-var array<string, array{column: string, value: mixed, size: int}> $returnParams */
         foreach ($returnParams as $name => &$value) {
-            $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
+            $this->bindParam($name, $value['value'], PDO::PARAM_STR, $value['size']);
         }
 
         unset($value);
