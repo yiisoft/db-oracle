@@ -10,7 +10,9 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
@@ -452,5 +454,79 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values = parent::delete();
         $values['base'][2] = 'DELETE FROM "user" WHERE ("is_enabled" = \'0\') AND ("power" = WRONG_POWER())';
         return $values;
+    }
+
+    public static function lengthBuilder(): array
+    {
+        $data = parent::lengthBuilder();
+
+        $data['query'][1] = "LENGTH((SELECT 'four' FROM DUAL))";
+
+        return $data;
+    }
+
+    public static function multiOperandFunctionClasses(): array
+    {
+        return [
+            ...parent::multiOperandFunctionClasses(),
+            ArrayMerge::class => [ArrayMerge::class],
+        ];
+    }
+
+    public static function multiOperandFunctionBuilder(): array
+    {
+        $data = parent::multiOperandFunctionBuilder();
+
+        $data['Greatest with 4 operands'][2] = 'GREATEST(1, 1.5, 1 + 2, (SELECT 10 FROM DUAL))';
+        $data['Least with 4 operands'][2] = 'LEAST(1, 1.5, 1 + 2, (SELECT 10 FROM DUAL))';
+        $data['Longest with 2 operands'][2] = <<<SQL
+            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
+            SQL;
+        $data['Longest with 3 operands'][2] = <<<SQL
+            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
+            SQL;
+        $data['Shortest with 2 operands'][2] = <<<SQL
+            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
+            SQL;
+        $data['Shortest with 3 operands'][2] = <<<SQL
+            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
+            SQL;
+
+        $stringParam = new Param('[3,4,5]', DataType::STRING);
+
+        return [
+            ...$data,
+            'ArrayMerge with 1 operand' => [
+                ArrayMerge::class,
+                ["'[1,2,3]'"],
+                "('[1,2,3]')",
+                '[1,2,3]',
+            ],
+            'ArrayMerge with 2 operands' => [
+                ArrayMerge::class,
+                ["'[1,2,3]'", $stringParam],
+                '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
+                . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))))",
+                '["1","2","3","4","5"]',
+                [':qp0' => $stringParam],
+            ],
+            'ArrayMerge with 4 operands' => [
+                ArrayMerge::class,
+                ["'[1,2,3]'", [5, 6, 7], $stringParam, static::getDb()->select(new ArrayExpression([9, 10]))],
+                '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
+                . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE((SELECT :qp2 FROM DUAL), '$[*]' COLUMNS(value  PATH '$'))"
+                . '))',
+                '["1","2","3","5","6","7","4","9","10"]',
+                [
+                    ':qp0' => new Param('[5,6,7]', DataType::STRING),
+                    ':qp1' => $stringParam,
+                    ':qp2' => new Param('[9,10]', DataType::STRING),
+                ],
+            ],
+        ];
     }
 }
