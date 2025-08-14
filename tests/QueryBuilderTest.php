@@ -25,6 +25,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\Assert;
+
 use function json_decode;
 
 /**
