@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use PDO;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
@@ -17,6 +17,7 @@ use function array_keys;
 use function array_map;
 use function count;
 use function implode;
+use function in_array;
 use function strlen;
 
 /**
@@ -25,6 +26,13 @@ use function strlen;
  */
 final class Command extends AbstractPdoCommand
 {
+    private const INTEGER_COLUMN_TYPES = [
+        ColumnType::TINYINT,
+        ColumnType::SMALLINT,
+        ColumnType::INTEGER,
+        ColumnType::BIGINT,
+    ];
+
     public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
@@ -37,6 +45,7 @@ final class Command extends AbstractPdoCommand
 
             return [];
         }
+        /** @var TableSchema $tableSchema */
 
         if ($columns instanceof QueryInterface) {
             throw new NotSupportedException(
@@ -46,9 +55,16 @@ final class Command extends AbstractPdoCommand
 
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
-
-        /** @var TableSchema $tableSchema */
         $tableColumns = $tableSchema->getColumns();
+
+        /**
+         * @psalm-var array<string, array{
+         *     column: string,
+         *     value: mixed,
+         *     dataType: DataType::*,
+         *     size: int,
+         * }> $returnParams
+         */
         $returnParams = [];
 
         foreach ($returnColumns as $name) {
@@ -61,11 +77,9 @@ final class Command extends AbstractPdoCommand
 
             $column = $tableColumns[$name];
 
-            if ($column->getPhpType() !== PhpType::INT) {
-                $returnParams[$phName]['dataType'] = PDO::PARAM_STR;
-            } else {
-                $returnParams[$phName]['dataType'] = PDO::PARAM_INT;
-            }
+            $returnParams[$phName]['dataType'] = in_array($column->getType(), self::INTEGER_COLUMN_TYPES, true)
+                ? PDO::PARAM_INT
+                : PDO::PARAM_STR;
 
             $returnParams[$phName]['size'] = ($column->getSize() ?? 3998) + 2;
         }
@@ -77,7 +91,6 @@ final class Command extends AbstractPdoCommand
         $this->setSql($sql)->bindValues($params);
         $this->prepare(false);
 
-        /** @psalm-var array<string, array{column: string, value: mixed, dataType: DataType::*, size: int}> $returnParams */
         foreach ($returnParams as $name => &$value) {
             $this->bindParam($name, $value['value'], $value['dataType'], $value['size']);
         }
