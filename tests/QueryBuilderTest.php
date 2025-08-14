@@ -25,7 +25,11 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\Assert;
+
 use function json_decode;
+use function sort;
+
+use const SORT_NUMERIC;
 
 /**
  * @group oracle
@@ -657,10 +661,10 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $result = $db->select($arrayMerge)->scalar();
         $result = json_decode($result);
-        sort($result);
+        sort($result, SORT_NUMERIC);
 
         $expectedResult = json_decode($expectedResult);
-        sort($expectedResult);
+        sort($expectedResult, SORT_NUMERIC);
 
         $this->assertSame($expectedResult, $result);
     }
