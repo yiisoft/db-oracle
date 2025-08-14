@@ -12,6 +12,8 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 
+use Yiisoft\Db\Schema\TableSchema;
+
 use function array_keys;
 use function array_map;
 use function count;
@@ -37,13 +39,14 @@ final class Command extends AbstractPdoCommand
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
         $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
 
-        if ($returnColumns === [] || $tableSchema === null) {
+        if ($returnColumns === []) {
             if ($this->insert($table, $columns)->execute() === 0) {
                 return false;
             }
 
             return [];
         }
+        /** @var TableSchema $tableSchema */
 
         if ($columns instanceof QueryInterface) {
             throw new NotSupportedException(
