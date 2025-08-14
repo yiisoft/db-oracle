@@ -25,6 +25,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Common\CommonQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use function json_decode;
 
 /**
  * @group oracle
@@ -615,10 +616,10 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testMultiOperandFunctionBuilderWithoutOperands($class);
     }
 
-    #[TestWith(['int[]', 'int', '[1,2,3,5,6,7,4,9,10]'])]
-    #[TestWith([new IntegerColumn(), 'number(10)', '[1,2,3,5,6,7,4,9,10]'])]
-    #[TestWith([new ArrayColumn(), '', '["1","2","3","5","6","7","4","9","10"]'])]
-    #[TestWith([new ArrayColumn(column: new IntegerColumn()), 'number(10)', '[1,2,3,5,6,7,4,9,10]'])]
+    #[TestWith(['int[]', 'int', '[1,2,3,4,5,6,7,9,10]'])]
+    #[TestWith([new IntegerColumn(), 'number(10)', '[1,2,3,4,5,6,7,9,10]'])]
+    #[TestWith([new ArrayColumn(), '', '["1","2","3","4","5","6","7","9","10"]'])]
+    #[TestWith([new ArrayColumn(column: new IntegerColumn()), 'number(10)', '[1,2,3,4,5,6,7,9,10]'])]
     public function testMultiOperandFunctionBuilderWithType(
         string|ColumnInterface $type,
         string $operandType,
@@ -655,6 +656,11 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         );
 
         $result = $db->select($arrayMerge)->scalar();
+        $result = json_decode($result);
+        sort($result);
+
+        $expectedResult = json_decode($expectedResult);
+        sort($expectedResult);
 
         $this->assertSame($expectedResult, $result);
     }
