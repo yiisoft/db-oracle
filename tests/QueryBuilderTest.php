@@ -662,9 +662,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $result = $db->select($arrayMerge)->scalar();
         $result = json_decode($result);
         sort($result, SORT_NUMERIC);
-
         $expectedResult = json_decode($expectedResult);
-        sort($expectedResult, SORT_NUMERIC);
 
         $this->assertSame($expectedResult, $result);
     }
