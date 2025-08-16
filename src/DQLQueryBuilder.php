@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
+use Yiisoft\Db\Expression\Function\Longest;
+use Yiisoft\Db\Expression\Function\Shortest;
+use Yiisoft\Db\Oracle\Builder\ArrayMergeBuilder;
 use Yiisoft\Db\Oracle\Builder\InBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeBuilder;
+use Yiisoft\Db\Oracle\Builder\LongestBuilder;
+use Yiisoft\Db\Oracle\Builder\ShortestBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\In;
@@ -89,6 +95,9 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
             NotIn::class => InBuilder::class,
             Like::class => LikeBuilder::class,
             NotLike::class => LikeBuilder::class,
+            ArrayMerge::class => ArrayMergeBuilder::class,
+            Longest::class => LongestBuilder::class,
+            Shortest::class => ShortestBuilder::class,
         ];
     }
 }
