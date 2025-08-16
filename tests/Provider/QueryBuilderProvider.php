@@ -500,7 +500,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 ArrayMerge::class,
                 ["'[1,2,3]'"],
                 "('[1,2,3]')",
-                '[1,2,3]',
+                [1, 2, 3],
             ],
             'ArrayMerge with 2 operands' => [
                 ArrayMerge::class,
@@ -508,7 +508,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
                 . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))))",
-                '["1","2","3","4","5"]',
+                [1, 2, 3, 4, 5],
                 [':qp0' => $stringParam],
             ],
             'ArrayMerge with 4 operands' => [
@@ -520,7 +520,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE((SELECT :qp2 FROM DUAL), '$[*]' COLUMNS(value  PATH '$'))"
                 . '))',
-                '["1","2","3","5","6","7","4","9","10"]',
+                [1, 2, 3, 4, 5, 6, 7, 9, 10],
                 [
                     ':qp0' => new Param('[5,6,7]', DataType::STRING),
                     ':qp1' => $stringParam,
