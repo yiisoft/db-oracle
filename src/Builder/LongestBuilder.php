@@ -12,8 +12,6 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 /**
  * Builds SQL representation of function expressions which returns the longest string from a set of operands.
  *
- * @see Longest
- *
  * ```SQL
  * (SELECT value FROM (
  *     SELECT operand1 AS value FROM DUAL
@@ -21,6 +19,8 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
  *     SELECT operand2 AS value FROM DUAL
  * ) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
  * ```
+ *
+ * @extends MultiOperandFunctionBuilder<Longest>
  */
 final class LongestBuilder extends MultiOperandFunctionBuilder
 {

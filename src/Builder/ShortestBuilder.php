@@ -11,8 +11,6 @@ use Yiisoft\Db\Expression\Function\Shortest;
 /**
  * Builds SQL representation of function expressions which return the shortest string from a set of operands.
  *
- * @see Shortest
- *
  * ```SQL
  * (SELECT value FROM (
  *     SELECT operand1 AS value FROM DUAL
@@ -20,6 +18,8 @@ use Yiisoft\Db\Expression\Function\Shortest;
  *     SELECT operand2 AS value FROM DUAL
  * ) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
  * ```
+ *
+ * @extends MultiOperandFunctionBuilder<Shortest>
  */
 final class ShortestBuilder extends MultiOperandFunctionBuilder
 {
