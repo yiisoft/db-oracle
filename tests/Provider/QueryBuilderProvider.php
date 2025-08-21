@@ -148,7 +148,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             'regular values with update part' => [
                 2 => ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp4, "status"=:qp5, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES (EXCLUDED."email", EXCLUDED."address", EXCLUDED."status", EXCLUDED."profile_id")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp4, "status"=2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES (EXCLUDED."email", EXCLUDED."address", EXCLUDED."status", EXCLUDED."profile_id")
                 SQL,
             ],
             'regular values without update part' => [
@@ -166,7 +166,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 2 => ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
                 MERGE INTO "T_upsert" USING (WITH USER_SQL AS (SELECT "email", 2 AS "status" FROM "customer" WHERE "name" = :qp0), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-                SELECT * FROM PAGINATION WHERE rownum <= 1) EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp1, "status"=:qp2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES (EXCLUDED."email", EXCLUDED."status")
+                SELECT * FROM PAGINATION WHERE rownum <= 1) EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp1, "status"=2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES (EXCLUDED."email", EXCLUDED."status")
                 SQL,
             ],
             'query without update part' => [
@@ -204,7 +204,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                     )->from('DUAL'),
                 2 => ['ts' => 0, '[[orders]]' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") EXCLUDED ON ({{%T_upsert}}."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "ts"=:qp1, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
+                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") EXCLUDED ON ({{%T_upsert}}."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "ts"=0, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'query, values and expressions without update part' => [
