@@ -137,61 +137,61 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $concreteData = [
             'regular values' => [
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"="EXCLUDED"."address", "status"="EXCLUDED"."status", "profile_id"="EXCLUDED"."profile_id" WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES ("EXCLUDED"."email", "EXCLUDED"."address", "EXCLUDED"."status", "EXCLUDED"."profile_id")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=EXCLUDED."address", "status"=EXCLUDED."status", "profile_id"=EXCLUDED."profile_id" WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES (EXCLUDED."email", EXCLUDED."address", EXCLUDED."status", EXCLUDED."profile_id")
                 SQL,
             ],
             'regular values with unique at not the first position' => [
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "address", :qp1 AS "email", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"="EXCLUDED"."address", "status"="EXCLUDED"."status", "profile_id"="EXCLUDED"."profile_id" WHEN NOT MATCHED THEN INSERT ("address", "email", "status", "profile_id") VALUES ("EXCLUDED"."address", "EXCLUDED"."email", "EXCLUDED"."status", "EXCLUDED"."profile_id")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "address", :qp1 AS "email", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=EXCLUDED."address", "status"=EXCLUDED."status", "profile_id"=EXCLUDED."profile_id" WHEN NOT MATCHED THEN INSERT ("address", "email", "status", "profile_id") VALUES (EXCLUDED."address", EXCLUDED."email", EXCLUDED."status", EXCLUDED."profile_id")
                 SQL,
             ],
             'regular values with update part' => [
                 2 => ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"=:qp4, "status"=:qp5, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES ("EXCLUDED"."email", "EXCLUDED"."address", "EXCLUDED"."status", "EXCLUDED"."profile_id")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp4, "status"=2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES (EXCLUDED."email", EXCLUDED."address", EXCLUDED."status", EXCLUDED."profile_id")
                 SQL,
             ],
             'regular values without update part' => [
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES ("EXCLUDED"."email", "EXCLUDED"."address", "EXCLUDED"."status", "EXCLUDED"."profile_id")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", :qp1 AS "address", :qp2 AS "status", :qp3 AS "profile_id" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN NOT MATCHED THEN INSERT ("email", "address", "status", "profile_id") VALUES (EXCLUDED."email", EXCLUDED."address", EXCLUDED."status", EXCLUDED."profile_id")
                 SQL,
             ],
             'query' => [
                 3 => <<<SQL
                 MERGE INTO "T_upsert" USING (WITH USER_SQL AS (SELECT "email", 2 AS "status" FROM "customer" WHERE "name" = :qp0), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-                SELECT * FROM PAGINATION WHERE rownum <= 1) "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "status"="EXCLUDED"."status" WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES ("EXCLUDED"."email", "EXCLUDED"."status")
+                SELECT * FROM PAGINATION WHERE rownum <= 1) EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "status"=EXCLUDED."status" WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES (EXCLUDED."email", EXCLUDED."status")
                 SQL,
             ],
             'query with update part' => [
                 2 => ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
                 MERGE INTO "T_upsert" USING (WITH USER_SQL AS (SELECT "email", 2 AS "status" FROM "customer" WHERE "name" = :qp0), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-                SELECT * FROM PAGINATION WHERE rownum <= 1) "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "address"=:qp1, "status"=:qp2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES ("EXCLUDED"."email", "EXCLUDED"."status")
+                SELECT * FROM PAGINATION WHERE rownum <= 1) EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "address"=:qp1, "status"=2, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES (EXCLUDED."email", EXCLUDED."status")
                 SQL,
             ],
             'query without update part' => [
                 3 => <<<SQL
                 MERGE INTO "T_upsert" USING (WITH USER_SQL AS (SELECT "email", 2 AS "status" FROM "customer" WHERE "name" = :qp0), PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-                SELECT * FROM PAGINATION WHERE rownum <= 1) "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES ("EXCLUDED"."email", "EXCLUDED"."status")
+                SELECT * FROM PAGINATION WHERE rownum <= 1) EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN NOT MATCHED THEN INSERT ("email", "status") VALUES (EXCLUDED."email", EXCLUDED."status")
                 SQL,
             ],
             'values and expressions' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"="EXCLUDED"."ts" WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") EXCLUDED ON ({{%T_upsert}}."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "ts"=EXCLUDED."ts" WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'values and expressions with update part' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 2 => ['[[orders]]' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
+                MERGE INTO {{%T_upsert}} USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") EXCLUDED ON ({{%T_upsert}}."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'values and expressions without update part' => [
                 1 => ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('ROUND((SYSDATE - DATE \'1970-01-01\')*24*60*60)')],
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES ("EXCLUDED"."email", "EXCLUDED"."ts")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS "ts" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'query, values and expressions with update part' => [
@@ -204,7 +204,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                     )->from('DUAL'),
                 2 => ['ts' => 0, '[[orders]]' => new Expression('"T_upsert"."orders" + 1')],
                 3 => <<<SQL
-                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ({{%T_upsert}}."email"="EXCLUDED"."email") WHEN MATCHED THEN UPDATE SET "ts"=:qp1, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO {{%T_upsert}} USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") EXCLUDED ON ({{%T_upsert}}."email"=EXCLUDED."email") WHEN MATCHED THEN UPDATE SET "ts"=0, "orders"="T_upsert"."orders" + 1 WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'query, values and expressions without update part' => [
@@ -216,17 +216,17 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                         ],
                     )->from('DUAL'),
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email", [[ts]]) VALUES ("EXCLUDED"."email", "EXCLUDED".[[ts]])
+                MERGE INTO "T_upsert" USING (SELECT :phEmail AS "email", ROUND((SYSDATE - DATE '1970-01-01')*24*60*60) AS [[ts]] FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN NOT MATCHED THEN INSERT ("email", "ts") VALUES (EXCLUDED."email", EXCLUDED."ts")
                 SQL,
             ],
             'no columns to update' => [
                 3 => <<<SQL
-                MERGE INTO "T_upsert_1" USING (SELECT :qp0 AS "a" FROM "DUAL") "EXCLUDED" ON ("T_upsert_1"."a"="EXCLUDED"."a") WHEN NOT MATCHED THEN INSERT ("a") VALUES ("EXCLUDED"."a")
+                MERGE INTO "T_upsert_1" USING (SELECT :qp0 AS "a" FROM "DUAL") EXCLUDED ON ("T_upsert_1"."a"=EXCLUDED."a") WHEN NOT MATCHED THEN INSERT ("a") VALUES (EXCLUDED."a")
                 SQL,
             ],
             'no columns to update with unique' => [
                 3 => <<<SQL
-                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email" FROM "DUAL") "EXCLUDED" ON ("T_upsert"."email"="EXCLUDED"."email") WHEN NOT MATCHED THEN INSERT ("email") VALUES ("EXCLUDED"."email")
+                MERGE INTO "T_upsert" USING (SELECT :qp0 AS "email" FROM "DUAL") EXCLUDED ON ("T_upsert"."email"=EXCLUDED."email") WHEN NOT MATCHED THEN INSERT ("email") VALUES (EXCLUDED."email")
                 SQL,
             ],
             'no unique columns in table - simple insert' => [

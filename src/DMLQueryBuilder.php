@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Oracle;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
+use function array_combine;
 use function array_fill;
 use function array_key_first;
 use function array_map;
@@ -85,7 +85,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 
             foreach ($columnNames as $name) {
                 $quotedName = $this->quoter->quoteColumnName($name);
-                $constraintCondition[] = "$quotedTableName.$quotedName=\"EXCLUDED\".$quotedName";
+                $constraintCondition[] = "$quotedTableName.$quotedName=EXCLUDED.$quotedName";
             }
 
             $onCondition[] = $constraintCondition;
@@ -96,41 +96,26 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         [, $placeholders, $values, $params] = $this->prepareInsertValues($table, $insertColumns, $params);
 
         if (!empty($placeholders)) {
-            $usingSelectValues = [];
-
-            foreach ($insertNames as $index => $name) {
-                $usingSelectValues[$name] = new Expression($placeholders[$index]);
-            }
-
-            $values = $this->queryBuilder->buildSelect($usingSelectValues, $params)
-                . ' ' . $this->queryBuilder->buildFrom(['DUAL'], $params);
+            $values = $this->buildSimpleSelect(array_combine($insertNames, $placeholders)) . ' FROM "DUAL"';
         }
 
         $insertValues = [];
         $quotedInsertNames = array_map($this->quoter->quoteColumnName(...), $insertNames);
 
         foreach ($quotedInsertNames as $quotedName) {
-            $insertValues[] = '"EXCLUDED".' . $quotedName;
+            $insertValues[] = 'EXCLUDED.' . $quotedName;
         }
 
-        $mergeSql = 'MERGE INTO ' . $quotedTableName . ' USING (' . $values . ') "EXCLUDED" ON (' . $on . ')';
+        $mergeSql = 'MERGE INTO ' . $quotedTableName . ' USING (' . $values . ') EXCLUDED ON (' . $on . ')';
         $insertSql = 'INSERT (' . implode(', ', $quotedInsertNames) . ')'
             . ' VALUES (' . implode(', ', $insertValues) . ')';
 
-        if ($updateColumns === false || $updateNames === []) {
+        if (empty($updateColumns) || $updateNames === []) {
             /** there are no columns to update */
             return "$mergeSql WHEN NOT MATCHED THEN $insertSql";
         }
 
-        if ($updateColumns === true) {
-            $updateColumns = [];
-            /** @psalm-var string[] $updateNames */
-            foreach ($updateNames as $name) {
-                $updateColumns[$name] = new Expression('"EXCLUDED".' . $this->quoter->quoteColumnName($name));
-            }
-        }
-
-        $updates = $this->prepareUpdateSets($table, $updateColumns, $params);
+        $updates = $this->prepareUpsertSets($table, $updateColumns, $updateNames, $params);
         $updateSql = 'UPDATE SET ' . implode(', ', $updates);
 
         return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
