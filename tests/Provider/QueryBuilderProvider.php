@@ -537,4 +537,27 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ],
         ];
     }
+
+    public static function upsertWithMultiOperandFunctions(): array
+    {
+        $data = parent::upsertWithMultiOperandFunctions();
+
+        unset(
+            $data[0][2]['array_col'],
+            $data[0][4]['array_col'],
+        );
+
+        $data[0][3] = 'MERGE INTO "test_upsert_with_functions" USING'
+            . ' (SELECT 1 AS "id", :qp0 AS "array_col", 5 AS "greatest_col", 5 AS "least_col", :qp1 AS "longest_col",'
+            . ' :qp2 AS "shortest_col" FROM "DUAL") EXCLUDED'
+            . ' ON ("test_upsert_with_functions"."id"=EXCLUDED."id") WHEN MATCHED THEN UPDATE SET'
+            . ' "greatest_col"=GREATEST("test_upsert_with_functions"."greatest_col", EXCLUDED."greatest_col"),'
+            . ' "least_col"=LEAST("test_upsert_with_functions"."least_col", EXCLUDED."least_col"),'
+            . ' "longest_col"=(SELECT value FROM (SELECT "test_upsert_with_functions"."longest_col" AS value FROM DUAL UNION SELECT EXCLUDED."longest_col" AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY),'
+            . ' "shortest_col"=(SELECT value FROM (SELECT "test_upsert_with_functions"."shortest_col" AS value FROM DUAL UNION SELECT EXCLUDED."shortest_col" AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)'
+            . ' WHEN NOT MATCHED THEN INSERT ("id", "array_col", "greatest_col", "least_col", "longest_col", "shortest_col")'
+            . ' VALUES (EXCLUDED."id", EXCLUDED."array_col", EXCLUDED."greatest_col", EXCLUDED."least_col", EXCLUDED."longest_col", EXCLUDED."shortest_col")';
+
+        return $data;
+    }
 }
