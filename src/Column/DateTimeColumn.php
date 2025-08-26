@@ -31,7 +31,7 @@ use function str_replace;
  */
 final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
 {
-    public function dbTypecast(mixed $value): string|ExpressionInterface|null
+    public function dbTypecast(mixed $value): float|int|string|ExpressionInterface|null
     {
         $value = parent::dbTypecast($value);
 
