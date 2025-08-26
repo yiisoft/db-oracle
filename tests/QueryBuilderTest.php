@@ -622,9 +622,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     #[TestWith(['int[]', 'int', '[1,2,3,4,5,6,7,9,10]'])]
     #[TestWith([new IntegerColumn(), 'number(10)', '[1,2,3,4,5,6,7,9,10]'])]
-    #[TestWith([new ArrayColumn(), '', '["1","2","3","4","5","6","7","9","10"]'])]
+    #[TestWith([new ArrayColumn(), '', '["1","10","2","3","4","5","6","7","9"]'])]
     #[TestWith([new ArrayColumn(column: new IntegerColumn()), 'number(10)', '[1,2,3,4,5,6,7,9,10]'])]
-    public function testMultiOperandFunctionBuilderWithType(
+    public function testArrayMergeWithTypeWithOrdering(
         string|ColumnInterface $type,
         string $operandType,
         string $expectedResult,
@@ -632,18 +632,18 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $stringParam = new Param('[3,4,5]', DataType::STRING);
+        $stringParam = new Param('[4,3,5]', DataType::STRING);
         $arrayMerge = (new ArrayMerge(
-            "'[1,2,3]'",
-            [5, 6, 7],
+            "'[2,1,3]'",
+            [6, 5, 7],
             $stringParam,
-            self::getDb()->select(new ArrayExpression([9, 10])),
-        ))->type($type);
+            self::getDb()->select(new ArrayExpression([10, 9])),
+        ))->type($type)->ordered();
         $params = [];
 
         $this->assertSame(
-            '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
-            . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value $operandType PATH '$'))"
+            '(SELECT JSON_ARRAYAGG(value ORDER BY value) AS value FROM ('
+            . "SELECT value FROM JSON_TABLE('[2,1,3]', '$[*]' COLUMNS(value $operandType PATH '$'))"
             . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value $operandType PATH '$'))"
             . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value $operandType PATH '$'))"
             . " UNION SELECT value FROM JSON_TABLE((SELECT :qp2 FROM DUAL), '$[*]' COLUMNS(value $operandType PATH '$'))"
@@ -652,17 +652,14 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         );
         Assert::arraysEquals(
             [
-                ':qp0' => new Param('[5,6,7]', DataType::STRING),
+                ':qp0' => new Param('[6,5,7]', DataType::STRING),
                 ':qp1' => $stringParam,
-                ':qp2' => new Param('[9,10]', DataType::STRING),
+                ':qp2' => new Param('[10,9]', DataType::STRING),
             ],
             $params,
         );
 
         $result = $db->select($arrayMerge)->scalar();
-        $result = json_decode($result);
-        sort($result, SORT_NUMERIC);
-        $expectedResult = json_decode($expectedResult);
 
         $this->assertSame($expectedResult, $result);
     }
