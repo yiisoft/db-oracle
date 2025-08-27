@@ -49,7 +49,10 @@ final class ArrayMergeBuilder extends MultiOperandFunctionBuilder
             $selects[] = "SELECT value FROM JSON_TABLE($builtOperand, '$[*]' COLUMNS(value $operandType PATH '$'))";
         }
 
-        return '(SELECT JSON_ARRAYAGG(value) AS value FROM (' . implode(' UNION ', $selects) . '))';
+        $orderBy = $expression->getOrdered() ? ' ORDER BY value' : '';
+        $unions = implode(' UNION ', $selects);
+
+        return "(SELECT JSON_ARRAYAGG(value$orderBy) AS value FROM ($unions))";
     }
 
     private function buildOperandType(string|ColumnInterface $type): string
