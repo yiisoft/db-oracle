@@ -251,6 +251,22 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $upsert;
     }
 
+    public static function selectScalar(): array
+    {
+        $data = parent::selectScalar();
+
+        $data['true'][1] = "SELECT '1'";
+        $data['false'][1] = "SELECT '0'";
+        $data['array'][1] = "SELECT 1, '1', 12.34";
+        $data['string keys'][1] = 'SELECT 1 AS "a", \'1\' AS "b", 12.34';
+
+        foreach ($data as &$values) {
+            $values[1] .= ' FROM DUAL';
+        }
+
+        return $data;
+    }
+
     public static function buildColumnDefinition(): array
     {
         $referenceRestrict = new ForeignKey(
