@@ -251,6 +251,22 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $upsert;
     }
 
+    public static function selectScalar(): array
+    {
+        $data = parent::selectScalar();
+
+        $data['true'][1] = "SELECT '1'";
+        $data['false'][1] = "SELECT '0'";
+        $data['array'][1] = "SELECT 1, '1', 12.34";
+        $data['string keys'][1] = 'SELECT 1 AS "a", \'1\' AS "b", 12.34';
+
+        foreach ($data as &$values) {
+            $values[1] .= ' FROM DUAL';
+        }
+
+        return $data;
+    }
+
     public static function buildColumnDefinition(): array
     {
         $referenceRestrict = new ForeignKey(
@@ -452,7 +468,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             3,
         ];
         $data['without case expression'][1] = 'CASE WHEN "column_name" = 1 THEN :qp0'
-            . ' WHEN "column_name" = 2 THEN (SELECT :pv1 FROM DUAL) END';
+            . ' WHEN "column_name" = 2 THEN (SELECT :qp1 FROM DUAL) END';
 
         return $data;
     }
