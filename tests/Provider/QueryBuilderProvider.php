@@ -12,7 +12,7 @@ use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Statement\When;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
@@ -543,7 +543,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ],
             'ArrayMerge with 4 operands' => [
                 ArrayMerge::class,
-                ["'[1,2,3]'", [5, 6, 7], $stringParam, self::getDb()->select(new ArrayExpression([9, 10]))],
+                ["'[1,2,3]'", [5, 6, 7], $stringParam, self::getDb()->select(new ArrayValue([9, 10]))],
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
                 . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
