@@ -12,7 +12,7 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Value\ArrayExpression;
-use Yiisoft\Db\Expression\Statement\CaseExpression;
+use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
@@ -578,14 +578,14 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testDropTable($expected, $ifExists, $cascade);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
-    public function testCaseExpressionBuilder(
-        CaseExpression $case,
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]
+    public function testCaseXBuilder(
+        CaseX $case,
         string $expectedSql,
         array $expectedParams,
         string|int $expectedResult,
     ): void {
-        parent::testCaseExpressionBuilder($case, $expectedSql, $expectedParams, $expectedResult);
+        parent::testCaseXBuilder($case, $expectedSql, $expectedParams, $expectedResult);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
