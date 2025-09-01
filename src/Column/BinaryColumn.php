@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Schema\Column\BinaryColumn as BaseBinaryColumn;
 use Yiisoft\Db\Schema\Data\StringableStream;
 
