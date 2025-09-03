@@ -10,10 +10,12 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKey;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Statement\CaseX;
+use Yiisoft\Db\Expression\Statement\When;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
@@ -455,13 +457,17 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         return $values;
     }
 
-    public static function caseExpressionBuilder(): array
+    public static function caseXBuilder(): array
     {
-        $data = parent::caseExpressionBuilder();
+        $data = parent::caseXBuilder();
 
         $data['with case expression'] = [
-            $data['with case expression'][0]->else(
-                new Expression('to_number(:qp0)', [':qp0' => $param = new Param(4, DataType::INTEGER)])
+            $data['with case expression'][0] = new CaseX(
+                '(1 + 2)',
+                when1: new When(1, 1),
+                when2: new When(2, new Expression('2')),
+                when3: new When(3, '(2 + 1)'),
+                else: new Expression('to_number(:qp0)', [':qp0' => $param = new Param(4, DataType::INTEGER)]),
             ),
             'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE to_number(:qp0) END',
             [':qp0' => $param],
@@ -537,7 +543,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ],
             'ArrayMerge with 4 operands' => [
                 ArrayMerge::class,
-                ["'[1,2,3]'", [5, 6, 7], $stringParam, self::getDb()->select(new ArrayExpression([9, 10]))],
+                ["'[1,2,3]'", [5, 6, 7], $stringParam, self::getDb()->select(new ArrayValue([9, 10]))],
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
                 . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"

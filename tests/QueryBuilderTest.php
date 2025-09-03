@@ -11,11 +11,11 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ArrayExpression;
-use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
+use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
 use Yiisoft\Db\Query\Query;
@@ -579,14 +579,14 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         parent::testDropTable($expected, $ifExists, $cascade);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
-    public function testCaseExpressionBuilder(
-        CaseExpression $case,
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]
+    public function testCaseXBuilder(
+        CaseX $case,
         string $expectedSql,
         array $expectedParams,
         string|int $expectedResult,
     ): void {
-        parent::testCaseExpressionBuilder($case, $expectedSql, $expectedParams, $expectedResult);
+        parent::testCaseXBuilder($case, $expectedSql, $expectedParams, $expectedResult);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
@@ -633,7 +633,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             "'[2,1,3]'",
             [6, 5, 7],
             $stringParam,
-            self::getDb()->select(new ArrayExpression([10, 9])),
+            self::getDb()->select(new ArrayValue([10, 9])),
         ))->type($type)->ordered();
         $params = [];
 
