@@ -10,6 +10,7 @@ use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
@@ -483,12 +484,12 @@ final class CommandTest extends CommonCommandTest
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $conditions,
-        array $params,
+        array|ExpressionInterface|string $conditions,
+        array|ExpressionInterface|string|null $from,
         array $expectedValues,
         int $expectedCount,
     ): void {
-        parent::testUpdate($table, $columns, $conditions, $params, $expectedValues, $expectedCount);
+        parent::testUpdate($table, $columns, $conditions, $from, $expectedValues, $expectedCount);
     }
 
     #[DataProviderExternal(CommandProvider::class, 'upsert')]
