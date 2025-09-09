@@ -62,9 +62,9 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         array|string|ExpressionInterface|null $from = null,
         array &$params = []
     ): string {
-        /**
-         * Oracle does not support UPDATE ... FROM ...
-         */
+        if ($from !== null) {
+            throw new NotSupportedException('Oracle does not support UPDATE with FROM clause.');
+        }
         return parent::update($table, $columns, $condition, null, $params);
     }
 
