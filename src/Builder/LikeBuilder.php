@@ -52,7 +52,7 @@ final class LikeBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\LikeB
     }
 
     protected function preparePlaceholderName(
-        string|int|ExpressionInterface $value,
+        string|Stringable|int|ExpressionInterface $value,
         Like|NotLike $condition,
         array &$params,
     ): string {
