@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
@@ -52,6 +53,19 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
     public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by Oracle.');
+    }
+
+    public function update(
+        string $table,
+        array $columns,
+        array|string|ExpressionInterface $condition,
+        array|string|ExpressionInterface|null $from = null,
+        array &$params = []
+    ): string {
+        if ($from !== null) {
+            throw new NotSupportedException('Oracle does not support FROM clause in UPDATE statement.');
+        }
+        return parent::update($table, $columns, $condition, null, $params);
     }
 
     /**
