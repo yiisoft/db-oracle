@@ -510,19 +510,19 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
     {
         $data = parent::multiOperandFunctionBuilder();
 
-        $data['Greatest with 4 operands'][2] = 'GREATEST(1, 1.5, 1 + 2, (SELECT 10 FROM DUAL))';
-        $data['Least with 4 operands'][2] = 'LEAST(1, 1.5, 1 + 2, (SELECT 10 FROM DUAL))';
+        $data['Greatest with 4 operands'][2] = 'GREATEST(1, 1.5, (1 + 2), (SELECT 10 FROM DUAL))';
+        $data['Least with 4 operands'][2] = 'LEAST(1, 1.5, (1 + 2), (SELECT 10 FROM DUAL))';
         $data['Longest with 2 operands'][2] = <<<SQL
-            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
+            (SELECT value FROM (SELECT :qp0 AS value FROM DUAL UNION SELECT :qp1 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
             SQL;
         $data['Longest with 3 operands'][2] = <<<SQL
-            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
+            (SELECT value FROM (SELECT :qp0 AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp1 AS value FROM DUAL) ORDER BY LENGTH(value) DESC FETCH FIRST 1 ROWS ONLY)
             SQL;
         $data['Shortest with 2 operands'][2] = <<<SQL
-            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
+            (SELECT value FROM (SELECT :qp0 AS value FROM DUAL UNION SELECT :qp1 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
             SQL;
         $data['Shortest with 3 operands'][2] = <<<SQL
-            (SELECT value FROM (SELECT 'short' AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp0 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
+            (SELECT value FROM (SELECT :qp0 AS value FROM DUAL UNION SELECT (SELECT 'longest' FROM DUAL) AS value FROM DUAL UNION SELECT :qp1 AS value FROM DUAL) ORDER BY LENGTH(value) ASC FETCH FIRST 1 ROWS ONLY)
             SQL;
 
         $stringParam = new Param('[3,4,5]', DataType::STRING);
@@ -531,33 +531,38 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ...$data,
             'ArrayMerge with 1 operand' => [
                 ArrayMerge::class,
-                ["'[1,2,3]'"],
-                "('[1,2,3]')",
+                [[1, 2, 3]],
+                '(:qp0)',
                 [1, 2, 3],
+                [':qp0' => new Param('[1,2,3]', DataType::STRING)],
             ],
             'ArrayMerge with 2 operands' => [
                 ArrayMerge::class,
-                ["'[1,2,3]'", $stringParam],
+                [[1, 2, 3], $stringParam],
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
-                . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
-                . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))))",
+                . "SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value  PATH '$'))))",
                 [1, 2, 3, 4, 5],
-                [':qp0' => $stringParam],
+                [
+                    ':qp0' => new Param('[1,2,3]', DataType::STRING),
+                    ':qp1' => $stringParam,
+                ],
             ],
             'ArrayMerge with 4 operands' => [
                 ArrayMerge::class,
-                ["'[1,2,3]'", [5, 6, 7], $stringParam, self::getDb()->select(new ArrayValue([9, 10]))],
+                [[1, 2, 3], new ArrayValue([5, 6, 7]), $stringParam, self::getDb()->select(new ArrayValue([9, 10]))],
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
-                . "SELECT value FROM JSON_TABLE('[1,2,3]', '$[*]' COLUMNS(value  PATH '$'))"
-                . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
+                . "SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value  PATH '$'))"
-                . " UNION SELECT value FROM JSON_TABLE((SELECT :qp2 FROM DUAL), '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE(:qp2, '$[*]' COLUMNS(value  PATH '$'))"
+                . " UNION SELECT value FROM JSON_TABLE((SELECT :qp3 FROM DUAL), '$[*]' COLUMNS(value  PATH '$'))"
                 . '))',
                 [1, 2, 3, 4, 5, 6, 7, 9, 10],
                 [
-                    ':qp0' => new Param('[5,6,7]', DataType::STRING),
-                    ':qp1' => $stringParam,
-                    ':qp2' => new Param('[9,10]', DataType::STRING),
+                    ':qp0' => new Param('[1,2,3]', DataType::STRING),
+                    ':qp1' => new Param('[5,6,7]', DataType::STRING),
+                    ':qp2' => $stringParam,
+                    ':qp3' => new Param('[9,10]', DataType::STRING),
                 ],
             ],
         ];
