@@ -634,8 +634,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $stringParam = new Param('[4,3,5]', DataType::STRING);
         $arrayMerge = (new ArrayMerge(
-            "'[2,1,3]'",
-            [6, 5, 7],
+            [2, 1, 3],
+            new ArrayValue([6, 5, 7]),
             $stringParam,
             self::getDb()->select(new ArrayValue([10, 9])),
         ))->type($type)->ordered();
@@ -643,18 +643,19 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->assertSame(
             '(SELECT JSON_ARRAYAGG(value ORDER BY value) AS value FROM ('
-            . "SELECT value FROM JSON_TABLE('[2,1,3]', '$[*]' COLUMNS(value $operandType PATH '$'))"
-            . " UNION SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value $operandType PATH '$'))"
+            . "SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value $operandType PATH '$'))"
             . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value $operandType PATH '$'))"
-            . " UNION SELECT value FROM JSON_TABLE((SELECT :qp2 FROM DUAL), '$[*]' COLUMNS(value $operandType PATH '$'))"
+            . " UNION SELECT value FROM JSON_TABLE(:qp2, '$[*]' COLUMNS(value $operandType PATH '$'))"
+            . " UNION SELECT value FROM JSON_TABLE((SELECT :qp3 FROM DUAL), '$[*]' COLUMNS(value $operandType PATH '$'))"
             . '))',
             $qb->buildExpression($arrayMerge, $params)
         );
         Assert::arraysEquals(
             [
-                ':qp0' => new Param('[6,5,7]', DataType::STRING),
-                ':qp1' => $stringParam,
-                ':qp2' => new Param('[10,9]', DataType::STRING),
+                ':qp0' => new Param('[2,1,3]', DataType::STRING),
+                ':qp1' => new Param('[6,5,7]', DataType::STRING),
+                ':qp2' => $stringParam,
+                ':qp3' => new Param('[10,9]', DataType::STRING),
             ],
             $params,
         );
