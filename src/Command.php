@@ -33,16 +33,13 @@ final class Command extends AbstractPdoCommand
         ColumnType::BIGINT,
     ];
 
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array
     {
         $tableSchema = $this->db->getSchema()->getTableSchema($table);
         $returnColumns = $tableSchema?->getPrimaryKey() ?? [];
 
         if ($returnColumns === []) {
-            if ($this->insert($table, $columns)->execute() === 0) {
-                return false;
-            }
-
+            $this->insert($table, $columns)->execute();
             return [];
         }
         /** @var TableSchema $tableSchema */
@@ -97,9 +94,7 @@ final class Command extends AbstractPdoCommand
 
         unset($value);
 
-        if ($this->execute() === 0) {
-            return false;
-        }
+        $this->execute();
 
         $result = [];
 
