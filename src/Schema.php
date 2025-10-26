@@ -266,7 +266,7 @@ final class Schema extends AbstractPdoSchema
                 $columnNames = [];
             }
 
-            /** @var string[] $columnNames */
+            /** @var list<string> $columnNames */
             $result[$name] = new Index(
                 $name,
                 $columnNames,
