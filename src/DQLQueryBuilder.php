@@ -33,7 +33,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         array $orderBy,
         ExpressionInterface|int|null $limit,
         ExpressionInterface|int|null $offset,
-        array &$params = []
+        array &$params = [],
     ): string {
         $orderByString = $this->buildOrderBy($orderBy, $params);
 
@@ -44,13 +44,13 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         $filters = [];
 
         if (!empty($offset)) {
-            $filters[] = 'rowNumId > ' .
-                ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
+            $filters[] = 'rowNumId > '
+                . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
 
         if ($limit !== null) {
-            $filters[] = 'rownum <= ' .
-                ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
+            $filters[] = 'rownum <= '
+                . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
         if (empty($filters)) {
@@ -69,7 +69,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
         return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END AS "0" FROM DUAL';
     }
 
-    public function buildFrom(array|null $tables, array &$params): string
+    public function buildFrom(?array $tables, array &$params): string
     {
         if (empty($tables)) {
             return 'FROM DUAL';
@@ -84,7 +84,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
             static fn(WithQuery $withQuery) => new WithQuery(
                 $withQuery->query,
                 $withQuery->alias,
-                false
+                false,
             ),
             $withQueries,
         );

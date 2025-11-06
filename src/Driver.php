@@ -28,7 +28,7 @@ final class Driver extends AbstractPdoDriver
                 NLS_TIME_FORMAT = 'HH24:MI:SSXFF'
                 NLS_TIME_TZ_FORMAT = 'HH24:MI:SSXFFTZH:TZM'
                 NLS_DATE_FORMAT = 'YYYY-MM-DD'
-            SQL
+            SQL,
         );
 
         return $pdo;

@@ -56,7 +56,7 @@ final class InBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InBuild
      *
      * @return string|null `null` when split isn't required. Otherwise - built SQL condition.
      */
-    protected function splitCondition(In|NotIn $condition, array &$params): string|null
+    protected function splitCondition(In|NotIn $condition, array &$params): ?string
     {
         $operator = match ($condition::class) {
             In::class => 'IN',
@@ -80,7 +80,7 @@ final class InBuilder extends \Yiisoft\Db\QueryBuilder\Condition\Builder\InBuild
 
         for ($i = 0; $i < $count; $i += $maxParameters) {
             $slices[] = $this->queryBuilder->createConditionFromArray(
-                [$operator, $column, array_slice($values, $i, $maxParameters)]
+                [$operator, $column, array_slice($values, $i, $maxParameters)],
             );
         }
 

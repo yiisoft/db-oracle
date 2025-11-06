@@ -18,11 +18,6 @@ final class ColumnFactoryTest extends AbstractColumnFactoryTest
 {
     use TestTrait;
 
-    protected function getColumnFactoryClass(): string
-    {
-        return ColumnFactory::class;
-    }
-
     #[DataProviderExternal(ColumnFactoryProvider::class, 'dbTypes')]
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
@@ -48,8 +43,13 @@ final class ColumnFactoryTest extends AbstractColumnFactoryTest
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'defaultValueRaw')]
-    public function testFromTypeDefaultValueRaw(string $type, string|null $defaultValueRaw, mixed $expected): void
+    public function testFromTypeDefaultValueRaw(string $type, ?string $defaultValueRaw, mixed $expected): void
     {
         parent::testFromTypeDefaultValueRaw($type, $defaultValueRaw, $expected);
+    }
+
+    protected function getColumnFactoryClass(): string
+    {
+        return ColumnFactory::class;
     }
 }

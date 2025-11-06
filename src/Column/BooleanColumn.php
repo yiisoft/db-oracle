@@ -22,7 +22,7 @@ final class BooleanColumn extends AbstractColumn
         };
     }
 
-    public function phpTypecast(mixed $value): bool|null
+    public function phpTypecast(mixed $value): ?bool
     {
         if ($value === null) {
             return null;

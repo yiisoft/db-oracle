@@ -62,12 +62,12 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             }
 
             return match ($column->getType()) {
-                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
-                    version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '<')
+                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON
+                    => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '<')
                     ? ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)'
                     : '',
-                ColumnType::BOOLEAN =>
-                    ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IN (0,1))',
+                ColumnType::BOOLEAN
+                    => ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IN (0,1))',
                 default => '',
             };
         }
@@ -124,8 +124,8 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                 ColumnType::TIME => 'interval day(0) to second',
                 ColumnType::TIMETZ => 'interval day(0) to second',
                 ColumnType::DATE => 'date',
-                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON =>
-                    version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
+                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON
+                    => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
                     ? 'json'
                     : 'clob',
                 default => 'varchar2',

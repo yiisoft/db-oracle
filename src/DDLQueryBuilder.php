@@ -26,7 +26,7 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
         string $referenceTable,
         array|string $referenceColumns,
         ?string $delete = null,
-        ?string $update = null
+        ?string $update = null,
     ): string {
         $sql = 'ALTER TABLE ' . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
@@ -98,7 +98,7 @@ final class DDLQueryBuilder extends AbstractDDLQueryBuilder
 
     public function renameTable(string $oldName, string $newName): string
     {
-        return 'ALTER TABLE ' . $this->quoter->quoteTableName($oldName) . ' RENAME TO ' .
-            $this->quoter->quoteTableName($newName);
+        return 'ALTER TABLE ' . $this->quoter->quoteTableName($oldName) . ' RENAME TO '
+            . $this->quoter->quoteTableName($newName);
     }
 }

@@ -57,9 +57,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        string|null $delete,
-        string|null $update,
-        string $expected
+        ?string $delete,
+        ?string $update,
+        string $expected,
     ): void {
         // Oracle does not support ON UPDATE CASCADE
         parent::testAddForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, null, $expected);
@@ -109,8 +109,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
-        string|null $expected,
-        array $expectedParams
+        ?string $expected,
+        array $expectedParams,
     ): void {
         parent::testBuildCondition($condition, $expected, $expectedParams);
     }
@@ -119,7 +119,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
         string $expected,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         parent::testBuildLikeCondition($condition, $expected, $expectedParams);
     }
@@ -296,7 +296,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.'
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.',
         );
 
         $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
@@ -324,7 +324,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         parent::testInsert($table, $columns, $params, $expectedSQL, $expectedParams);
     }
@@ -335,7 +335,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -495,7 +495,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         parent::testUpsert($table, $insertColumns, $updateColumns, $expectedSql, $expectedParams);
     }
@@ -505,9 +505,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
@@ -648,7 +648,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             . " UNION SELECT value FROM JSON_TABLE(:qp2, '$[*]' COLUMNS(value $operandType PATH '$'))"
             . " UNION SELECT value FROM JSON_TABLE((SELECT :qp3 FROM DUAL), '$[*]' COLUMNS(value $operandType PATH '$'))"
             . '))',
-            $qb->buildExpression($arrayMerge, $params)
+            $qb->buildExpression($arrayMerge, $params),
         );
         Assert::arraysEquals(
             [

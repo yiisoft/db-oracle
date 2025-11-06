@@ -280,7 +280,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
         $referenceSetNull = new ForeignKey(
             foreignTableName: 'ref_table',
-            foreignColumnNames:['id'],
+            foreignColumnNames: ['id'],
             onDelete: ReferentialAction::SET_NULL,
             onUpdate: ReferentialAction::SET_NULL,
         );
