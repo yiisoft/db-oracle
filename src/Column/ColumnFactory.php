@@ -16,8 +16,6 @@ use function strcasecmp;
 
 final class ColumnFactory extends AbstractColumnFactory
 {
-    private const DATETIME_REGEX = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()\s*'(?:\d )?([^']+)/";
-
     /**
      * The mapping from physical column types (keys) to abstract column types (values).
      *
@@ -54,6 +52,7 @@ final class ColumnFactory extends AbstractColumnFactory
         /** Deprecated */
         'long' => ColumnType::TEXT,
     ];
+    private const DATETIME_REGEX = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()\s*'(?:\d )?([^']+)/";
 
     protected function columnDefinitionParser(): ColumnDefinitionParser
     {

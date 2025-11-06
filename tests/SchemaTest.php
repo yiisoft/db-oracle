@@ -193,7 +193,7 @@ final class SchemaTest extends CommonSchemaTest
     public function testTableSchemaWithDbSchemes(
         string $tableName,
         string $expectedTableName,
-        string $expectedSchemaName = ''
+        string $expectedSchemaName = '',
     ): void {
         $db = $this->getConnection();
 
@@ -204,15 +204,15 @@ final class SchemaTest extends CommonSchemaTest
         $mockDb
             ->method('createCommand')
             ->with(
-                self::callback(static fn ($sql) => true),
+                self::callback(static fn($sql) => true),
                 self::callback(
                     function ($params) use ($expectedTableName, $expectedSchemaName) {
                         $this->assertEquals($expectedTableName, $params[':tableName']);
                         $this->assertEquals($expectedSchemaName, $params[':schemaName']);
 
                         return true;
-                    }
-                )
+                    },
+                ),
             )
             ->willReturn($commandMock);
         $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
@@ -225,7 +225,7 @@ final class SchemaTest extends CommonSchemaTest
     {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.'
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.',
         );
 
         parent::testWorkWithDefaultValueConstraint();
@@ -243,7 +243,7 @@ final class SchemaTest extends CommonSchemaTest
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'resultColumns')]
-    public function testGetResultColumn(ColumnInterface|null $expected, array $info): void
+    public function testGetResultColumn(?ColumnInterface $expected, array $info): void
     {
         parent::testGetResultColumn($expected, $info);
     }

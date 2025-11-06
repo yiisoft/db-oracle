@@ -106,7 +106,7 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ),
                     'timestamp_local' => new DateTimeColumn(
                         dbType: 'timestamp with local time zone',
-                        size:6,
+                        size: 6,
                         dbTimezone: $dbTimezone,
                     ),
                     'time_col' => new DateTimeColumn(

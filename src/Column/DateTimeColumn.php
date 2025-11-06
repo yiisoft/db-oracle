@@ -44,14 +44,14 @@ final class DateTimeColumn extends \Yiisoft\Db\Schema\Column\DateTimeColumn
         return match ($this->getType()) {
             ColumnType::TIMESTAMP, ColumnType::DATETIME, ColumnType::DATETIMETZ => new Expression("TIMESTAMP '$value'"),
             ColumnType::TIME, ColumnType::TIMETZ => new Expression(
-                "INTERVAL '$value' DAY(0) TO SECOND" . (($size = $this->getSize()) !== null ? "($size)" : '')
+                "INTERVAL '$value' DAY(0) TO SECOND" . (($size = $this->getSize()) !== null ? "($size)" : ''),
             ),
             ColumnType::DATE => new Expression("DATE '$value'"),
             default => $value,
         };
     }
 
-    public function phpTypecast(mixed $value): DateTimeImmutable|null
+    public function phpTypecast(mixed $value): ?DateTimeImmutable
     {
         if (is_string($value) && match ($this->getType()) {
             ColumnType::TIME, ColumnType::TIMETZ => true,

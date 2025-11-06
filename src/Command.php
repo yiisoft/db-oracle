@@ -46,7 +46,7 @@ final class Command extends AbstractPdoCommand
 
         if ($columns instanceof QueryInterface) {
             throw new NotSupportedException(
-                __METHOD__ . '() is not supported by Oracle when inserting sub-query.'
+                __METHOD__ . '() is not supported by Oracle when inserting sub-query.',
             );
         }
 
@@ -130,7 +130,7 @@ final class Command extends AbstractPdoCommand
                     $name,
                     $paramsPassedByReference[$name],
                     $param->type,
-                    strlen((string) $param->value)
+                    strlen((string) $param->value),
                 );
             } else {
                 $this->pdoStatement?->bindValue($name, $param->value, $param->type);

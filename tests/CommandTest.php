@@ -42,7 +42,7 @@ final class CommandTest extends CommonCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.'
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::addDefaultValue is not supported by Oracle.',
         );
 
         $command->addDefaultValue('{{table}}', '{{name}}', 'column', 'value');
@@ -57,7 +57,7 @@ final class CommandTest extends CommonCommandTest
         array $columns,
         string $expected,
         array $expectedParams = [],
-        int $insertedRow = 1
+        int $insertedRow = 1,
     ): void {
         $db = $this->getConnection();
 
@@ -93,7 +93,7 @@ final class CommandTest extends CommonCommandTest
                 ['id' => '1', 'name' => 'John'],
                 ['id' => '2', 'name' => 'Emma'],
             ],
-            (new Query($db))->from('test_batch_autoincrement')->all()
+            (new Query($db))->from('test_batch_autoincrement')->all(),
         );
 
         $db->close();
@@ -146,7 +146,7 @@ final class CommandTest extends CommonCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['id' => PseudoType::PK, 'bar' => ColumnType::INTEGER]
+            ['id' => PseudoType::PK, 'bar' => ColumnType::INTEGER],
         )->execute();
         $command->setSql(
             <<<SQL
@@ -235,7 +235,7 @@ final class CommandTest extends CommonCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.'
+            'Yiisoft\Db\Oracle\DDLQueryBuilder::dropDefaultValue is not supported by Oracle.',
         );
 
         $command->dropDefaultValue('{{table}}', '{{name}}');
@@ -368,7 +368,7 @@ final class CommandTest extends CommonCommandTest
                 'email' => 't1@example.com',
                 'name' => 'test',
                 'address' => 'test address',
-            ]
+            ],
         )->execute();
 
         $query = $command->setSql(
@@ -464,13 +464,13 @@ final class CommandTest extends CommonCommandTest
                 'name' => 'Some {{updated}} name',
                 'address' => 'Some {{%updated}} address',
             ],
-            ['id' => $customerId]
+            ['id' => $customerId],
         )->execute();
 
         $customer = $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}} WHERE
-            SQL . ' [[id]] = ' . $customerId
+            SQL . ' [[id]] = ' . $customerId,
         )->queryOne();
 
         $this->assertIsArray($customer);
@@ -508,7 +508,7 @@ final class CommandTest extends CommonCommandTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         array $selectCondition,
         array $expectedValues,
     ): void {
@@ -574,12 +574,12 @@ final class CommandTest extends CommonCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-    public function testProfiler(string|null $sql = null): void
+    public function testProfiler(?string $sql = null): void
     {
         parent::testProfiler('SELECT 123 FROM DUAL');
     }
 
-    public function testProfilerData(string|null $sql = null): void
+    public function testProfilerData(?string $sql = null): void
     {
         parent::testProfilerData('SELECT 123 FROM DUAL');
     }
@@ -590,7 +590,7 @@ final class CommandTest extends CommonCommandTest
     }
 
     #[DataProviderExternal(CommandProvider::class, 'createIndex')]
-    public function testCreateIndex(array $columns, array $indexColumns, string|null $indexType, string|null $indexMethod): void
+    public function testCreateIndex(array $columns, array $indexColumns, ?string $indexType, ?string $indexMethod): void
     {
         parent::testCreateIndex($columns, $indexColumns, $indexType, $indexMethod);
     }

@@ -8,7 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 
 final class ColumnBuilder extends \Yiisoft\Db\Schema\Column\ColumnBuilder
 {
-    public static function binary(int|null $size = null): BinaryColumn
+    public static function binary(?int $size = null): BinaryColumn
     {
         return new BinaryColumn(ColumnType::BINARY, size: $size);
     }
@@ -18,27 +18,27 @@ final class ColumnBuilder extends \Yiisoft\Db\Schema\Column\ColumnBuilder
         return new BooleanColumn(ColumnType::BOOLEAN);
     }
 
-    public static function timestamp(int|null $size = 0): DateTimeColumn
+    public static function timestamp(?int $size = 0): DateTimeColumn
     {
         return new DateTimeColumn(ColumnType::TIMESTAMP, size: $size);
     }
 
-    public static function datetime(int|null $size = 0): DateTimeColumn
+    public static function datetime(?int $size = 0): DateTimeColumn
     {
         return new DateTimeColumn(ColumnType::DATETIME, size: $size);
     }
 
-    public static function datetimeWithTimezone(int|null $size = 0): DateTimeColumn
+    public static function datetimeWithTimezone(?int $size = 0): DateTimeColumn
     {
         return new DateTimeColumn(ColumnType::DATETIMETZ, size: $size);
     }
 
-    public static function time(int|null $size = 0): DateTimeColumn
+    public static function time(?int $size = 0): DateTimeColumn
     {
         return new DateTimeColumn(ColumnType::TIME, size: $size);
     }
 
-    public static function timeWithTimezone(int|null $size = 0): DateTimeColumn
+    public static function timeWithTimezone(?int $size = 0): DateTimeColumn
     {
         return new DateTimeColumn(ColumnType::TIMETZ, size: $size);
     }

@@ -60,7 +60,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         array $columns,
         array|string|ExpressionInterface $condition,
         array|string|ExpressionInterface|null $from = null,
-        array &$params = []
+        array &$params = [],
     ): string {
         if ($from !== null) {
             throw new NotSupportedException('Oracle does not support FROM clause in UPDATE statement.');
@@ -83,7 +83,7 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
             $table,
             $insertColumns,
             $updateColumns,
-            $constraints
+            $constraints,
         );
 
         if (empty($uniqueNames)) {
@@ -139,37 +139,10 @@ final class DMLQueryBuilder extends AbstractDMLQueryBuilder
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string {
         throw new NotSupportedException(__METHOD__ . '() is not supported by Oracle.');
-    }
-
-    protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
-    {
-        if (empty($columns)) {
-            $names = [];
-            $placeholders = [];
-            $tableSchema = $this->schema->getTableSchema($table);
-
-            if ($tableSchema !== null) {
-                if (!empty($tableSchema->getPrimaryKey())) {
-                    $names = $tableSchema->getPrimaryKey();
-                } else {
-                    /**
-                     * @psalm-suppress PossiblyNullArgument
-                     * @var string[] $names
-                     */
-                    $names = [array_key_first($tableSchema->getColumns())];
-                }
-
-                $placeholders = array_fill(0, count($names), 'DEFAULT');
-            }
-
-            return [$names, $placeholders, '', $params];
-        }
-
-        return parent::prepareInsertValues($table, $columns, $params);
     }
 
     public function resetSequence(string $table, int|string|null $value = null): string
@@ -202,5 +175,32 @@ begin' . ($value === null ? '
     execute immediate \'DROP SEQUENCE "' . $sequenceName . '"\';
     execute immediate \'CREATE SEQUENCE "' . $sequenceName . '" START WITH \' || lastSeq || \' INCREMENT BY 1 NOMAXVALUE NOCACHE\';
 end;';
+    }
+
+    protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
+    {
+        if (empty($columns)) {
+            $names = [];
+            $placeholders = [];
+            $tableSchema = $this->schema->getTableSchema($table);
+
+            if ($tableSchema !== null) {
+                if (!empty($tableSchema->getPrimaryKey())) {
+                    $names = $tableSchema->getPrimaryKey();
+                } else {
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @var string[] $names
+                     */
+                    $names = [array_key_first($tableSchema->getColumns())];
+                }
+
+                $placeholders = array_fill(0, count($names), 'DEFAULT');
+            }
+
+            return [$names, $placeholders, '', $params];
+        }
+
+        return parent::prepareInsertValues($table, $columns, $params);
     }
 }

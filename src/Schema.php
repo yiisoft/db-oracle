@@ -61,6 +61,12 @@ use function strtolower;
  */
 final class Schema extends AbstractPdoSchema
 {
+    public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
+    {
+        $this->defaultSchema = $defaultSchema;
+        parent::__construct($db, $schemaCache);
+    }
+
     protected function findConstraints(TableSchemaInterface $table): void
     {
         $tableName = $this->resolveFullName($table->getName(), $table->getSchemaName());
@@ -68,12 +74,6 @@ final class Schema extends AbstractPdoSchema
         $table->checks(...$this->getTableMetadata($tableName, SchemaInterface::CHECKS));
         $table->foreignKeys(...$this->getTableMetadata($tableName, SchemaInterface::FOREIGN_KEYS));
         $table->indexes(...$this->getTableMetadata($tableName, SchemaInterface::INDEXES));
-    }
-
-    public function __construct(protected ConnectionInterface $db, SchemaCache $schemaCache, string $defaultSchema)
-    {
-        $this->defaultSchema = $defaultSchema;
-        parent::__construct($db, $schemaCache);
     }
 
     /**
@@ -155,7 +155,7 @@ final class Schema extends AbstractPdoSchema
      *
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    protected function loadResultColumn(array $metadata): ColumnInterface|null
+    protected function loadResultColumn(array $metadata): ?ColumnInterface
     {
         if (empty($metadata['oci:decl_type'])) {
             return null;
@@ -191,8 +191,8 @@ final class Schema extends AbstractPdoSchema
             'timestamp with time zone',
             'timestamp with local time zone' => $columnInfo['size'] = $metadata['scale'],
             'interval day to second',
-            'interval year to month' =>
-                [$columnInfo['size'], $columnInfo['scale']] = [$metadata['scale'], $metadata['precision']],
+            'interval year to month'
+                => [$columnInfo['size'], $columnInfo['scale']] = [$metadata['scale'], $metadata['precision']],
             'number' => $metadata['scale'] !== -127 ? $columnInfo['scale'] = $metadata['scale'] : null,
             'float' => null,
             default => $columnInfo['size'] = $metadata['len'],
@@ -208,7 +208,7 @@ final class Schema extends AbstractPdoSchema
         return $this->db->getColumnFactory()->fromDbType($dbType, $columnInfo);
     }
 
-    protected function loadTableSchema(string $name): TableSchemaInterface|null
+    protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
         $table = new TableSchema(...$this->db->getQuoter()->getTableNameParts($name));
 
@@ -389,7 +389,7 @@ final class Schema extends AbstractPdoSchema
      *
      * @internal TableSchemaInterface `$table->getName()` The table schema.
      */
-    protected function getTableSequenceName(string $tableName): string|null
+    protected function getTableSequenceName(string $tableName): ?string
     {
         $sequenceNameSql = <<<SQL
         SELECT
@@ -405,6 +405,17 @@ final class Schema extends AbstractPdoSchema
 
         /** @var string|null */
         return $sequenceName === false ? null : $sequenceName;
+    }
+
+    protected function findViewNames(string $schema = ''): array
+    {
+        $sql = match ($schema) {
+            '' => 'SELECT VIEW_NAME FROM USER_VIEWS',
+            default => "SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = '$schema'",
+        };
+
+        /** @var string[] */
+        return $this->db->createCommand($sql)->queryColumn();
     }
 
     /**
@@ -530,16 +541,5 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $result[$returnType];
-    }
-
-    protected function findViewNames(string $schema = ''): array
-    {
-        $sql = match ($schema) {
-            '' => 'SELECT VIEW_NAME FROM USER_VIEWS',
-            default => "SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = '$schema'",
-        };
-
-        /** @var string[] */
-        return $this->db->createCommand($sql)->queryColumn();
     }
 }
