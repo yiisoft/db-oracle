@@ -5,52 +5,43 @@
     <a href="https://www.oracle.com/database/technologies/" target="_blank">
         <img src="https://avatars3.githubusercontent.com/u/4430336" height="100px" alt="Oracle">
     </a>
-    <h1 align="center">Yii Database Oracle driver</h1>
+    <h1 align="center">Yii Database Oracle Driver</h1>
     <br>
 </p>
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db-oracle/v)](https://packagist.org/packages/yiisoft/db-oracle)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db-oracle/downloads)](https://packagist.org/packages/yiisoft/db-oracle)
-[![rector](https://github.com/yiisoft/db-oracle/actions/workflows/rector.yml/badge.svg)](https://github.com/yiisoft/db-oracle/actions/workflows/rector.yml)
-[![codecov](https://codecov.io/gh/yiisoft/db-oracle/branch/master/graph/badge.svg?token=XGJAFXVHSH)](https://codecov.io/gh/yiisoft/db-oracle)
-[![StyleCI](https://github.styleci.io/repos/114756574/shield?branch=master)](https://github.styleci.io/repos/114756574?branch=master)
+[![Build status](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml)
+[![Code Coverage](https://codecov.io/gh/yiisoft/db-oracle/branch/master/graph/badge.svg?token=UF9VERNMYU)](https://codecov.io/gh/yiisoft/db-oracle)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master)
+[![static analysis](https://github.com/yiisoft/db-oracle/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/db-oracle/actions?query=workflow%3A%22static+analysis%22)
+[![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
+[![psalm-level](https://shepherd.dev/github/yiisoft/db-oracle/level.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
 
-Oracle driver for [Yii Database](https://github.com/yiisoft/db) is a database driver for [Oracle] databases.
+Oracle driver for [Yii Database](https://github.com/yiisoft/db) is a package for working with
+[Oracle](https://www.oracle.com/database/technologies/) databases in PHP. It includes a database connection class,
+a command builder class, and a set of classes for representing database tables and rows as PHP objects.
 
-The package allows you to connect to [Oracle] databases from your application and perform various database operations
-such as executing queries, creating and modifying database schema, and processing data. It supports a wide range of
-[Oracle] versions and provides a simple and efficient interface for working with [Oracle] databases.
-
-To use the package, you need to have the [Oracle] client library installed and configured on your server, and you need
-to specify the correct database connection parameters. Once you have done this, you can use the driver to connect to
-your Oracle database and perform various database operations as needed.
-
-[Oracle]: https://www.oracle.com/database/technologies/
-
-## Support version
-
-| PHP           | Oracle Version | CI-Actions |
-|---------------|----------------|------------|
-| **8.1 - 8.4** | **12c - 21c**|[![build](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/build.yml) [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb-oracle%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db-oracle/master) [![static analysis](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db-oracle/actions/workflows/static.yml) [![type-coverage](https://shepherd.dev/github/yiisoft/db-oracle/coverage.svg)](https://shepherd.dev/github/yiisoft/db-oracle)
+Driver supports Oracle 12c - 21c.
 
 ## Installation
 
 The package could be installed with [Composer](https://getcomposer.org):
 
-```php
+```shell
 composer require yiisoft/db-oracle
 ```
 
 > [!IMPORTANT]
-> It also depends on [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) and requires
-> the installation of [PSR-16 implementation](https://packagist.org/providers/psr/simple-cache-implementation).
-> For example, [yiisoft/cache](https://github.com/yiisoft/cache) or one of the other [cache handlers](https://github.com/yiisoft/cache#cache-handlers).
+> See also [installation notes](https://github.com/yiisoft/db/?tab=readme-ov-file#installation) for `yiisoft/db`
+> package.
 
 ## Documentation
 
-For config connection to Oracle database check [Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/guide/en/connection/oracle.md).
+For config connection to Oracle database check
+[Connecting Oracle](https://github.com/yiisoft/db/blob/master/docs/guide/en/connection/oracle.md).
 
-[Check the documentation docs](https://github.com/yiisoft/db/blob/master/docs/guide/en/README.md) to learn about usage.
+Check the `yiisoft/db` [docs](https://github.com/yiisoft/db/blob/master/docs/guide/en/README.md) to learn about usage.
 
 - [Internals](docs/internals.md)
 
@@ -59,7 +50,7 @@ You may also check out other [Yii Community Resources](https://www.yiiframework.
 
 ## License
 
-The Yii Database Oracle driver is free software. It is released under the terms of the BSD License.
+The Yii Database Oracle Driver is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
