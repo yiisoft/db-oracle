@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -38,6 +39,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 
     public function build(ColumnInterface $column): string
     {
+        if ($column->isUnsigned()) {
+            throw new NotSupportedException('The "unsigned" attribute is not supported by Oracle.');
+        }
+
         return $this->buildType($column)
             . $this->buildAutoIncrement($column)
             . $this->buildDefault($column)

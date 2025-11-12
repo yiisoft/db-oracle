@@ -18,6 +18,17 @@ use Yiisoft\Db\Schema\Column\StringColumn;
 
 final class ColumnFactoryProvider extends \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider
 {
+    public static function pseudoTypes(): array
+    {
+        $values = parent::pseudoTypes();
+
+        // Oracle doesn't support unsigned types
+        $values['upk'][1] = new IntegerColumn(primaryKey: true, autoIncrement: true, unsigned: false);
+        $values['ubigpk'][1] = new BigIntColumn(primaryKey: true, autoIncrement: true, unsigned: false);
+
+        return $values;
+    }
+
     public static function dbTypes(): array
     {
         return [

@@ -63,6 +63,7 @@
 - Chg #365: Update expression namespaces according to changes in `yiisoft/db` package (@Tigrov)
 - Enh #359: Update `DMLQueryBuilder::update()` method to adapt changes in `yiisoft/db` (@rustamwin)
 - Enh #373: Adapt to `DQLQueryBuilderInterface::buildWithQueries()` signature changes in `yiisoft/db` package (@vjik)
+- Chg #378: Throw exception on "unsigned" column usage (@vjik)
 
 ## 1.3.0 March 21, 2024
 

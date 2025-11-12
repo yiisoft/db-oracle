@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -53,6 +54,11 @@ final class ColumnFactory extends AbstractColumnFactory
         'long' => ColumnType::TEXT,
     ];
     private const DATETIME_REGEX = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()\s*'(?:\d )?([^']+)/";
+
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface
+    {
+        return parent::fromPseudoType($pseudoType, $info)->unsigned(false);
+    }
 
     protected function columnDefinitionParser(): ColumnDefinitionParser
     {
