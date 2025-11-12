@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
