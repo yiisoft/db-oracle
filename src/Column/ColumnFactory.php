@@ -54,6 +54,11 @@ final class ColumnFactory extends AbstractColumnFactory
     ];
     private const DATETIME_REGEX = "/^(?:TIMESTAMP|DATE|INTERVAL|to_timestamp(?:_tz)?\(|to_date\(|to_dsinterval\()\s*'(?:\d )?([^']+)/";
 
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface
+    {
+        return parent::fromPseudoType($pseudoType, $info)->unsigned(false);
+    }
+
     protected function columnDefinitionParser(): ColumnDefinitionParser
     {
         return new ColumnDefinitionParser();
