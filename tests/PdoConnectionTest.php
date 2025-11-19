@@ -4,33 +4,24 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Throwable;
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidCallException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Oracle\ServerInfo;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Tests\Common\CommonPdoConnectionTest;
+
+use function strlen;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class PdoConnectionTest extends CommonPdoConnectionTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidCallException
-     * @throws Throwable
-     */
     public function testGetLastInsertID(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->insert('item', ['name' => 'Yii2 starter', 'category_id' => 1])->execute();
@@ -41,15 +32,10 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidCallException
-     * @throws Throwable
-     */
     public function testGetLastInsertIDWithException(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->insert('item', ['name' => 'Yii2 starter', 'category_id' => 1])->execute();
@@ -61,16 +47,10 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
         $db->getLastInsertId();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidCallException
-     * @throws Throwable
-     */
     public function testGetLastInsertIdWithTwoConnection()
     {
-        $db1 = $this->getConnection();
-        $db2 = $this->getConnection();
+        $db1 = $this->createConnection();
+        $db2 = $this->createConnection();
 
         $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate1\')';
         $db1->createCommand($sql)->execute();
@@ -87,7 +67,7 @@ final class PdoConnectionTest extends CommonPdoConnectionTest
 
     public function testGetServerInfo(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
         $serverInfo = $db->getServerInfo();
 
         $this->assertInstanceOf(ServerInfo::class, $serverInfo);

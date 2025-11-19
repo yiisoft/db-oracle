@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use Yiisoft\Db\Oracle\Tests\Provider\CommandPdoProvider;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Tests\Common\CommonPdoCommandTest;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class PdoCommandTest extends CommonPdoCommandTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParam
-     */
+    #[DataProviderExternal(CommandPdoProvider::class, 'bindParam')]
     public function testBindParam(
         string $field,
         string $name,
@@ -31,9 +29,7 @@ final class PdoCommandTest extends CommonPdoCommandTest
         parent::testBindParam($field, $name, $value, $dataType, $length, $driverOptions, $expected);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
-     */
+    #[DataProviderExternal(CommandPdoProvider::class, 'bindParamsNonWhere')]
     public function testBindParamsNonWhere(string $sql): void
     {
         parent::testBindParamsNonWhere($sql);

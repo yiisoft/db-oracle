@@ -7,16 +7,16 @@ namespace Yiisoft\Db\Oracle\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnFactoryProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-use Yiisoft\Db\Tests\AbstractColumnFactoryTest;
+use Yiisoft\Db\Tests\Common\CommonColumnFactoryTest;
 
 /**
  * @group oracle
  */
-final class ColumnFactoryTest extends AbstractColumnFactoryTest
+final class ColumnFactoryTest extends CommonColumnFactoryTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'dbTypes')]
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void

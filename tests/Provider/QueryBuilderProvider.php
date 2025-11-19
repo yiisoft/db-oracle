@@ -5,32 +5,26 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
 use Exception;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Statement\WhenThen;
 use Yiisoft\Db\Expression\Value\ArrayValue;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Oracle\Tests\Support\OracleTestHelper;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 
 use function array_replace;
 
-/**
- * @psalm-suppress PropertyNotSetInConstructor
- */
 final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilderProvider
 {
-    use TestTrait;
-
-    protected static string $driverName = 'oci';
     protected static string $likeEscapeCharSql = " ESCAPE '!'";
     protected static array $likeParameterReplacements = [
         '\%' => '!%',
@@ -70,8 +64,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         ];
 
         foreach ($batchInsert as $key => &$value) {
-            DbHelper::changeSqlForOracleBatchInsert($value['expected'], $replaceParams[$key] ?? []);
-
+            OracleTestHelper::changeSqlForBatchInsert($value['expected'], $replaceParams[$key] ?? []);
             foreach ($replaceParams[$key] ?? [] as $param => $val) {
                 $value['expectedParams'][$param] = new Param($val, DataType::STRING);
             }
@@ -108,7 +101,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
          * may or may not quote \.
          */
         try {
-            $encodedBackslash = substr(self::getDb()->quoteValue('\\\\'), 1, -1);
+            $encodedBackslash = substr(TestConnection::getShared()->quoteValue('\\\\'), 1, -1);
 
             self::$likeParameterReplacements[$encodedBackslash] = '\\';
         } catch (Exception) {
@@ -205,7 +198,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 SQL,
             ],
             'query, values and expressions with update part' => [
-                1 => (new Query(self::getDb()))
+                1 => static fn(ConnectionInterface $db) => $db
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -218,7 +211,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 SQL,
             ],
             'query, values and expressions without update part' => [
-                1 => (new Query(self::getDb()))
+                1 => static fn(ConnectionInterface $db) => $db
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -386,9 +379,8 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL';
         $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE SET NULL';
 
-        $db = self::getDb();
-
-        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
+        $version = TestConnection::getShared()->getServerInfo()->getVersion();
+        if (version_compare($version, '21', '>=')) {
             $values['array()'][0] = 'json';
             $values['structured()'][0] = 'json';
             $values['json()'][0] = 'json';
@@ -411,8 +403,6 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
                 $values['json(100)'][1]->withName('json_100'),
             ];
         }
-
-        $db->close();
 
         return [
             ...$values,
@@ -464,7 +454,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
     public static function caseXBuilder(): array
     {
-        $data = parent::caseXBuilder();
+        $data = iterator_to_array(parent::caseXBuilder());
 
         $data['with case expression'] = [
             new CaseX(
@@ -513,7 +503,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
 
     public static function multiOperandFunctionBuilder(): array
     {
-        $data = parent::multiOperandFunctionBuilder();
+        $data = iterator_to_array(parent::multiOperandFunctionBuilder());
 
         $data['Greatest with 4 operands'][2] = 'GREATEST(1, 1.5, (1 + 2), (SELECT 10 FROM DUAL))';
         $data['Least with 4 operands'][2] = 'LEAST(1, 1.5, (1 + 2), (SELECT 10 FROM DUAL))';
@@ -555,7 +545,12 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
             ],
             'ArrayMerge with 4 operands' => [
                 ArrayMerge::class,
-                [[1, 2, 3], new ArrayValue([5, 6, 7]), $stringParam, self::getDb()->select(new ArrayValue([9, 10]))],
+                static fn(ConnectionInterface $db) => [
+                    [1, 2, 3],
+                    new ArrayValue([5, 6, 7]),
+                    $stringParam,
+                    $db->select(new ArrayValue([9, 10])),
+                ],
                 '(SELECT JSON_ARRAYAGG(value) AS value FROM ('
                 . "SELECT value FROM JSON_TABLE(:qp0, '$[*]' COLUMNS(value  PATH '$'))"
                 . " UNION SELECT value FROM JSON_TABLE(:qp1, '$[*]' COLUMNS(value  PATH '$'))"

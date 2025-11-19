@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -17,7 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Oracle\Tests\Provider\QueryBuilderProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
@@ -31,7 +32,7 @@ use Yiisoft\Db\Tests\Support\Assert;
  */
 final class QueryBuilderTest extends CommonQueryBuilderTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     public function getBuildColumnDefinitionProvider(): array
     {
@@ -40,7 +41,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testAddDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -67,7 +68,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testAddForeignKeyUpdateException(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -108,7 +109,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
-        array|ExpressionInterface|string $condition,
+        Closure|array|ExpressionInterface|string $condition,
         ?string $expected,
         array $expectedParams,
     ): void {
@@ -126,7 +127,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testBuildOrderByAndLimit(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))
@@ -161,7 +162,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testBuildWithLimit(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->limit(10);
@@ -182,7 +183,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testBuildWithOffset(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->offset(10);
@@ -209,7 +210,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testCheckIntegrity(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -221,7 +222,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testCreateTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -258,7 +259,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testDropCommentFromColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $qb = $db->getQueryBuilder();
 
@@ -274,7 +276,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testDropCommentFromTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -290,7 +292,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testDropDefaultValue(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $qb = $db->getQueryBuilder();
 
@@ -304,7 +307,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testDropIndex(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -321,7 +324,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams,
@@ -332,24 +335,27 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
     public function testInsertReturningPks(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams,
     ): void {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $queryBuilder = $db->getQueryBuilder();
+
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
             'Yiisoft\Db\Oracle\DMLQueryBuilder::insertReturningPks is not supported by Oracle.',
         );
 
-        $db = $this->getConnection(true);
-        $qb = $db->getQueryBuilder();
-        $qb->insertReturningPks($table, $columns, $params);
+        $queryBuilder->insertReturningPks($table, $columns, $params);
     }
 
     public function testRenameTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -365,7 +371,8 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testResetSequence(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $qb = $db->getQueryBuilder();
@@ -436,7 +443,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testResetNonExistSequenceException(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
@@ -450,7 +459,9 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     {
         self::markTestSkipped('Sequence name not found for composite primary key');
 
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
@@ -462,7 +473,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testSelectExists(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $sql = 'SELECT 1 FROM "customer" WHERE "id" = 1';
@@ -477,7 +488,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         string $table,
         array $columns,
         array|ExpressionInterface|string $condition,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
@@ -492,7 +503,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string $expectedSql,
         array $expectedParams,
@@ -503,13 +514,13 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         ?array $returnColumns,
         string $expectedSql,
         array $expectedParams,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $this->expectException(NotSupportedException::class);
@@ -520,7 +531,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     public function testDefaultValues(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $queryBuilder = $db->getQueryBuilder();
 
         // Non-primary key columns should have DEFAULT as value
@@ -537,7 +548,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
-    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
+    public function testBuildColumnDefinition(string $expected, Closure|ColumnInterface|string $column): void
     {
         parent::testBuildColumnDefinition($expected, $column);
     }
@@ -564,7 +575,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         if ($ifExists) {
-            $qb = $this->getConnection()->getQueryBuilder();
+            $qb = $this->getSharedConnection()->getQueryBuilder();
 
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage('Oracle doesn\'t support "IF EXISTS" option on drop table.');
@@ -585,7 +596,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]
     public function testCaseXBuilder(
-        CaseX $case,
+        Closure|CaseX $case,
         string $expectedSql,
         array $expectedParams,
         string|int $expectedResult,
@@ -595,7 +606,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
     public function testLengthBuilder(
-        string|ExpressionInterface $operand,
+        Closure|string|ExpressionInterface $operand,
         string $expectedSql,
         int $expectedResult,
         array $expectedParams = [],
@@ -606,7 +617,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
     #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
     public function testMultiOperandFunctionBuilder(
         string $class,
-        array $operands,
+        Closure|array $operands,
         string $expectedSql,
         array|string|int $expectedResult,
         array $expectedParams = [],
@@ -629,7 +640,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
         string $operandType,
         string $expectedResult,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $stringParam = new Param('[4,3,5]', DataType::STRING);
@@ -637,7 +648,7 @@ final class QueryBuilderTest extends CommonQueryBuilderTest
             [2, 1, 3],
             new ArrayValue([6, 5, 7]),
             $stringParam,
-            self::getDb()->select(new ArrayValue([10, 9])),
+            $db->select(new ArrayValue([10, 9])),
         ))->type($type)->ordered();
         $params = [];
 

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Provider;
 
-use JsonException;
 use PDO;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\IndexType;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Oracle\Tests\Support\OracleTestHelper;
 
 use function array_merge;
 use function json_encode;
@@ -18,10 +16,6 @@ use function serialize;
 
 final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
 {
-    use TestTrait;
-
-    protected static string $driverName = 'oci';
-
     public static function batchInsert(): array
     {
         $batchInsert = parent::batchInsert();
@@ -81,7 +75,7 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         ];
 
         foreach ($replaceParams as $key => $expectedParams) {
-            DbHelper::changeSqlForOracleBatchInsert($batchInsert[$key]['expected'], $expectedParams);
+            OracleTestHelper::changeSqlForBatchInsert($batchInsert[$key]['expected'], $expectedParams);
             $batchInsert[$key]['expectedParams'] = array_merge($batchInsert[$key]['expectedParams'], $expectedParams);
         }
 
@@ -115,9 +109,6 @@ final class CommandProvider extends \Yiisoft\Db\Tests\Provider\CommandProvider
         return $batchInsert;
     }
 
-    /**
-     * @throws JsonException
-     */
     public static function insertVarbinary(): array
     {
         return [

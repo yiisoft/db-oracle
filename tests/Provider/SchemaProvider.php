@@ -13,7 +13,7 @@ use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\BooleanColumn;
 use Yiisoft\Db\Oracle\Column\DateTimeColumn;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -21,13 +21,9 @@ use Yiisoft\Db\Tests\Support\Assert;
 
 final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
 {
-    use TestTrait;
-
     public static function columns(): array
     {
-        $db = self::getDb();
-        $dbTimezone = self::getDb()->getServerInfo()->getTimezone();
-        $db->close();
+        $dbTimezone = TestConnection::getShared()->getServerInfo()->getTimezone();
 
         return [
             [
@@ -44,8 +40,8 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     ),
                     'tinyint_col' => new IntegerColumn(
                         dbType: 'number',
-                        size: 3,
                         scale: 0,
+                        size: 3,
                         defaultValue: 1,
                     ),
                     'smallint_col' => new IntegerColumn(
@@ -93,8 +89,8 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     'numeric_col' => new DoubleColumn(
                         ColumnType::DECIMAL,
                         dbType: 'number',
-                        size: 5,
                         scale: 2,
+                        size: 5,
                         defaultValue: 33.22,
                     ),
                     'timestamp_col' => new DateTimeColumn(
@@ -112,26 +108,26 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     'time_col' => new DateTimeColumn(
                         ColumnType::TIME,
                         dbType: 'interval day to second',
-                        size: 0,
                         scale: 0,
+                        size: 0,
                         defaultValue: new DateTimeImmutable('10:33:21', new DateTimeZone('UTC')),
                         shouldConvertTimezone: true,
                     ),
                     'interval_day_col' => new StringColumn(
                         dbType: 'interval day to second',
-                        size: 0,
                         scale: 1,
+                        size: 0,
                         defaultValue: new Expression("INTERVAL '2 04:56:12' DAY(1) TO SECOND(0)"),
                     ),
                     'bool_col' => new BooleanColumn(
-                        dbType: 'char',
                         check: '"bool_col" in (0,1)',
+                        dbType: 'char',
                         notNull: true,
                         size: 1,
                     ),
                     'bool_col2' => new BooleanColumn(
-                        dbType: 'char',
                         check: '"bool_col2" in (0,1)',
+                        dbType: 'char',
                         size: 1,
                         defaultValue: true,
                     ),
@@ -144,14 +140,14 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     'bit_col' => new IntegerColumn(
                         dbType: 'number',
                         notNull: true,
-                        size: 3,
                         scale: 0,
+                        size: 3,
                         defaultValue: 130, // b'10000010'
                     ),
                     'json_col' => new JsonColumn(
+                        check: '"json_col" is json',
                         dbType: 'clob',
                         defaultValue: ['a' => 1],
-                        check: '"json_col" is json',
                     ),
                 ],
                 'type',
@@ -159,10 +155,10 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
             [
                 [
                     'id' => new IntegerColumn(
+                        autoIncrement: true,
                         dbType: 'number',
                         primaryKey: true,
                         notNull: true,
-                        autoIncrement: true,
                         scale: 0,
                     ),
                     'type' => new StringColumn(

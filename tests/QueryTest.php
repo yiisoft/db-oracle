@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Common\CommonQueryTest;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryTest extends CommonQueryTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     /**
      * Ensure no ambiguous column error occurs on indexBy with JOIN.
@@ -24,7 +22,8 @@ final class QueryTest extends CommonQueryTest
      */
     public function testAmbiguousColumnIndexBy(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $selectExpression = "[[customer]].[[name]] || ' in ' || [[p]].[[description]] name";
 

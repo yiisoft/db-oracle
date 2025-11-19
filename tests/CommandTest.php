@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
@@ -14,7 +15,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\Common\CommonCommandTest;
@@ -30,13 +32,11 @@ use function version_compare;
  */
 final class CommandTest extends CommonCommandTest
 {
-    use TestTrait;
-
-    protected string $upsertTestCharCast = 'CAST([[address]] AS VARCHAR(255))';
+    use IntegrationTestTrait;
 
     public function testAddDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
 
@@ -59,13 +59,14 @@ final class CommandTest extends CommonCommandTest
         array $expectedParams = [],
         int $insertedRow = 1,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
+        $version = $db->getServerInfo()->getVersion();
+        $isOldVersion = version_compare($version, '21', '<');
 
-        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
-            $this->fixture = 'oci21.sql';
-        }
-
-        $db->close();
+        $this->loadFixture(
+            __DIR__ . '/Support/Fixture/'
+            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
+        );
 
         parent::testBatchInsert($table, $values, $columns, $expected, $expectedParams, $insertedRow);
     }
@@ -73,7 +74,7 @@ final class CommandTest extends CommonCommandTest
     /** @link https://github.com/yiisoft/db-oracle/issues/284 */
     public function testBatchInsertWithAutoincrement(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         try {
@@ -101,7 +102,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testCLOBStringInsertion(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -130,7 +131,8 @@ final class CommandTest extends CommonCommandTest
 
     public function testCreateTable(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -171,7 +173,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testCreateView(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -229,7 +231,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testDropDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
 
@@ -243,7 +245,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testDropTableIfExists(): void
     {
-        $command = $this->getConnection()->createCommand();
+        $command = $this->getSharedConnection()->createCommand();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Oracle doesn\'t support "IF EXISTS" option on drop table.');
@@ -268,7 +270,8 @@ final class CommandTest extends CommonCommandTest
 
     public function testsInsertQueryAsColumnValue(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $time = (string) time();
@@ -304,7 +307,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testInsertReturningPksWithPrimaryKeyString(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -327,7 +330,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testInsertReturningPksWithPrimaryKeySignedDecimal(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -358,7 +361,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testInsertSelectAlias(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $command->delete('{{customer}}')->execute();
@@ -413,7 +416,8 @@ final class CommandTest extends CommonCommandTest
     #[DataProviderExternal(CommandProvider::class, 'insertVarbinary')]
     public function testInsertVarbinary(mixed $expectedData, mixed $testData): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{T_upsert_varbinary}}')->execute();
@@ -433,7 +437,8 @@ final class CommandTest extends CommonCommandTest
 
     public function testNoTablenameReplacement(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -485,7 +490,7 @@ final class CommandTest extends CommonCommandTest
         string $table,
         array $columns,
         array|ExpressionInterface|string $conditions,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         array $expectedValues,
         int $expectedCount,
@@ -498,7 +503,7 @@ final class CommandTest extends CommonCommandTest
     }
 
     #[DataProviderExternal(CommandProvider::class, 'upsert')]
-    public function testUpsert(array $firstData, array $secondData): void
+    public function testUpsert(Closure|array $firstData, Closure|array $secondData): void
     {
         parent::testUpsert($firstData, $secondData);
     }
@@ -506,13 +511,13 @@ final class CommandTest extends CommonCommandTest
     #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         ?array $returnColumns,
         array $selectCondition,
         array $expectedValues,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
@@ -531,7 +536,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testUpsertReturningPks(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
@@ -542,7 +547,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testUpsertReturningPksEmptyValues()
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         $this->expectException(NotSupportedException::class);
@@ -553,7 +558,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testUpsertReturningPksWithPhpTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Yiisoft\Db\Oracle\DMLQueryBuilder::upsertReturning() is not supported by Oracle.');
@@ -565,7 +570,8 @@ final class CommandTest extends CommonCommandTest
 
     public function testQueryScalarWithBlob(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $value = json_encode(['test'], JSON_THROW_ON_ERROR);
         $db->createCommand()->insert('{{%T_upsert_varbinary}}', ['id' => 1, 'blob_col' => $value])->execute();
@@ -586,7 +592,12 @@ final class CommandTest extends CommonCommandTest
 
     public function testShowDatabases(): void
     {
-        $this->assertSame([self::getDatabaseName()], self::getDb()->createCommand()->showDatabases());
+        $db = $this->getSharedConnection();
+
+        $this->assertSame(
+            [TestConnection::databaseName()],
+            $db->createCommand()->showDatabases(),
+        );
     }
 
     #[DataProviderExternal(CommandProvider::class, 'createIndex')]
@@ -597,7 +608,7 @@ final class CommandTest extends CommonCommandTest
 
     public function testCreateSearchIndex()
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         if (version_compare($db->getServerInfo()->getVersion(), '21', '<')) {
             $this->markTestSkipped('Search index is supported since Oracle 21');
@@ -625,5 +636,10 @@ final class CommandTest extends CommonCommandTest
         );
 
         $db->close();
+    }
+
+    protected function getUpsertTestCharCast(): string
+    {
+        return 'CAST([[address]] AS VARCHAR(255))';
     }
 }
