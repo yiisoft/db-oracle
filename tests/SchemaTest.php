@@ -13,10 +13,12 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Common\CommonSchemaTest;
-use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 use function version_compare;
 
@@ -25,28 +27,27 @@ use function version_compare;
  */
 final class SchemaTest extends CommonSchemaTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     #[DataProviderExternal(SchemaProvider::class, 'columns')]
-    public function testColumns(array $columns, string $tableName = 'type'): void
+    public function testColumns(array $columns, string $tableName = 'type', ?string $dump = null): void
     {
-        $db = $this->getConnection();
-        $version21 = version_compare($db->getServerInfo()->getVersion(), '21', '>=');
-        $db->close();
+        $db = $this->getSharedConnection();
+        $version21 = version_compare(TestConnection::getServerVersion(), '21', '>=');
 
         if ($version21 && $tableName === 'type') {
-            $this->fixture = 'oci21.sql';
-
+            $dump = FixtureDump::OCI21;
             $columns['json_col']->dbType('json');
             $columns['json_col']->check(null);
         }
 
-        parent::testColumns($columns, $tableName);
+        parent::testColumns($columns, $tableName, $dump);
     }
 
     public function testCompositeFk(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $schema = $db->getSchema();
         $table = $schema->getTableSchema('composite_fk');
@@ -70,7 +71,7 @@ final class SchemaTest extends CommonSchemaTest
 
     public function testGetDefaultSchema(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $schema = $db->getSchema();
 
@@ -89,11 +90,12 @@ final class SchemaTest extends CommonSchemaTest
 
     public function testGetSchemaNames(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $schema = $db->getSchema();
 
-        if (version_compare($db->getServerInfo()->getVersion(), '12', '>')) {
+        if (version_compare(TestConnection::getServerVersion(), '12', '>')) {
             $this->assertContains('SYSBACKUP', $schema->getSchemaNames());
         } else {
             $this->assertEmpty($schema->getSchemaNames());
@@ -104,7 +106,8 @@ final class SchemaTest extends CommonSchemaTest
 
     public function testGetTableNamesWithSchema(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $schema = $db->getSchema();
         $tablesNames = $schema->getTableNames('SYSTEM');
@@ -149,7 +152,8 @@ final class SchemaTest extends CommonSchemaTest
 
     public function testGetViewNames(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $schema = $db->getSchema();
         $views = $schema->getViewNames();
@@ -161,7 +165,8 @@ final class SchemaTest extends CommonSchemaTest
 
     public function testGetViewNamesWithSchema(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $schema = $db->getSchema();
         $views = $schema->getViewNames('SYSTEM');
@@ -195,7 +200,7 @@ final class SchemaTest extends CommonSchemaTest
         string $expectedTableName,
         string $expectedSchemaName = '',
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $commandMock = $this->createMock(CommandInterface::class);
         $commandMock->method('queryAll')->willReturn([]);
@@ -215,7 +220,7 @@ final class SchemaTest extends CommonSchemaTest
                 ),
             )
             ->willReturn($commandMock);
-        $schema = new Schema($mockDb, DbHelper::getSchemaCache(), 'dbo');
+        $schema = new Schema($mockDb, TestHelper::createMemorySchemaCache(), 'dbo');
         $schema->getTablePrimaryKey($tableName, true);
 
         $db->close();
@@ -234,7 +239,7 @@ final class SchemaTest extends CommonSchemaTest
     public function testNotConnectionPDO(): void
     {
         $db = $this->createMock(ConnectionInterface::class);
-        $schema = new Schema($db, DbHelper::getSchemaCache(), 'system');
+        $schema = new Schema($db, TestHelper::createMemorySchemaCache(), 'system');
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Only PDO connections are supported.');

@@ -10,9 +10,10 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\ColumnFactory;
 use Yiisoft\Db\Oracle\Connection;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Tests\Common\CommonConnectionTest;
-use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\TestHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
@@ -20,11 +21,11 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  */
 final class ConnectionTest extends CommonConnectionTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     public function testSerialize(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $db->open();
         $serialized = serialize($db);
@@ -38,7 +39,7 @@ final class ConnectionTest extends CommonConnectionTest
 
     public function testSettingDefaultAttributes(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->assertSame(PDO::ERRMODE_EXCEPTION, $db->getActivePDO()?->getAttribute(PDO::ATTR_ERRMODE));
 
@@ -47,7 +48,7 @@ final class ConnectionTest extends CommonConnectionTest
 
     public function testTransactionIsolation(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $transaction = $db->beginTransaction(TransactionInterface::READ_COMMITTED);
         $transaction->commit();
@@ -66,7 +67,8 @@ final class ConnectionTest extends CommonConnectionTest
 
     public function testTransactionShortcutCustom(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -97,21 +99,23 @@ final class ConnectionTest extends CommonConnectionTest
 
     public function testSerialized(): void
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection();
         $connection->open();
         $serialized = serialize($connection);
-        $this->assertNotNull($connection->getPDO());
+        $this->assertNotNull($connection->getPdo());
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(PdoConnectionInterface::class, $unserialized);
-        $this->assertNull($unserialized->getPDO());
+        $this->assertNull($unserialized->getPdo());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123 FROM DUAL')->queryScalar());
-        $this->assertNotNull($connection->getPDO());
+        $this->assertNotNull($connection->getPdo());
+
+        $connection->close();
     }
 
     public function getColumnBuilderClass(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->assertSame(ColumnBuilder::class, $db->getColumnBuilderClass());
 
@@ -120,7 +124,7 @@ final class ConnectionTest extends CommonConnectionTest
 
     public function testGetColumnFactory(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->assertInstanceOf(ColumnFactory::class, $db->getColumnFactory());
 
@@ -131,7 +135,11 @@ final class ConnectionTest extends CommonConnectionTest
     {
         $columnFactory = new ColumnFactory();
 
-        $db = new Connection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+        $db = new Connection(
+            TestConnection::createDriver(),
+            TestHelper::createMemorySchemaCache(),
+            $columnFactory,
+        );
 
         $this->assertSame($columnFactory, $db->getColumnFactory());
 

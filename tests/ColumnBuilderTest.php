@@ -6,15 +6,15 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnBuilderProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\AbstractColumnBuilderTest;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Tests\Common\CommonColumnBuilderTest;
 
 /**
  * @group oracle
  */
-class ColumnBuilderTest extends AbstractColumnBuilderTest
+class ColumnBuilderTest extends CommonColumnBuilderTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     #[DataProviderExternal(ColumnBuilderProvider::class, 'buildingMethods')]
     public function testBuildingMethods(
