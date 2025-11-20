@@ -15,6 +15,7 @@ use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider;
+use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Query\Query;
@@ -41,10 +42,7 @@ final class ColumnTest extends CommonColumnTest
         $db = $this->getSharedConnection();
         $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $this->loadFixture(
-            __DIR__ . '/Support/Fixture/'
-            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
-        );
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $this->insertTypeValues($db);
 
@@ -66,10 +64,7 @@ final class ColumnTest extends CommonColumnTest
         $db = $this->getSharedConnection();
         $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $this->loadFixture(
-            __DIR__ . '/Support/Fixture/'
-            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
-        );
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $this->insertTypeValues($db);
 
@@ -137,10 +132,7 @@ final class ColumnTest extends CommonColumnTest
         $db = $this->getSharedConnection();
         $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $this->loadFixture(
-            __DIR__ . '/Support/Fixture/'
-            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
-        );
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         parent::testPhpTypecast();
     }
@@ -150,10 +142,7 @@ final class ColumnTest extends CommonColumnTest
         $db = $this->getSharedConnection();
         $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $this->loadFixture(
-            __DIR__ . '/Support/Fixture/'
-            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
-        );
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');

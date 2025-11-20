@@ -15,6 +15,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\IndexType;
 use Yiisoft\Db\Oracle\Tests\Provider\CommandProvider;
+use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Query\Query;
@@ -63,10 +64,7 @@ final class CommandTest extends CommonCommandTest
         $version = $db->getServerInfo()->getVersion();
         $isOldVersion = version_compare($version, '21', '<');
 
-        $this->loadFixture(
-            __DIR__ . '/Support/Fixture/'
-            . ($isOldVersion ? 'oci.sql' : 'oci21.sql'),
-        );
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         parent::testBatchInsert($table, $values, $columns, $expected, $expectedParams, $insertedRow);
     }

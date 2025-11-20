@@ -13,6 +13,7 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider;
+use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
 use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -35,7 +36,7 @@ final class SchemaTest extends CommonSchemaTest
         $version21 = version_compare(TestConnection::getServerVersion(), '21', '>=');
 
         if ($version21 && $tableName === 'type') {
-            $dump = __DIR__ . '/Support/Fixture/oci21.sql';
+            $dump = FixtureDump::OCI21;
             $columns['json_col']->dbType('json');
             $columns['json_col']->check(null);
         }
