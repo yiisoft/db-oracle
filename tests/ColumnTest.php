@@ -16,6 +16,7 @@ use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
@@ -38,8 +39,7 @@ final class ColumnTest extends CommonColumnTest
     public function testQueryWithTypecasting(): void
     {
         $db = $this->getSharedConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $isOldVersion = version_compare($version, '21', '<');
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
         $this->loadFixture(
             __DIR__ . '/Support/Fixture/'
@@ -64,8 +64,7 @@ final class ColumnTest extends CommonColumnTest
     public function testCommandWithPhpTypecasting(): void
     {
         $db = $this->getSharedConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $isOldVersion = version_compare($version, '21', '<');
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
         $this->loadFixture(
             __DIR__ . '/Support/Fixture/'
@@ -136,8 +135,7 @@ final class ColumnTest extends CommonColumnTest
     public function testPhpTypecast(): void
     {
         $db = $this->getSharedConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $isOldVersion = version_compare($version, '21', '<');
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
         $this->loadFixture(
             __DIR__ . '/Support/Fixture/'
@@ -150,8 +148,7 @@ final class ColumnTest extends CommonColumnTest
     public function testColumnInstance(): void
     {
         $db = $this->getSharedConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $isOldVersion = version_compare($version, '21', '<');
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
         $this->loadFixture(
             __DIR__ . '/Support/Fixture/'

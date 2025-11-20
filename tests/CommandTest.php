@@ -610,7 +610,7 @@ final class CommandTest extends CommonCommandTest
     {
         $db = $this->getSharedConnection();
 
-        if (version_compare($db->getServerInfo()->getVersion(), '21', '<')) {
+        if (version_compare(TestConnection::getServerVersion(), '21', '<')) {
             $this->markTestSkipped('Search index is supported since Oracle 21');
         }
 

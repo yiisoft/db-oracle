@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Oracle\Schema;
 use Yiisoft\Db\Oracle\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Common\CommonSchemaTest;
 use Yiisoft\Db\Tests\Support\TestHelper;
@@ -31,7 +32,7 @@ final class SchemaTest extends CommonSchemaTest
     public function testColumns(array $columns, string $tableName = 'type', ?string $dump = null): void
     {
         $db = $this->getSharedConnection();
-        $version21 = version_compare($db->getServerInfo()->getVersion(), '21', '>=');
+        $version21 = version_compare(TestConnection::getServerVersion(), '21', '>=');
 
         if ($version21 && $tableName === 'type') {
             $dump = __DIR__ . '/Support/Fixture/oci21.sql';
@@ -93,7 +94,7 @@ final class SchemaTest extends CommonSchemaTest
 
         $schema = $db->getSchema();
 
-        if (version_compare($db->getServerInfo()->getVersion(), '12', '>')) {
+        if (version_compare(TestConnection::getServerVersion(), '12', '>')) {
             $this->assertContains('SYSBACKUP', $schema->getSchemaNames());
         } else {
             $this->assertEmpty($schema->getSchemaNames());

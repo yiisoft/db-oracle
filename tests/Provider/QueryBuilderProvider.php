@@ -379,7 +379,7 @@ final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilder
         $values['reference($reference)'][0] = 'number(10) REFERENCES "ref_table" ("id") ON DELETE SET NULL';
         $values['reference($referenceWithSchema)'][0] = 'number(10) REFERENCES "ref_schema"."ref_table" ("id") ON DELETE SET NULL';
 
-        $version = TestConnection::getShared()->getServerInfo()->getVersion();
+        $version = TestConnection::getServerVersion();
         if (version_compare($version, '21', '>=')) {
             $values['array()'][0] = 'json';
             $values['structured()'][0] = 'json';
