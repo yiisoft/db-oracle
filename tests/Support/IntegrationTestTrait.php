@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests\Support;
 
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
 use Yiisoft\Db\Tests\Support\TestHelper;
@@ -38,5 +39,21 @@ trait IntegrationTestTrait
             explode('/', $triggers),
             explode(';', $data),
         );
+    }
+
+    protected function dropView(ConnectionInterface $db, string $view): void
+    {
+        $view = $db->getQuoter()->quoteTableName($view);
+        $sql = <<<SQL
+            BEGIN
+                EXECUTE IMMEDIATE 'DROP VIEW $view';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    IF SQLCODE != -942 THEN
+                        RAISE;
+                    END IF;
+            END;
+            SQL;
+        $db->createCommand($sql)->execute();
     }
 }
