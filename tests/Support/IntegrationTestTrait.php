@@ -43,6 +43,17 @@ trait IntegrationTestTrait
 
     protected function dropView(ConnectionInterface $db, string $view): void
     {
-        $db->createCommand('DROP VIEW ' . $db->getQuoter()->quoteTableName($view))->execute();
+        $view = $db->getQuoter()->quoteTableName($view);
+        $sql = <<<SQL
+            BEGIN
+                EXECUTE IMMEDIATE 'DROP VIEW $view';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    IF SQLCODE != -942 THEN
+                        RAISE;
+                    END IF;
+            END;
+            SQL;
+        $db->createCommand($sql)->execute();
     }
 }
