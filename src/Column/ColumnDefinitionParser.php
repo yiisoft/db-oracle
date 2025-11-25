@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Column;
 
+use Yiisoft\Db\Syntax\AbstractColumnDefinitionParser;
+
 use function preg_match;
 use function preg_replace;
 use function strlen;
@@ -13,7 +15,7 @@ use function substr;
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
  */
-final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionParser
+final class ColumnDefinitionParser extends AbstractColumnDefinitionParser
 {
     private const TYPE_PATTERN = '/^('
         . 'timestamp\s*(?:\((\d+)\))? with(?: local)? time zone'
@@ -37,11 +39,7 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
         $typeDetails = $matches[6] ?? $matches[2] ?? '';
 
         if ($typeDetails !== '') {
-            if ($type === 'enum') {
-                $info += $this->enumInfo($typeDetails);
-            } else {
-                $info += $this->sizeInfo($typeDetails);
-            }
+            $info += $this->parseSizeInfo($typeDetails);
         }
 
         $scale = $matches[5] ?? $matches[3] ?? '';
@@ -57,6 +55,31 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
 
         $extra = substr($definition, strlen($matches[0]));
 
-        return $info + $this->extraInfo($extra);
+        if ($extra !== '') {
+            $info += $this->extraInfo($extra);
+        }
+
+        return $info;
+    }
+
+    protected function parseTypeParams(string $type, string $params): array
+    {
+        return match ($type) {
+            'char',
+            'nchar',
+            'character',
+            'varchar',
+            'varchar2',
+            'nvarchar2',
+            'raw',
+            'number',
+            'float',
+            'timestamp',
+            'timestamp with time zone',
+            'timestamp with local time zone',
+            'interval day to second',
+            'interval year to month' => $this->parseSizeInfo($params),
+            default => [],
+        };
     }
 }
