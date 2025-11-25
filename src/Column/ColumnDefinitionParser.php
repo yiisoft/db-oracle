@@ -55,7 +55,11 @@ final class ColumnDefinitionParser extends AbstractColumnDefinitionParser
 
         $extra = substr($definition, strlen($matches[0]));
 
-        return $info + $this->extraInfo($extra);
+        if ($extra !== '') {
+            $info += $this->extraInfo($extra);
+        }
+
+        return $info;
     }
 
     protected function parseTypeParams(string $type, string $params): array
