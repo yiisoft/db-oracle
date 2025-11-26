@@ -559,7 +559,7 @@ final class Schema extends AbstractPdoSchema
         if (!preg_match(
             "~(?:\"$quotedColumnName\"|$quotedColumnName)\s+IN\s*\((.+)\)~i",
             $check,
-            $block
+            $block,
         )) {
             return null;
         }
@@ -569,7 +569,7 @@ final class Schema extends AbstractPdoSchema
 
         return array_map(
             static fn($v) => str_replace("''", "'", $v),
-            $matches[1]
+            $matches[1],
         );
     }
 }
