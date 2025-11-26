@@ -457,6 +457,7 @@ final class Schema extends AbstractPdoSchema
             'size' => $info['size'] !== null ? (int) $info['size'] : null,
             'table' => $info['table'],
             'unique' => $info['constraint_type'] === 'U',
+            'values' => $this->tryGetEnumValuesFromCheck($info['column_name'], $info['check']),
         ];
 
         if ($dbType === 'timestamp with local time zone') {
@@ -543,5 +544,32 @@ final class Schema extends AbstractPdoSchema
         }
 
         return $result[$returnType];
+    }
+
+    /**
+     * @psalm-return list<string>|null
+     */
+    private function tryGetEnumValuesFromCheck(string $columnName, ?string $check): ?array
+    {
+        if ($check === null) {
+            return null;
+        }
+
+        $quotedColumnName = preg_quote($columnName, '~');
+        if (!preg_match(
+            "~(?:\"$quotedColumnName\"|$quotedColumnName)\s+IN\s*\((.+)\)~i",
+            $check,
+            $block
+        )) {
+            return null;
+        }
+
+        // Выбираем все строки в одинарных кавычках внутри
+        preg_match_all("~'((?:''|[^'])*)'~", $block[1], $matches);
+
+        return array_map(
+            static fn($v) => str_replace("''", "'", $v),
+            $matches[1]
+        );
     }
 }

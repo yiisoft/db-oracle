@@ -11,6 +11,7 @@ use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function ceil;
+use function in_array;
 use function log10;
 use function strtoupper;
 
@@ -61,23 +62,20 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 
         if (empty($check)) {
             $name = $column->getName();
-
-            if (empty($name)) {
-                return '';
+            if (!empty($name)) {
+                $type = $column->getType();
+                if (in_array($type, [ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON], true)) {
+                    return version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '<')
+                        ? ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)'
+                        : '';
+                }
+                if ($type === ColumnType::BOOLEAN) {
+                    return ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IN (0,1))';
+                }
             }
-
-            return match ($column->getType()) {
-                ColumnType::ARRAY, ColumnType::STRUCTURED, ColumnType::JSON
-                    => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '<')
-                    ? ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IS JSON)'
-                    : '',
-                ColumnType::BOOLEAN
-                    => ' CHECK (' . $this->queryBuilder->getQuoter()->quoteSimpleColumnName($name) . ' IN (0,1))',
-                default => '',
-            };
         }
 
-        return " CHECK ($check)";
+        return parent::buildCheck($column);
     }
 
     protected function buildOnDelete(string $onDelete): string
@@ -133,6 +131,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                     => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
                     ? 'json'
                     : 'clob',
+                ColumnType::ENUM => 'varchar2(' . ($size ?? 255) . ')',
                 default => 'varchar2',
             },
             'timestamp with time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
