@@ -6,15 +6,15 @@ namespace Yiisoft\Db\Oracle\Tests;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Oracle\Tests\Provider\QuoterProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\AbstractQuoterTest;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Tests\Common\CommonQuoterTest;
 
 /**
  * @group oracle
  */
-final class QuoterTest extends AbstractQuoterTest
+final class QuoterTest extends CommonQuoterTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     #[DataProviderExternal(QuoterProvider::class, 'tableNameParts')]
     public function testGetTableNameParts(string $tableName, array $expected): void

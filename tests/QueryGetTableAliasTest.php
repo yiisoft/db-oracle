@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
-use Yiisoft\Db\Tests\AbstractQueryGetTableAliasTest;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Tests\Common\CommonQueryGetTableAliasTest;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QueryGetTableAliasTest extends AbstractQueryGetTableAliasTest
+final class QueryGetTableAliasTest extends CommonQueryGetTableAliasTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 }

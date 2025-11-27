@@ -9,8 +9,6 @@ use Yiisoft\Db\Oracle\Dsn;
 
 /**
  * @group oracle
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class DsnTest extends TestCase
 {

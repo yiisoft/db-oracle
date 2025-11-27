@@ -15,7 +15,9 @@ use Yiisoft\Db\Oracle\Column\BinaryColumn;
 use Yiisoft\Db\Oracle\Column\ColumnBuilder;
 use Yiisoft\Db\Oracle\Column\JsonColumn;
 use Yiisoft\Db\Oracle\Tests\Provider\ColumnProvider;
-use Yiisoft\Db\Oracle\Tests\Support\TestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\Fixture\FixtureDump;
+use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
+use Yiisoft\Db\Oracle\Tests\Support\TestConnection;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
@@ -33,21 +35,14 @@ use function version_compare;
  */
 final class ColumnTest extends CommonColumnTest
 {
-    use TestTrait;
+    use IntegrationTestTrait;
 
     public function testQueryWithTypecasting(): void
     {
-        $db = $this->getConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $db->close();
+        $db = $this->getSharedConnection();
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $isOldVersion = version_compare($version, '21', '<');
-
-        if (!$isOldVersion) {
-            $this->fixture = 'oci21.sql';
-        }
-
-        $db = $this->getConnection(true);
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $this->insertTypeValues($db);
 
@@ -66,17 +61,10 @@ final class ColumnTest extends CommonColumnTest
 
     public function testCommandWithPhpTypecasting(): void
     {
-        $db = $this->getConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $db->close();
+        $db = $this->getSharedConnection();
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        $isOldVersion = version_compare($version, '21', '<');
-
-        if (!$isOldVersion) {
-            $this->fixture = 'oci21.sql';
-        }
-
-        $db = $this->getConnection(true);
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $this->insertTypeValues($db);
 
@@ -95,7 +83,7 @@ final class ColumnTest extends CommonColumnTest
 
     public function testSelectWithPhpTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $sql = "SELECT null, 1, 2.5, 'string' FROM DUAL";
 
@@ -141,27 +129,20 @@ final class ColumnTest extends CommonColumnTest
 
     public function testPhpTypecast(): void
     {
-        $db = $this->getConnection();
-        $version = $db->getServerInfo()->getVersion();
-        $db->close();
+        $db = $this->getSharedConnection();
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        if (version_compare($version, '21', '>=')) {
-            $this->fixture = 'oci21.sql';
-        }
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         parent::testPhpTypecast();
     }
 
     public function testColumnInstance(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
+        $isOldVersion = version_compare(TestConnection::getServerVersion(), '21', '<');
 
-        if (version_compare($db->getServerInfo()->getVersion(), '21', '>=')) {
-            $this->fixture = 'oci21.sql';
-        }
-
-        $db->close();
-        $db = $this->getConnection(true);
+        $this->loadFixture($isOldVersion ? FixtureDump::DEFAULT : FixtureDump::OCI21);
 
         $schema = $db->getSchema();
         $tableSchema = $schema->getTableSchema('type');
@@ -221,7 +202,9 @@ final class ColumnTest extends CommonColumnTest
 
     public function testUniqueColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
         $schema = $db->getSchema();
 
         $this->assertTrue($schema->getTableSchema('T_constraints_1')?->getColumn('C_unique')->isUnique());
@@ -233,7 +216,7 @@ final class ColumnTest extends CommonColumnTest
 
     public function testTimestampColumnOnDifferentTimezones(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
         $schema = $db->getSchema();
         $command = $db->createCommand();
         $tableName = 'timestamp_column_test';

@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Oracle\SqlParser;
-use Yiisoft\Db\Tests\AbstractSqlParserTest;
+use Yiisoft\Db\Oracle\Tests\Provider\SqlParserProvider;
+use Yiisoft\Db\Tests\Common\CommonSqlParserTest;
 
 /**
  * @group oracle
  */
-final class SqlParserTest extends AbstractSqlParserTest
+final class SqlParserTest extends CommonSqlParserTest
 {
-    /** @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\SqlParserProvider::getNextPlaceholder */
+    #[DataProviderExternal(SqlParserProvider::class, 'getNextPlaceholder')]
     public function testGetNextPlaceholder(string $sql, ?string $expectedPlaceholder, ?int $expectedPosition): void
     {
         parent::testGetNextPlaceholder($sql, $expectedPlaceholder, $expectedPosition);
