@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Tests;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Oracle\Column\ColumnDefinitionParser;
+use Yiisoft\Db\Oracle\Tests\Provider\ColumnDefinitionParserProvider;
 use Yiisoft\Db\Tests\AbstractColumnDefinitionParserTest;
 
 /**
@@ -12,9 +14,7 @@ use Yiisoft\Db\Tests\AbstractColumnDefinitionParserTest;
  */
 final class ColumnDefinitionParserTest extends AbstractColumnDefinitionParserTest
 {
-    /**
-     * @dataProvider \Yiisoft\Db\Oracle\Tests\Provider\ColumnDefinitionParserProvider::parse
-     */
+    #[DataProviderExternal(ColumnDefinitionParserProvider::class, 'parse')]
     public function testParse(string $definition, array $expected): void
     {
         parent::testParse($definition, $expected);

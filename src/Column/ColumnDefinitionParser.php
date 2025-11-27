@@ -22,7 +22,7 @@ final class ColumnDefinitionParser extends \Yiisoft\Db\Syntax\ColumnDefinitionPa
         . 'interval day\s*(?:\((\d+)\))? to second'
         . '|long raw'
         . '|\w*'
-        . ')\s*(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*'
+        . ")\s*(?:\(((?:'[^']*'|[^)])+)\))?(\[[\d\[\]]*\])?\s*"
         . '/i';
 
     public function parse(string $definition): array
