@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Column;
 
+use _PHPStan_e870ac104\Symfony\Component\Console\Exception\LogicException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+
+use Yiisoft\Db\Schema\Column\EnumColumn;
 
 use function ceil;
 use function in_array;
@@ -131,7 +134,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                     => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
                     ? 'json'
                     : 'clob',
-                ColumnType::ENUM => 'varchar2(' . ($size ?? 255) . ')',
+                ColumnType::ENUM => 'varchar2(' . $this->calcEnumSize($column) . ')',
                 default => 'varchar2',
             },
             'timestamp with time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
@@ -144,5 +147,24 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
     protected function getDefaultUuidExpression(): string
     {
         return 'sys_guid()';
+    }
+
+    private function calcEnumSize(ColumnInterface $column): int
+    {
+        $size = $column->getSize();
+        if ($size !== null) {
+            return $size;
+        }
+
+        if ($column instanceof EnumColumn) {
+            return max(
+                array_map(
+                    strlen(...),
+                    $column->getValues(),
+                ),
+            );
+        }
+
+        throw new LogicException('Cannot calculate enum size. Set the size explicitly or use `EnumColumn` instance.');
     }
 }
