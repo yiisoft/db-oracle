@@ -10,7 +10,6 @@ use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-
 use Yiisoft\Db\Schema\Column\EnumColumn;
 
 use function ceil;
