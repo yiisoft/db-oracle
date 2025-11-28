@@ -41,6 +41,23 @@ trait IntegrationTestTrait
         );
     }
 
+    protected function dropTable(string $table): void
+    {
+        $db = TestConnection::getShared();
+        $table = $db->getQuoter()->quoteTableName($table);
+        $sql = <<<SQL
+            BEGIN
+                EXECUTE IMMEDIATE 'DROP TABLE $table';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    IF SQLCODE != -942 THEN
+                        RAISE;
+                    END IF;
+            END;
+            SQL;
+        $db->createCommand($sql)->execute();
+    }
+
     protected function dropView(ConnectionInterface $db, string $view): void
     {
         $view = $db->getQuoter()->quoteTableName($view);
