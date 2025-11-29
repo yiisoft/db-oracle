@@ -65,6 +65,7 @@
 - Enh #373: Adapt to `DQLQueryBuilderInterface::buildWithQueries()` signature changes in `yiisoft/db` package (@vjik)
 - Chg #378: Throw exception on "unsigned" column usage (@vjik)
 - Bug #383: Fix column definition parsing in cases with parentheses (@vjik)
+- New #382: Add enumeration column type support (@vjik)
 
 ## 1.3.0 March 21, 2024
 
