@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Column;
+namespace Yiisoft\Db\Oracle\Tests\Column;
 
 use PHPUnit\Framework\Attributes\TestWith;
 use Yiisoft\Db\Oracle\Tests\Support\IntegrationTestTrait;
