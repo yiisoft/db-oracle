@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Oracle\Column;
 
-use _PHPStan_e870ac104\Symfony\Component\Console\Exception\LogicException;
+use LogicException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\NotSupportedException;
