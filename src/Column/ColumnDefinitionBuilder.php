@@ -133,7 +133,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
                     => version_compare($this->queryBuilder->getServerInfo()->getVersion(), '21', '>=')
                     ? 'json'
                     : 'clob',
-                ColumnType::ENUM => 'varchar2(' . $this->calcEnumSize($column) . ')',
+                ColumnType::ENUM => 'varchar2(' . $this->calcEnumSize($column) . ' BYTE)',
                 default => 'varchar2',
             },
             'timestamp with time zone' => 'timestamp' . ($size !== null ? "($size)" : '') . ' with time zone',
