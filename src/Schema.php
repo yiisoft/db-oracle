@@ -557,7 +557,7 @@ final class Schema extends AbstractPdoSchema
 
         $quotedColumnName = preg_quote($columnName, '~');
         if (!preg_match(
-            "~(?:\"$quotedColumnName\"|$quotedColumnName)\s+IN\s*\((.+)\)~i",
+            "~^\s*(?:\"$quotedColumnName\"|$quotedColumnName)\s+IN\s*\(\s*(('(?:''|[^'])*')(?:,\s*(?2))*)\s*\)\s*$~i",
             $check,
             $block,
         )) {

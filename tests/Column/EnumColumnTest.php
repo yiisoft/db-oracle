@@ -16,6 +16,8 @@ final class EnumColumnTest extends CommonEnumColumnTest
     #[TestWith(['INTEGER CHECK ("status" IN (1, 2, 3))'])]
     #[TestWith(["VARCHAR2(10) CHECK (\"status\" != 'abc')"])]
     #[TestWith(["VARCHAR2(10) CHECK (\"status\" NOT IN ('a', 'b', 'c'))"])]
+    #[TestWith(["VARCHAR2(10) CHECK (\"status\" IN ('a', 'b', 'c') OR \"status\" = 'x')"])]
+    #[TestWith(["VARCHAR2(10) CHECK (\"status\" IN ('a', 'b', 'c') OR \"status\" IN ('x', 'y', 'z'))"])]
     public function testNonEnumCheck(string $columnDefinition): void
     {
         $this->dropTable('test_enum_table');
