@@ -564,7 +564,6 @@ final class Schema extends AbstractPdoSchema
             return null;
         }
 
-        // Выбираем все строки в одинарных кавычках внутри
         preg_match_all("~'((?:''|[^'])*)'~", $block[1], $matches);
 
         return array_map(
