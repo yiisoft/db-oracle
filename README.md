@@ -24,6 +24,11 @@ a command builder class, and a set of classes for representing database tables a
 
 Driver supports Oracle 12c - 21c.
 
+## Requirements
+
+- PHP 8.1 - 8.5.
+- `pdo` PHP extension.
+
 ## Installation
 
 The package could be installed with [Composer](https://getcomposer.org):
