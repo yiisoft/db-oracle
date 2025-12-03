@@ -86,12 +86,12 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                     'blob_col' => new BinaryColumn(
                         dbType: 'blob',
                     ),
-                    'numeric_col' => new DoubleColumn(
+                    'numeric_col' => new StringColumn(
                         ColumnType::DECIMAL,
                         dbType: 'number',
                         scale: 2,
                         size: 5,
-                        defaultValue: 33.22,
+                        defaultValue: '33.22',
                     ),
                     'timestamp_col' => new DateTimeColumn(
                         dbType: 'timestamp',
@@ -265,16 +265,26 @@ final class SchemaProvider extends \Yiisoft\Db\Tests\Provider\SchemaProvider
                 'len' => 4000,
                 'precision' => 0,
             ]],
-            [new DoubleColumn(ColumnType::DECIMAL, dbType: 'number', name: 'numeric_col', notNull: false, size: 5, scale: 2), [
-                'oci:decl_type' => 'NUMBER',
-                'native_type' => 'NUMBER',
-                'pdo_type' => 2,
-                'scale' => 2,
-                'flags' => ['nullable'],
-                'name' => 'numeric_col',
-                'len' => 22,
-                'precision' => 5,
-            ]],
+            [
+                new StringColumn(
+                    ColumnType::DECIMAL,
+                    dbType: 'number',
+                    name: 'numeric_col',
+                    notNull: false,
+                    scale: 2,
+                    size: 5,
+                ),
+                [
+                    'oci:decl_type' => 'NUMBER',
+                    'native_type' => 'NUMBER',
+                    'pdo_type' => 2,
+                    'scale' => 2,
+                    'flags' => ['nullable'],
+                    'name' => 'numeric_col',
+                    'len' => 22,
+                    'precision' => 5,
+                ],
+            ],
             [new DateTimeColumn(dbType: 'timestamp', name: 'timestamp_col', notNull: true, size: 6), [
                 'oci:decl_type' => 'TIMESTAMP',
                 'native_type' => 'TIMESTAMP',
