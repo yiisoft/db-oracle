@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Oracle;
 
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnInfoSource;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\Check;
@@ -168,7 +169,7 @@ final class Schema extends AbstractPdoSchema
             default => strtolower((string) $metadata['oci:decl_type']),
         };
 
-        $columnInfo = ['fromResult' => true];
+        $columnInfo = ['source' => ColumnInfoSource::QUERY_RESULT];
 
         if (!empty($metadata['table'])) {
             $columnInfo['table'] = $metadata['table'];
@@ -455,6 +456,7 @@ final class Schema extends AbstractPdoSchema
             'scale' => $info['data_scale'] !== null ? (int) $info['data_scale'] : null,
             'schema' => $info['schema'],
             'size' => $info['size'] !== null ? (int) $info['size'] : null,
+            'source' => ColumnInfoSource::TABLE_SCHEMA,
             'table' => $info['table'],
             'unique' => $info['constraint_type'] === 'U',
             'values' => $this->tryGetEnumValuesFromCheck($info['column_name'], $info['check']),
