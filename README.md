@@ -27,7 +27,7 @@ Driver supports Oracle 12c - 21c.
 ## Requirements
 
 - PHP 8.1 - 8.5.
-- `pdo` PHP extension.
+- `pdo_oci` PHP extension.
 
 ## Installation
 

@@ -24,7 +24,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: 1.0.0
-      EXTENSIONS: pdo, pdo_oci
+      EXTENSIONS: pdo_oci
 
     runs-on: ${{ matrix.os }}
 

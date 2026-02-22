@@ -4,6 +4,7 @@
 
 - Enh #392: Explicitly import classes and functions in "use" section (@mspirkov)
 - Enh #393: Remove unnecessary files from Composer package (@mspirkov)
+- Enh #394: Add `ext-pdo_oci` to `require` section of `composer.json` (@Tigrov)
 
 ## 2.0.0 December 05, 2025
 

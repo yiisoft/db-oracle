@@ -31,6 +31,7 @@
     ],
     "require": {
         "ext-pdo": "*",
+        "ext-pdo_oci": "*",
         "php": "8.1 - 8.5",
         "yiisoft/db": "^2.0"
     },
