@@ -41,7 +41,7 @@ jobs:
 
     services:
       oci:
-        image: gvenzl/oracle-xe:21
+        image: gvenzl/oracle-xe:21@sha256:c2682a4216b0fe65537912c4a049c7e5c15a85bb7c94bb8137d5f2d2eef60603
         ports:
           - 1521:1521
         env:
