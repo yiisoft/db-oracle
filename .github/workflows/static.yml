@@ -1,20 +1,15 @@
+name: Static analysis
+
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - '.github/workflows/static.yml'
       - 'psalm*.xml'
       - 'composer.json'
-
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - '.github/workflows/static.yml'
-      - 'psalm*.xml'
-      - 'composer.json'
-
-name: Static analysis
+    paths: *paths
 
 permissions:
   contents: read
@@ -28,7 +23,7 @@ jobs:
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
       php: >-
-        ['8.1', '8.2', '8.3', '8.4']
+        ['8.1', '8.2', '8.3', '8.4', '8.5']
       extensions: pdo_oci
       required-packages: >-
         ['db']

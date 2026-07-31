@@ -1,22 +1,16 @@
+name: build
+
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/build.yml'
       - 'composer.json'
       - 'phpunit.xml.dist'
-
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/build.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
-
-name: build
+    paths: *paths
 
 permissions:
   contents: read
@@ -82,7 +76,7 @@ jobs:
           persist-credentials: false
 
       - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.EXTENSIONS }}
