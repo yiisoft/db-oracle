@@ -8,11 +8,13 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
+use Yiisoft\Db\Expression\Value\UuidValue;
 use Yiisoft\Db\Oracle\Builder\ArrayMergeBuilder;
 use Yiisoft\Db\Oracle\Builder\InBuilder;
 use Yiisoft\Db\Oracle\Builder\LikeBuilder;
 use Yiisoft\Db\Oracle\Builder\LongestBuilder;
 use Yiisoft\Db\Oracle\Builder\ShortestBuilder;
+use Yiisoft\Db\Oracle\Builder\UuidValueBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\WithQuery;
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
@@ -103,6 +105,7 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
             ArrayMerge::class => ArrayMergeBuilder::class,
             Longest::class => LongestBuilder::class,
             Shortest::class => ShortestBuilder::class,
+            UuidValue::class => UuidValueBuilder::class,
         ];
     }
 }
