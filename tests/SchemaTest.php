@@ -80,14 +80,6 @@ final class SchemaTest extends CommonSchemaTest
         $db->close();
     }
 
-    public function testGetSchemaDefaultValues(): void
-    {
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Oracle\Schema::loadTableDefaultValues is not supported by Oracle.');
-
-        parent::testGetSchemaDefaultValues();
-    }
-
     public function testGetSchemaNames(): void
     {
         $db = $this->getSharedConnection();
